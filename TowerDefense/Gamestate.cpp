@@ -29,7 +29,7 @@ void State_Game::initTest()
 	temp.setDamage(5);
 
 	towers.at(0)->setProjectile(temp);
-	towers.at(0)->setPosition({200, 30});
+	towers.at(0)->setPosition({200, 70});
 
 	towers.push_back(new Tower());
 
@@ -90,6 +90,7 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 			if (ctrlTower) {
 				ctrlTower->setOverlayColor(sf::Color::White);
+				ctrlTower->setDrawRange(false);
 			}
 			
 			ctrlTower = nullptr;
@@ -98,6 +99,7 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 				if (i->contains(mousePos)) {
 					ctrlTower = i;
 					ctrlTower->setOverlayColor({100,100,100});
+					ctrlTower->setDrawRange(true);
 					break;
 				}
 			}
@@ -179,6 +181,7 @@ void State_Game::update(float dt)
 
 	//Collision
 	updateCollision();
+	updateTargeting();
 }
 
 void State_Game::draw(sf::RenderWindow& win)
@@ -213,6 +216,18 @@ void State_Game::updateCollision()
 			if (p->getBounds().intersects(h->getBounds())) {
 				h->takeDamage(p->getDamage(), p->getDamageType());
 				p->die();
+			}
+		}
+	}
+}
+
+void State_Game::updateTargeting()
+{
+	for (auto i : hostiles) {
+		for (auto j : towers) {
+			if (j->inRange(i->getPos())) {
+				j->setTarget(i->getPos());
+				j->fire(projectiles);
 			}
 		}
 	}

@@ -129,6 +129,11 @@ sf::FloatRect Hostile::getBounds()
 	return graph.getGlobalBounds();
 }
 
+sf::Vector2f Hostile::getPos()
+{
+	return graph.getPosition();
+}
+
 Round::Round()
 {
 }

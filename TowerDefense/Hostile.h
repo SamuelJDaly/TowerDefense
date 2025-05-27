@@ -51,6 +51,7 @@ public:
 
 	bool getDead();
 	sf::FloatRect getBounds();
+	sf::Vector2f getPos();
 };
 
 //######################	ROUND		############################

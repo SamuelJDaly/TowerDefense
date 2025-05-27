@@ -55,6 +55,7 @@ public:
 	void draw(sf::RenderWindow &win);
 
 	void updateCollision();
+	void updateTargeting();
 };
 
 

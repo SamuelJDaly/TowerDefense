@@ -125,6 +125,18 @@ void Tower::update(float dt)
 void Tower::draw(sf::RenderWindow& win)
 {
 	win.draw(graph);
+
+	if (doDrawRange) {
+		sf::CircleShape circle;
+		circle.setRadius(range);
+		circle.setOrigin(range, range);
+		circle.setPosition(graph.getPosition());
+		circle.setFillColor({0,200,0,20});
+		circle.setOutlineColor({0,255,0});
+		circle.setOutlineThickness(1);
+
+		win.draw(circle);
+	}
 }
 
 void Tower::setTexture(sf::Texture* texture)
@@ -171,9 +183,23 @@ void Tower::setOverlayColor(sf::Color col)
 	graph.setColor(col);
 }
 
+void Tower::setDrawRange(bool state)
+{
+	doDrawRange = state;
+}
+
 bool Tower::contains(sf::Vector2f pos)
 {
 	if (graph.getGlobalBounds().contains(pos)) {
+		return true;
+	}
+
+	return false;
+}
+
+bool Tower::inRange(sf::Vector2f pos)
+{
+	if (dist(pos,graph.getPosition()) <= range) {
 		return true;
 	}
 

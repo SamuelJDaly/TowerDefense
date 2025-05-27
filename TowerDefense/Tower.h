@@ -55,7 +55,7 @@ private:
 	//Data
 	sf::Sprite graph;
 
-	float cooldownThreshold = .25; //in s
+	float cooldownThreshold = 1; //in s
 	float cooldownTimer = 0;
 	bool canFire = true;
 
@@ -63,6 +63,8 @@ private:
 	sf::Vector2f target = {0,0};
 
 	float range = 100;
+	bool doDrawRange = false;
+
 
 public:
 	//Constructor and Destructor
@@ -82,7 +84,10 @@ public:
 	void fire(std::vector<Projectile*> &projectileList);
 	void setOverlayColor(sf::Color col);
 
+	void setDrawRange(bool state);
+
 	bool contains(sf::Vector2f pos);
+	bool inRange(sf::Vector2f pos);
 
 };
 
