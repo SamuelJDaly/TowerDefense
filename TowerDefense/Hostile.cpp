@@ -1,11 +1,7 @@
 #include "Hostile.h"
 
-Hostile::Hostile(sf::Texture* tex)
+Hostile::Hostile()
 {
-	texture = tex;
-	graph.setTexture(*texture);
-	graph.setOrigin({(float)(tex->getSize().x / 2.0), (float)(tex->getSize().y / 2.0) });
-	size = (sf::Vector2f)tex->getSize();
 }
 
 Hostile::~Hostile()
@@ -46,6 +42,14 @@ void Hostile::update(float dt)
 void Hostile::draw(sf::RenderWindow& win)
 {
 	win.draw(graph);
+}
+
+void Hostile::setTexture(sf::Texture* texture)
+{
+	this->texture = texture;
+	graph.setTexture(*texture);
+	graph.setOrigin({ (float)(texture->getSize().x / 2.0), (float)(texture->getSize().y / 2.0) });
+	size = (sf::Vector2f)texture->getSize();
 }
 
 void Hostile::setTarget(sf::Vector2f newTarget)
@@ -123,4 +127,109 @@ bool Hostile::getDead()
 sf::FloatRect Hostile::getBounds()
 {
 	return graph.getGlobalBounds();
+}
+
+Round::Round()
+{
+}
+
+Round::~Round()
+{
+	//Free any remaining memory in hostiles stack.
+	while (!hostiles.empty()) {
+		delete hostiles.top();
+		hostiles.pop();
+	}
+}
+
+void Round::start()
+{
+	isRunning = true;
+}
+
+void Round::update(float dt)
+{
+	if (!isRunning || timing.empty()) {
+		return;
+	}
+
+	timer += dt;
+
+	if (timer >= timing.top()) {
+		timer = 0;
+		doSpawn = true;
+		timing.pop();
+	}
+
+}
+
+void Round::spawn(std::vector<Hostile*> &list)
+{
+	//NOTE:
+	// Any hostile exported to the given list WILL NOT BE FREED by the destructor of this class.
+	// It is the responsibility of the owner of that list to free said memory.
+	// (Any hostiles remaining in the hostiles stack at the time of the destructor call will be freed).
+
+	if (hostiles.empty()) {
+		return;
+	}
+
+	list.push_back(hostiles.top());
+	hostiles.pop();
+	doSpawn = false;
+}
+
+void Round::addAtlasEntry(std::string name, Hostile type)
+{
+	atlas.insert({ name, type });
+}
+
+void Round::loadFromFile(std::string filepath)
+{
+	//## Vars
+	std::ifstream inFile;
+	float time = 0;
+	std::string type = "";
+
+
+
+	//## Open file
+	inFile.open(filepath);
+
+	if (!inFile.is_open()) {
+		std::cout << "Could not open file: " << filepath << std::endl;
+		return;
+	}
+
+	//## Read File
+	while (inFile >> time >> type) {
+		auto it = atlas.find(type);
+
+		if (it == atlas.end()) {
+			std::cout << "Hostile type not found: " << type << std::endl;
+			return;
+		}
+
+		Hostile* temp = new Hostile(atlas.at(type));
+		temp->resetNode();
+
+		
+		timing.push(time);
+		hostiles.push(temp);
+	}
+
+	//## Close file
+	inFile.close();
+
+	if (hostiles.size() != timing.size()) {
+		std::cout << "Round loaded. Cardinality mismatch." << std::endl;
+	}
+
+	return;
+
+}
+
+bool Round::getSpawnState()
+{
+	return doSpawn;
 }

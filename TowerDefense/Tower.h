@@ -62,6 +62,8 @@ private:
 	Projectile projectileType;
 	sf::Vector2f target = {0,0};
 
+	float range = 100;
+
 public:
 	//Constructor and Destructor
 	Tower();

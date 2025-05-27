@@ -11,10 +11,10 @@ void State_Game::initMap()
 
 void State_Game::initHostiles()
 {
-	hostiles.push_back(new Hostile(textureHandler->lookup("hostile_0")));
-	hostiles.at(0)->setPath(tileMap->getPath());
-	hostiles.at(0)->resetNode();
-	hostiles.at(0)->setSize({12,12});
+	//hostiles.push_back(new Hostile(textureHandler->lookup("hostile_0")));
+	//hostiles.at(0)->setPath(tileMap->getPath());
+	//hostiles.at(0)->resetNode();
+	//hostiles.at(0)->setSize({12,12});
 }
 
 void State_Game::initTest()
@@ -37,6 +37,19 @@ void State_Game::initTest()
 
 	towers.at(1)->setProjectile(temp);
 	towers.at(1)->setPosition({ 300, 300 });
+
+	Hostile testHostile;
+	testHostile.setTexture(textureHandler->lookup("hostile_0"));
+	testHostile.setPath(tileMap->getPath());
+	testHostile.setSize({ 12,12 });
+	
+
+	Round* testRound = new Round();
+	testRound->addAtlasEntry("test", testHostile);
+	testRound->loadFromFile("resource/rounds/round_0.txt");
+	testRound->start();
+
+	rounds.push(testRound);
 }
 
 State_Game::State_Game(TextureHandler* textureHandler)
@@ -105,7 +118,8 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 	if (event.type == sf::Event::KeyReleased) {
 		if (event.key.code == sf::Keyboard::Space) {
-			hostiles.push_back(new Hostile(textureHandler->lookup("hostile_0")));
+			hostiles.push_back(new Hostile());
+			hostiles.back()->setTexture(textureHandler->lookup("hostile_0"));
 			hostiles.back()->setPath(tileMap->getPath());
 			hostiles.back()->setSize({12,12});
 			hostiles.back()->resetNode();
@@ -119,6 +133,12 @@ void State_Game::update(float dt)
 	map->update(dt);
 	tileMap->update(dt);
 	
+	//Update current round
+	rounds.top()->update(dt);
+
+	if (rounds.top()->getSpawnState()) {
+		rounds.top()->spawn(hostiles);
+	}
 
 	//Update hostiles
 	auto hosIt = hostiles.begin();

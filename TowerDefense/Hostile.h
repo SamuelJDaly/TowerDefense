@@ -1,6 +1,13 @@
 #pragma once
+#include <iostream>
+#include <fstream>
+#include <unordered_map>
+#include <vector>
+#include <stack>
 #include <SFML/Graphics.hpp>
 #include "Util.h"
+
+//######################	HOSTILE		############################
 
 class Hostile
 {
@@ -25,12 +32,14 @@ private:
 
 public:
 	//Constructor and Destructor
-	Hostile(sf::Texture* tex);
+	Hostile();
 	~Hostile();
 
 	//Primary Functions
 	void update(float dt);
 	void draw(sf::RenderWindow& win);
+
+	void setTexture(sf::Texture* texture);
 	void setTarget(sf::Vector2f newTarget);
 	void setPath(Node* path);
 	void setPos(sf::Vector2f newPos);
@@ -42,4 +51,40 @@ public:
 
 	bool getDead();
 	sf::FloatRect getBounds();
+};
+
+//######################	ROUND		############################
+/*
+The round is basically a scheduling system for spawning hostiles at given times.
+This is accomplished by keeping track of two lists:
+	1. A list of hostiles to spawn
+	2. The timing between each spawn
+*/
+
+class Round {
+private:
+	//Data
+	std::stack<float> timing;
+	std::stack<Hostile*> hostiles;
+	std::unordered_map<std::string, Hostile> atlas;
+	float timer = 0;
+	bool isRunning = false;
+	bool doSpawn = false;
+
+
+
+public:
+	//Constructor and Destructor
+	Round();
+	~Round();
+
+	//Primary functions
+	void start();
+	void update(float dt);
+	void spawn(std::vector<Hostile*> &list);
+	//void fLoadAtlas(std::string filepath); //NOT IMPLEMENTED
+	void addAtlasEntry(std::string name, Hostile type);
+	void loadFromFile(std::string filepath);
+
+	bool getSpawnState();
 };

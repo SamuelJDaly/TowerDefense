@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <stack>
 #include <SFML/Graphics.hpp>
 #include "Tower.h"
 #include "Hostile.h"
@@ -31,6 +32,8 @@ private:
 	std::vector<Hostile*> hostiles;
 	std::vector<Tower*> towers;
 	std::vector<Projectile*> projectiles;
+	std::stack<Round*> rounds;
+
 	//textureHandler (base class)
 
 	Tower* ctrlTower = nullptr;
