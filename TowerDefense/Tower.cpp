@@ -74,6 +74,11 @@ void Projectile::setDamage(float newDamage)
 	damage = newDamage;
 }
 
+void Projectile::setSpeed(float newSpeed)
+{
+	speed = newSpeed;
+}
+
 float Projectile::getSpeed()
 {
 	return speed;

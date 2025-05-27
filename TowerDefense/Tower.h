@@ -38,6 +38,7 @@ public:
 	void setRange(float newRange);
 	void setPosition(sf::Vector2f newPos);
 	void setDamage(float newDamage);
+	void setSpeed(float newSpeed);
 	
 	float getSpeed();
 	bool getDead();

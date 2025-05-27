@@ -1,5 +1,12 @@
 #include "Gamestate.h"
 
+
+
+
+//##############################################################################################################
+//				GAME
+////##############################################################################################################
+
 void State_Game::initMap()
 {
 	map = new Map(textureHandler);
@@ -27,6 +34,7 @@ void State_Game::initTest()
 	temp.setTexture(textureHandler->lookup("projectile_0"));
 	temp.setRange(600);
 	temp.setDamage(3);
+	temp.setSpeed(200);
 
 	towers.at(0)->setProjectile(temp);
 	towers.at(0)->setPosition({200, 70});
@@ -236,4 +244,25 @@ void State_Game::updateTargeting()
 			}
 		}
 	}
+}
+
+//##############################################################################################################
+//				MENU
+////##############################################################################################################
+
+Gamestate_Menu::Gamestate_Menu()
+{
+
+}
+
+Gamestate_Menu::~Gamestate_Menu()
+{
+}
+
+void Gamestate_Menu::update(float dt)
+{
+}
+
+void Gamestate_Menu::draw(sf::RenderWindow& win)
+{
 }
