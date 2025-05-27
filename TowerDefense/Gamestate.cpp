@@ -29,11 +29,12 @@ void State_Game::initTest()
 	towers.push_back(new Tower());
 
 	towers.at(0)->setTexture(textureHandler->lookup("tower_0"));
+	towers.back()->setCooldown(.25);
 
 	Projectile temp;
 	temp.setTexture(textureHandler->lookup("projectile_0"));
 	temp.setRange(600);
-	temp.setDamage(3);
+	temp.setDamage(1);
 	temp.setSpeed(200);
 
 	towers.at(0)->setProjectile(temp);

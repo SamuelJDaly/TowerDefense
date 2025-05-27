@@ -188,6 +188,11 @@ void Tower::setOverlayColor(sf::Color col)
 	graph.setColor(col);
 }
 
+void Tower::setCooldown(float newCooldown)
+{
+	cooldownThreshold = newCooldown;
+}
+
 void Tower::setDrawRange(bool state)
 {
 	doDrawRange = state;

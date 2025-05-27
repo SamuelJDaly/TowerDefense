@@ -84,6 +84,7 @@ public:
 	void setTarget(sf::Vector2f newTarget);
 	void fire(std::vector<Projectile*> &projectileList);
 	void setOverlayColor(sf::Color col);
+	void setCooldown(float newCooldown);
 
 	void setDrawRange(bool state);
 
