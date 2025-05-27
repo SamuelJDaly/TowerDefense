@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <SFML/Graphics.hpp>
 
 #define PI 3.14159
@@ -35,3 +36,5 @@ struct Node {
 
 std::istream& operator>>(std::istream& is, Node& obj);
 
+Node* fLoadPath(std::string filepath);
+void pathOffset(Node* head, sf::Vector2f offSet);

@@ -36,3 +36,59 @@ std::istream& operator>>(std::istream& is, Node& obj)
 	obj.type = type;
 	return is;
 }
+
+Node* fLoadPath(std::string filepath)
+{
+	//This function loads a set of nodes from a given filepath
+	Node* pathHead = nullptr;
+
+	//Open file
+	std::ifstream inFile;
+
+	inFile.open(filepath);
+
+	if (!inFile.is_open()) {
+		std::cout << "Cannot open file: " << filepath << std::endl;
+		return nullptr;
+	}
+
+	//Read file
+	Node curr;
+	Node* last = nullptr;
+
+	while (inFile >> curr) {
+		//Call implicit copy constructor
+		Node* newNode = new Node(curr);
+		if (last) {
+			//If there is a last then link with current node and vice versa
+			newNode->last = last;
+			last->next = newNode;
+		}
+		else {
+			//If there is no last, then this is the first node
+			pathHead = newNode;
+		}
+
+
+		//Store current node as last
+		last = newNode;
+	}
+
+	//Close file
+	inFile.close();
+
+	return pathHead;
+}
+
+void pathOffset(Node* head, sf::Vector2f offSet)
+{
+	Node* curr = head;
+	while (curr) {
+		//Apply offset
+		curr->pos.x += offSet.x;
+		curr->pos.y += offSet.y;
+
+		//Iterate
+		curr = curr->next;
+	}
+}

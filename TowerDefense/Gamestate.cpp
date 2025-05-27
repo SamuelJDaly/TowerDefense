@@ -26,7 +26,7 @@ void State_Game::initTest()
 	Projectile temp;
 	temp.setTexture(textureHandler->lookup("projectile_0"));
 	temp.setRange(600);
-	temp.setDamage(5);
+	temp.setDamage(3);
 
 	towers.at(0)->setProjectile(temp);
 	towers.at(0)->setPosition({200, 70});
@@ -145,6 +145,11 @@ void State_Game::update(float dt)
 	//Update hostiles
 	auto hosIt = hostiles.begin();
 	for (auto i : hostiles) {
+		//Apply damage if path end reached
+		if (i->getPathDone()) {
+			hp -= i->getHp();
+			std::cout << "HP: " << hp << std::endl;
+		}
 		//Delete it if dead
 		if (i->getDead()) {
 			delete hostiles.at(std::distance(hostiles.begin(), hosIt));

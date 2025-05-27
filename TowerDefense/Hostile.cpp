@@ -15,6 +15,12 @@ void Hostile::update(float dt)
 		this->Die();
 	}
 
+	//Check if path is done
+	if (!currNode) {
+		isPathDone = true;
+		this->Die();
+	}
+
 
 	//## 1. Path determination (get target)
 	//Calculate offset from target
@@ -123,6 +129,17 @@ bool Hostile::getDead()
 {
 	return isDead;
 }
+
+bool Hostile::getPathDone()
+{
+	return isPathDone;
+}
+
+int Hostile::getHp()
+{
+	return hp;
+}
+
 
 sf::FloatRect Hostile::getBounds()
 {
@@ -238,3 +255,4 @@ bool Round::getSpawnState()
 {
 	return doSpawn;
 }
+

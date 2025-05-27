@@ -21,6 +21,7 @@ private:
 	float speed = 30;
 	float hp = 10;
 	bool isDead = false;
+	bool isPathDone = false;
 	std::vector<DamageType> resistance;
 	std::vector<DamageType>weakness;
 
@@ -52,6 +53,8 @@ public:
 	bool getDead();
 	sf::FloatRect getBounds();
 	sf::Vector2f getPos();
+	bool getPathDone();
+	int getHp();
 };
 
 //######################	ROUND		############################

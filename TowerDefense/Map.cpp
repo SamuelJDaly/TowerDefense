@@ -156,42 +156,13 @@ void Map::draw(sf::RenderWindow& win)
 
 void Map::loadPath(std::string filepath)
 {
-	//This function loads a set of nodes from a given filepath
-	//Open file
-	std::ifstream inFile;
-
-	inFile.open(filepath);
-
-	if (!inFile.is_open()) {
-		std::cout << "Cannot open file: " << filepath << std::endl;
+	Node* temp = fLoadPath(filepath);
+	if (!temp) {
+		std::cout << "Path not loaded..." << std::endl;
 		return;
 	}
 
-	//Read file
-	Node curr;
-	Node* last = nullptr;
-
-	while (inFile >> curr) {
-		//Call implicit copy constructor
-		Node* newNode = new Node(curr);
-
-		if (last) {
-			//If there is a last then link with current node and vice versa
-			newNode->last = last;
-			last->next = newNode;
-		}
-		else {
-			//If there is no last, then this is the first node
-			pathHead = newNode;
-		}
-
-
-		//Store current node as last
-		last = newNode;
-	}
-
-	//Close file
-	inFile.close();
+	pathHead = temp;
 }
 
 Node* Map::getPath()
@@ -387,46 +358,15 @@ void TileMap::setBackground(sf::Texture* texture, sf::Vector2f size)
 
 void TileMap::loadPath(std::string filepath)
 {
-	//This function loads a set of nodes from a given filepath
-	//Open file
-	std::ifstream inFile;
-
-	inFile.open(filepath);
-
-	if (!inFile.is_open()) {
-		std::cout << "Cannot open file: " << filepath << std::endl;
+	Node* temp = fLoadPath(filepath);
+	if (!temp) {
+		std::cout << "Path not loaded..." << std::endl;
 		return;
 	}
 
-	//Read file
-	Node curr;
-	Node* last = nullptr;
+	pathHead = temp;
 
-	while (inFile >> curr) {
-		//Call implicit copy constructor
-		Node* newNode = new Node(curr);
-		newNode->pos.x *= tileSize;
-		newNode->pos.y *= tileSize;
-		newNode->pos.x += tileSize / 2;
-		newNode->pos.y += tileSize / 2;
-
-		if (last) {
-			//If there is a last then link with current node and vice versa
-			newNode->last = last;
-			last->next = newNode;
-		}
-		else {
-			//If there is no last, then this is the first node
-			pathHead = newNode;
-		}
-
-
-		//Store current node as last
-		last = newNode;
-	}
-
-	//Close file
-	inFile.close();
+	pathOffset(pathHead, { (float)(tileSize / 2.0), (float)(tileSize / 2.0) });
 }
 
 Node* TileMap::getPath()

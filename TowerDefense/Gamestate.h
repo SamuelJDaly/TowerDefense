@@ -37,6 +37,8 @@ private:
 	//textureHandler (base class)
 
 	Tower* ctrlTower = nullptr;
+
+	int hp = 10;
 	
 
 	//Util
@@ -60,3 +62,21 @@ public:
 
 
 //##########################	MENU 	#############################################
+
+class Gamestate_Menu : public Gamestate {
+private:
+	//Data
+
+
+	//Util
+
+public:
+	//Constructor and Destructor
+	Gamestate_Menu();
+	~Gamestate_Menu();
+
+	//Primary Functions
+	void update(float dt);
+	void draw(sf::RenderWindow &win);
+
+};
