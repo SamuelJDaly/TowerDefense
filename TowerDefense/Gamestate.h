@@ -55,22 +55,41 @@ public:
 //##########################	GAME	#############################################
 class State_Game : public Gamestate {
 private:
-	//Data
+	//# Data
+	//Camera
+	sf::View view_playField;
+	sf::View view_gui;
+	sf::Vector2f viewSize_playField = { 500,500 };
+	sf::Vector2f viewSize_gui = { 500,500 };
+	sf::FloatRect viewport_playField = {0,0,1,1};
+	sf::FloatRect viewport_gui = {0,0,1,1};
+
+	sf::FloatRect cameraBounds = {-100,-100,600,600}; //How much can the camera offset
+	float panSpeed = 300;
+	float zoomSpeed = .03;
+	float currZoom = 1;
+	sf::Vector2f zoomBounds = {1.5,.70};
+
+
+	//Gameplay
 	Map* map;
 	TileMap* tileMap;
 	std::vector<Hostile*> hostiles;
 	std::vector<Tower*> towers;
 	std::vector<Projectile*> projectiles;
 	std::stack<Round*> rounds;
-
-	//textureHandler (base class)
-
 	Tower* ctrlTower = nullptr;
 
 	int hp = 10;
 	
 
+	//textureHandler (base class)
+
+	
+	
+
 	//Util
+	void initView();
 	void initMap();
 	void initHostiles();
 	void initTest();
@@ -87,6 +106,7 @@ public:
 
 	void updateCollision();
 	void updateTargeting();
+	void updateCamera(float dt); //zoom is handled in polling function :(
 };
 
 

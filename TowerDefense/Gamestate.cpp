@@ -7,6 +7,16 @@
 //				GAME
 ////##############################################################################################################
 
+void State_Game::initView()
+{
+	view_playField.setCenter(viewSize_playField.x/2, viewSize_playField.y/2);
+	view_playField.setSize(viewSize_playField);
+	//view_gui.setSize(viewSize_gui);
+
+	view_playField.setViewport(viewport_playField);
+	view_gui.setViewport(viewport_gui);
+}
+
 void State_Game::initMap()
 {
 	map = new Map(textureHandler);
@@ -67,6 +77,7 @@ State_Game::State_Game(TextureHandler* textureHandler)
 {
 	this->textureHandler = textureHandler;
 	
+	this->initView();
 	this->initMap();
 	this->initHostiles();
 	this->initTest();
@@ -94,10 +105,19 @@ State_Game::~State_Game()
 
 void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 {
+	//###	MOUSE
+	//Button
 	if (event.type == sf::Event::MouseButtonReleased) {
+		// Get click coords
+		// get the current mouse position in the window
+		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
+
+		// convert it to world coordinates
+		sf::Vector2f worldPos = win.mapPixelToCoords(pixelPos, view_playField);
+
+
 		if (event.key.code == sf::Mouse::Left) {
 			//Select tower
-			sf::Vector2f mousePos = { (float)(sf::Mouse::getPosition(win).x) , (float)(sf::Mouse::getPosition(win).y) };
 
 			if (ctrlTower) {
 				ctrlTower->setOverlayColor(sf::Color::White);
@@ -107,7 +127,7 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 			ctrlTower = nullptr;
 
 			for (auto i : towers) {
-				if (i->contains(mousePos)) {
+				if (i->contains(worldPos)) {
 					ctrlTower = i;
 					ctrlTower->setOverlayColor({100,100,100});
 					ctrlTower->setDrawRange(true);
@@ -121,14 +141,29 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 			if (!ctrlTower) {
 				return;
 			}
-			sf::Vector2f mousePos = { (float)(sf::Mouse::getPosition(win).x) , (float)(sf::Mouse::getPosition(win).y)};
 			
-			ctrlTower->setTarget(mousePos);
+			ctrlTower->setTarget(worldPos);
 			ctrlTower->fire(projectiles);
 		}
 	}
 
 
+	//Scroll Wheel
+	if (event.type == sf::Event::MouseWheelMoved) {
+		float zoom = currZoom - (zoomSpeed * event.mouseWheel.delta);
+		
+		if (zoom < zoomBounds.x && zoom >= zoomBounds.y) {
+			
+			view_playField.zoom(1/currZoom);
+			currZoom = zoom;
+			view_playField.zoom(currZoom);
+		}
+
+		std::cout << currZoom << std::endl;
+		
+	}
+
+	//###	KEYBOARD
 	if (event.type == sf::Event::KeyReleased) {
 		if (event.key.code == sf::Keyboard::Space) {
 			hostiles.push_back(new Hostile());
@@ -199,12 +234,16 @@ void State_Game::update(float dt)
 
 
 	//Collision
+	updateCamera(dt);
 	updateCollision();
 	updateTargeting();
 }
 
 void State_Game::draw(sf::RenderWindow& win)
 {
+	//# Play Field
+	win.setView(view_playField);
+
 	//map->draw(win);
 	tileMap->draw(win);
 
@@ -220,6 +259,8 @@ void State_Game::draw(sf::RenderWindow& win)
 		i->draw(win);
 	}
 
+	//# GUI
+	win.setView(view_gui);
 	
 }
 
@@ -248,6 +289,35 @@ void State_Game::updateTargeting()
 				j->setTarget(i->getPos());
 				j->fire(projectiles);
 			}
+		}
+	}
+}
+
+void State_Game::updateCamera(float dt)
+{
+	//Up
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		if (view_playField.getCenter().y >= cameraBounds.top) {
+			view_playField.move({ 0,-1 * panSpeed * dt });
+		}
+	}
+
+	//Down
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		if (view_playField.getCenter().y <= cameraBounds.height) {
+			view_playField.move({ 0,panSpeed * dt });
+		}
+	}
+	//Left
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		if (view_playField.getCenter().x >= cameraBounds.left) {
+			view_playField.move({ -1 * panSpeed * dt,0 });
+		}
+	}
+	//Right
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		if (view_playField.getCenter().x <= cameraBounds.width) {
+			view_playField.move({ panSpeed * dt,0 });
 		}
 	}
 }
