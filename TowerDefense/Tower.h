@@ -2,7 +2,17 @@
 #include <SFML/Graphics.hpp>
 #include "Util.h"
 
+/*
+Project: Tower Defense, Tower System
+Created: 26 MAY 2025
+Updated: 26 MAY 2025
 
+Description:
+	This file contains the Tower System, which is one of the main ways the player interacts with the game. As of this version, towers
+	fire projectiles as actual seperate objects with their own stats. The system will need to be expanded to accomodate more damage delivery
+	methods than the projectile, such as aoe damage, beam damage, etc...
+
+*/
 
 //###########	PROJECTILE	#####################
 class Projectile {

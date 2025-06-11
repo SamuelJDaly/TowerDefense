@@ -7,6 +7,18 @@
 #include <SFML/Graphics.hpp>
 #include "Util.h"
 
+/*
+Project: Tower Defense, Hostile System
+Created: 26 MAY 2025
+Updated: 26 MAY 2025
+
+Description:
+	This file contains the Hostile system. This system implements the enemies that the player must defeat in order to stay alive.
+	The main parts of this sytem are the "Hostile" and the "Round". The Hostile is exactly what it sounds like, a sprite and a
+	group of stats. The round is a list of times and a list of hostiles. When the current time value passes the current hostile
+	is spawned, and the list is advanced.
+*/
+
 //######################	HOSTILE		############################
 
 class Hostile

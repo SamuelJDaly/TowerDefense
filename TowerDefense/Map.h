@@ -6,6 +6,18 @@
 #include "TextureHandler.h"
 #include "Util.h"
 
+/*
+Project: Tower Defense, Map System
+Created: 26 MAY 2025
+Updated: 26 MAY 2025
+
+Description:
+	This file contains the map system. The original idea was to use a simple map with a single background image, which was called the "Map".
+	In order to facilitate other systems this has been replaced with a tilemap system. The "Tilemap" is a 2d array of tiles
+	(which are basically sprites and a few stats). It also contains a path, which is mostly just a linked list of coordinates. This path
+	is used by the hostile system to tell enemies where to move. Right now the system only supports singly linked paths, ie no branching.
+	It might be worth implementing branching, and multiple paths.
+*/
 
 //###################	TILE		#######################
 class Tile {

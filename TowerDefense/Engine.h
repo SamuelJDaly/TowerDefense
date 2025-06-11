@@ -6,6 +6,16 @@
 #include "TextureHandler.h"
 #include "Gamestate.h"
 
+/*
+Project: Tower Defense, Engine
+Created: 26 MAY 2025
+Updated: 26 MAY 2025
+
+Description:
+	This file contains the game "Engine" system. It functions as a state manager and a resource manager (textures, audio, etc...).
+	
+*/
+
 
 class Engine
 {

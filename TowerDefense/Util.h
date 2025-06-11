@@ -8,6 +8,17 @@
 #define MODIFIER_WEAKNESS 0.25;
 #define MODIFIER_RESISTANCE 0.25;
 
+
+/*
+Project: Tower Defense, Utility Functions
+Created: 26 MAY 2025
+Updated: 26 MAY 2025
+
+Description:
+	This file contains various utility functions that are common to multiple systems.
+*/
+
+
 //#################		UTIL	###################
 enum class NodeType {
 	BEGIN, PATH, END

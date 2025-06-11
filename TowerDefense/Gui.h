@@ -4,7 +4,24 @@
 #include <queue>
 #include <SFML/Graphics.hpp>
 
+/*
+Project: GUI System
+Created: 28 MAY 2025
+Updated: 28 MAY 2025
 
+Description:
+	This file contains the GUI System. The system is made up of a collection of widets, and a Gui class to manage them.
+
+	Widgets:
+		-Panel: A 9 slice border and a background. Helps divide the window up and make widgets more visible.
+		-Label: SFML Text object with a wrapper to make it a widget. Displays text.
+		-Button: Clickable control to fire of certain events. The exact mechanism is not yet implemented.
+
+	GUI:
+		-List of Widgets
+		-Layer System
+		-Widget ID System
+*/
 
 //############################################################################################
 //				ELEMENTS
