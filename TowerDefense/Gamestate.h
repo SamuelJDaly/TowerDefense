@@ -5,6 +5,7 @@
 #include "Tower.h"
 #include "Hostile.h"
 #include "Map.h"
+#include "Gui.h"
 
 //##########################	BASE CLASS	#########################################
 class Gamestate
@@ -63,20 +64,23 @@ public:
 
 //##########################	MENU 	#############################################
 
-class Gamestate_Menu : public Gamestate {
+class State_Menu : public Gamestate {
 private:
 	//Data
-
+	Gui* gui;
+	sf::Font font;
 
 	//Util
+	void initGui();
 
 public:
 	//Constructor and Destructor
-	Gamestate_Menu();
-	~Gamestate_Menu();
+	State_Menu(TextureHandler* textureHandler);
+	~State_Menu();
 
 	//Primary Functions
 	void update(float dt);
+	void poll(sf::RenderWindow& win, sf::Event& event);
 	void draw(sf::RenderWindow &win);
 
 };

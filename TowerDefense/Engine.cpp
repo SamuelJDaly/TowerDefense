@@ -15,11 +15,14 @@ void Engine::initTextures()
 	textureHandler->addTexture("tower_0", "resource/tex/tower_0.png");
 	textureHandler->addTexture("projectile_0", "resource/tex/projectile_0.png");
 	textureHandler->addTexture("tileset_0", "resource/tex/tileset_0.png");
+	textureHandler->addTexture("panel_0", "resource/tex/panel_0.png");
+	textureHandler->addTexture("panel_1", "resource/tex/panel_1.png");
 }
 
 void Engine::initState()
 {
 	currState = new State_Game(textureHandler);
+	//currState = new State_Menu(textureHandler);
 }
 
 Engine::Engine()
@@ -48,6 +51,14 @@ void Engine::update()
 		if (event.type == sf::Event::Closed) {
 			win->close();
 			isRunning = false;
+		}
+
+		if (event.type == sf::Event::MouseButtonReleased) {
+			if (event.key.code == sf::Mouse::Right) {
+				auto pos = sf::Mouse::getPosition(*win);
+
+				std::cout << "(" << pos.x << ", " << pos.y << ")" << std::endl;
+			}
 		}
 
 		currState->poll(*win, event);

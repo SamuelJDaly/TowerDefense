@@ -29,7 +29,7 @@ void State_Game::initTest()
 	towers.push_back(new Tower());
 
 	towers.at(0)->setTexture(textureHandler->lookup("tower_0"));
-	towers.back()->setCooldown(.25);
+	towers.back()->setCooldown(.01);
 
 	Projectile temp;
 	temp.setTexture(textureHandler->lookup("projectile_0"));
@@ -44,8 +44,10 @@ void State_Game::initTest()
 
 	towers.at(1)->setTexture(textureHandler->lookup("tower_0"));
 
+	temp.setDamage(5);
 	towers.at(1)->setProjectile(temp);
 	towers.at(1)->setPosition({ 300, 300 });
+	
 
 	Hostile testHostile;
 	testHostile.setTexture(textureHandler->lookup("hostile_0"));
@@ -56,9 +58,9 @@ void State_Game::initTest()
 	Round* testRound = new Round();
 	testRound->addAtlasEntry("test", testHostile);
 	testRound->loadFromFile("resource/rounds/round_0.txt");
-	testRound->start();
 
 	rounds.push(testRound);
+	rounds.top()->start();
 }
 
 State_Game::State_Game(TextureHandler* textureHandler)
@@ -145,11 +147,14 @@ void State_Game::update(float dt)
 	tileMap->update(dt);
 	
 	//Update current round
-	rounds.top()->update(dt);
-
-	if (rounds.top()->getSpawnState()) {
-		rounds.top()->spawn(hostiles);
+	if (!rounds.empty()) {
+		rounds.top()->update(dt);
+		if (rounds.top()->getSpawnState()) {
+			rounds.top()->spawn(hostiles);
+		}
 	}
+
+	
 
 	//Update hostiles
 	auto hosIt = hostiles.begin();
@@ -251,19 +256,59 @@ void State_Game::updateTargeting()
 //				MENU
 ////##############################################################################################################
 
-Gamestate_Menu::Gamestate_Menu()
+void State_Menu::initGui()
+{
+	gui = new Gui();
+
+	Widget_Panel* panel = new Widget_Panel();
+	panel->setTexture(textureHandler->lookup("panel_0"));
+	panel->setSize({100,100});
+	panel->setLayer(0);
+
+	Widget_Panel* panel2 = new Widget_Panel();
+	panel2->setTexture(textureHandler->lookup("panel_1"));
+	panel2->setSize({ 100,100 });
+	panel2->setLayer(2);
+	panel2->setPosition({50,50});
+
+	Widget_Label* label = new Widget_Label();
+	label->setFont(&font);
+	label->setText("Test");
+	label->setLayer(3);
+
+
+	gui->addWidget(panel);
+	gui->addWidget(panel2);
+	gui->addWidget(label);
+	
+
+}
+
+State_Menu::State_Menu(TextureHandler* textureHandler)
+{
+	this->textureHandler = textureHandler;
+	if (!font.loadFromFile("resource/font/jmhtype.ttf")) {
+		
+	}
+	this->initGui();
+}
+
+State_Menu::~State_Menu()
+{
+	delete gui;
+}
+
+void State_Menu::poll(sf::RenderWindow& win, sf::Event& event)
 {
 
 }
 
-Gamestate_Menu::~Gamestate_Menu()
+void State_Menu::update(float dt)
 {
+	gui->update(dt);
 }
 
-void Gamestate_Menu::update(float dt)
+void State_Menu::draw(sf::RenderWindow& win)
 {
-}
-
-void Gamestate_Menu::draw(sf::RenderWindow& win)
-{
+	gui->draw(win);
 }

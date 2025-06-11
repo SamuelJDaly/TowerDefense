@@ -73,6 +73,7 @@ private:
 	std::unordered_map<std::string, Hostile> atlas;
 	float timer = 0;
 	bool isRunning = false;
+	bool isDone = false;
 	bool doSpawn = false;
 
 
@@ -91,4 +92,5 @@ public:
 	void loadFromFile(std::string filepath);
 
 	bool getSpawnState();
+	bool getDone();
 };

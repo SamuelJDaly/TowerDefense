@@ -171,7 +171,12 @@ void Round::start()
 
 void Round::update(float dt)
 {
-	if (!isRunning || timing.empty()) {
+	if (timing.empty()) {
+		isDone = true;
+		return;
+	}
+
+	if (!isRunning) {
 		return;
 	}
 
@@ -193,6 +198,7 @@ void Round::spawn(std::vector<Hostile*> &list)
 	// (Any hostiles remaining in the hostiles stack at the time of the destructor call will be freed).
 
 	if (hostiles.empty()) {
+		isDone = true;
 		return;
 	}
 
@@ -254,5 +260,10 @@ void Round::loadFromFile(std::string filepath)
 bool Round::getSpawnState()
 {
 	return doSpawn;
+}
+
+bool Round::getDone()
+{
+	return isDone;
 }
 
