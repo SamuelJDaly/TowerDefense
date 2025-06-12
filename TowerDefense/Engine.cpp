@@ -17,6 +17,7 @@ void Engine::initTextures()
 	textureHandler->addTexture("tileset_0", "resource/tex/tileset_0.png");
 	textureHandler->addTexture("panel_0", "resource/tex/panel_0.png");
 	textureHandler->addTexture("panel_1", "resource/tex/panel_1.png");
+	textureHandler->addTexture("panel_brn", "resource/tex/panel_brn.png");
 }
 
 void Engine::initState()

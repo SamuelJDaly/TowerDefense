@@ -70,6 +70,9 @@ private:
 	float currZoom = 1;
 	sf::Vector2f zoomBounds = {1.5,.70};
 
+	//Gui
+	Gui* gui;
+
 
 	//Gameplay
 	Map* map;
@@ -89,6 +92,7 @@ private:
 	
 
 	//Util
+	void initGui();
 	void initView();
 	void initMap();
 	void initHostiles();

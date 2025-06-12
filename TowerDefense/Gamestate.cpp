@@ -7,6 +7,20 @@
 //				GAME
 ////##############################################################################################################
 
+void State_Game::initGui()
+{
+	gui = new Gui();
+
+
+	Widget_Panel* panel = new Widget_Panel();
+	panel->setTexture(textureHandler->lookup("panel_brn"));
+	panel->setSize({ 100,500 });
+	panel->setPosition({400,0});
+	panel->setLayer(0);
+
+	gui->addWidget(panel);
+}
+
 void State_Game::initView()
 {
 	view_playField.setCenter(viewSize_playField.x/2, viewSize_playField.y/2);
@@ -77,6 +91,7 @@ State_Game::State_Game(TextureHandler* textureHandler)
 {
 	this->textureHandler = textureHandler;
 	
+	this->initGui();
 	this->initView();
 	this->initMap();
 	this->initHostiles();
@@ -101,6 +116,8 @@ State_Game::~State_Game()
 	for (auto i : towers) {
 		delete i;
 	}
+
+	delete gui;
 }
 
 void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
@@ -233,7 +250,8 @@ void State_Game::update(float dt)
 	}
 
 
-	//Collision
+	//Other
+	gui->update(dt);
 	updateCamera(dt);
 	updateCollision();
 	updateTargeting();
@@ -261,6 +279,8 @@ void State_Game::draw(sf::RenderWindow& win)
 
 	//# GUI
 	win.setView(view_gui);
+
+	gui->draw(win);
 	
 }
 
