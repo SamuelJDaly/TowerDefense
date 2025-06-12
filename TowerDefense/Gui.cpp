@@ -48,15 +48,21 @@ void Widget_Panel::arrange()
 
 
 	//## Border
-	scaleX = (size.x) / spriteSheet->getSize().x;
-	scaleY = (size.y) / spriteSheet->getSize().y;
+	sf::Vector2f topMidSize;
+	topMidSize.x = size.x - (2*cornerSize.x);
+	topMidSize.y = size.y - (2 * cornerSize.y);
+
+	sf::Vector2f midSizeVertical;
+
 
 	//Pos
 	border[0].setPosition(pos.x, pos.y);
-	border[1].setPosition(pos.x + thirdX, pos.y);
-	border[2].setPosition(pos.x + (2 * thirdX), pos.y);
+	border[1].setPosition(pos.x + cornerSize.x, pos.y);
+	border[2].setPosition(pos.x + topMidSize.x + cornerSize.x, pos.y);
+
 	border[3].setPosition(pos.x, pos.y + thirdY);
 	border[4].setPosition(pos.x + (2 * thirdX), pos.y + thirdY);
+	
 	border[5].setPosition(pos.x, pos.y + (2 * thirdY));
 	border[6].setPosition(pos.x + thirdX, pos.y + (2 * thirdY));
 	border[7].setPosition(pos.x + (2 * thirdX), pos.y + (2 * thirdY));

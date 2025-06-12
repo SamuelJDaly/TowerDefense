@@ -13,7 +13,7 @@ void State_Game::initGui()
 
 
 	Widget_Panel* panel = new Widget_Panel();
-	panel->setTexture(textureHandler->lookup("panel_brn"));
+	panel->setTexture(textureHandler->lookup("panel_stone"));
 	panel->setSize({ 100,500 });
 	panel->setPosition({400,0});
 	panel->setLayer(0);
