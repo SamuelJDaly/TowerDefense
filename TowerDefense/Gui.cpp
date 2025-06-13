@@ -26,7 +26,7 @@ int Widget::getID()
 }
 
 //#################################### PANEL
-void Widget_Panel::arrange()
+void Widget_Panel::applyPos()
 {
 	//Guard
 	if (!spriteSheet) {
@@ -35,48 +35,55 @@ void Widget_Panel::arrange()
 
 	//## Vars
 	float scaleX, scaleY;
-	float thirdX = size.x / 3;
-	float thirdY = size.y / 3;
+	float thirdX = size.x / 3.f;
+	float thirdY = size.y / 3.f;
 	int row = 0; int col = 0;
 
 	//## Background
-	scaleX = size.x * 3 / spriteSheet->getSize().x;
-	scaleY = size.y * 3 / spriteSheet->getSize().y;
-
-	background.setPosition(pos);
-	background.setScale(scaleX, scaleY);
+	background.setPosition({pos.x+borderPadding,pos.y+borderPadding});
 
 
 	//## Border
-	sf::Vector2f topMidSize;
-	topMidSize.x = size.x - (2*cornerSize.x);
-	topMidSize.y = size.y - (2 * cornerSize.y);
-
-	sf::Vector2f midSizeVertical;
+	sf::Vector2f middleSize;
+	middleSize.x = size.x - (2*cornerSize.x);
+	middleSize.y = size.y - (2*cornerSize.y);
 
 
 	//Pos
 	border[0].setPosition(pos.x, pos.y);
 	border[1].setPosition(pos.x + cornerSize.x, pos.y);
-	border[2].setPosition(pos.x + topMidSize.x + cornerSize.x, pos.y);
+	border[2].setPosition(pos.x + middleSize.x + cornerSize.x, pos.y);
 
-	border[3].setPosition(pos.x, pos.y + thirdY);
-	border[4].setPosition(pos.x + (2 * thirdX), pos.y + thirdY);
+	border[3].setPosition(pos.x, pos.y + cornerSize.y);
+	border[4].setPosition(pos.x + middleSize.x + cornerSize.x, pos.y + cornerSize.y);
 	
-	border[5].setPosition(pos.x, pos.y + (2 * thirdY));
-	border[6].setPosition(pos.x + thirdX, pos.y + (2 * thirdY));
-	border[7].setPosition(pos.x + (2 * thirdX), pos.y + (2 * thirdY));
+	border[5].setPosition(pos.x, pos.y + middleSize.y + cornerSize.y);
+	border[6].setPosition(pos.x + cornerSize.x, pos.y + middleSize.y + cornerSize.y);
+	border[7].setPosition(pos.x + cornerSize.x + middleSize.x, pos.y + middleSize.y + cornerSize.y);
+}
 
-	//Scale
-	border[0].setScale(scaleX, scaleY);
-	border[1].setScale(scaleX, scaleY);
-	border[2].setScale(scaleX, scaleY);
-	border[3].setScale(scaleX, scaleY);
-	border[4].setScale(scaleX, scaleY);
-	border[5].setScale(scaleX, scaleY);
-	border[6].setScale(scaleX, scaleY);
-	border[7].setScale(scaleX, scaleY);
+void Widget_Panel::applyScale()
+{
+	//## Background
+	float scaleX, scaleY;
+	scaleX = (3*size.x - (2*borderPadding)) / spriteSheet->getSize().x;
+	scaleY = (3*size.y - (2*borderPadding)) / spriteSheet->getSize().y;
 
+	background.setScale(scaleX, scaleY);
+
+
+
+	//## Border
+	sf::Vector2f middleScale;
+	middleScale.x = (3*size.x - (2 * cornerSize.x)) / spriteSheet->getSize().x;
+	middleScale.y = (3*size.y - (2 * cornerSize.y)) / spriteSheet->getSize().y;
+
+	border[1].setScale(middleScale.x, 1);
+
+	border[3].setScale(1, middleScale.y);
+	border[4].setScale(1, middleScale.y);
+
+	border[6].setScale(middleScale.x, 1);
 }
 
 Widget_Panel::Widget_Panel()
@@ -94,7 +101,7 @@ void Widget_Panel::update(const float dt)
 void Widget_Panel::draw(sf::RenderWindow& win)
 {
 	win.draw(background);
-
+	
 	for (int i = 0; i < 8; i++) {
 		win.draw(border[i]);
 	}
@@ -107,6 +114,8 @@ void Widget_Panel::setTexture(sf::Texture* sheet)
 
 	int thirdX = spriteSheet->getSize().x / 3;
 	int thirdY = spriteSheet->getSize().y / 3;
+
+	cornerSize = {spriteSheet->getSize().x / 3.f, spriteSheet->getSize().y / 3.f};
 
 	background.setTexture(*spriteSheet);
 	background.setTextureRect({ thirdX,thirdY,thirdX,thirdY });
@@ -124,13 +133,15 @@ void Widget_Panel::setTexture(sf::Texture* sheet)
 	border[6].setTextureRect({ thirdX,2 * thirdY,thirdX,thirdY });
 	border[7].setTextureRect({ 2 * thirdX,2 * thirdY,thirdX,thirdY });
 
-	this->arrange();
+	this->applyPos();
+	this->applyScale();
 }
 
 void Widget_Panel::setSize(sf::Vector2f newSize)
 {
 	size = newSize;
-	this->arrange();
+	this->applyPos();
+	this->applyScale();
 }
 
 void Widget_Panel::setColor(sf::Color col)
@@ -141,7 +152,7 @@ void Widget_Panel::setColor(sf::Color col)
 void Widget_Panel::setPosition(sf::Vector2f newPos)
 {
 	pos = newPos;
-	this->arrange();
+	this->applyPos();
 }
 
 

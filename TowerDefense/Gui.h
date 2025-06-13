@@ -64,6 +64,7 @@ private:
 	sf::Texture* spriteSheet; //Use a spritesheet to avoid needing to set 9 textures
 	sf::Vector2f cornerSize = {1,1};
 	sf::Vector2f size = {1,1};
+	float borderPadding = 0;
 
 	//unsigned int layer = 0; base class
 	//int ID = 0; base class
@@ -71,7 +72,8 @@ private:
 
 
 	//Util
-	void arrange(); //Position and scale individual sprites
+	void applyPos(); //Position panel components
+	void applyScale(); //Scale panel components
 
 public:
 	//Constructor and Destructor
