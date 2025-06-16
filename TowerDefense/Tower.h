@@ -5,7 +5,7 @@
 /*
 Project: Tower Defense, Tower System
 Created: 26 MAY 2025
-Updated: 26 MAY 2025
+Updated: 16 JUN 2025
 
 Description:
 	This file contains the Tower System, which is one of the main ways the player interacts with the game. As of this version, towers

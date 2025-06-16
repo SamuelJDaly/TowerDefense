@@ -10,7 +10,7 @@
 /*
 Project: Tower Defense, Gamestate System
 Created: 26 MAY 2025
-Updated: 11 JUN 2025
+Updated: 16 JUN 2025
 
 Description:
 	This file contains the Gamestate System. This is what actually ties the various systems (tower, hostile, map, etc...) together and manages their interactions.
