@@ -193,8 +193,10 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 		// convert it to world coordinates
 		sf::Vector2f worldPos = win.mapPixelToCoords(pixelPos, view_playField);
+		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
 
 
+		//## Left Click
 		if (event.key.code == sf::Mouse::Left) {
 			//Select tower
 
@@ -215,6 +217,8 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 			}
 		}
 
+
+		//## Right Click
 		if (event.key.code == sf::Mouse::Right) {
 			//Fire tower
 			if (!ctrlTower) {
