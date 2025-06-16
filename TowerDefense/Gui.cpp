@@ -34,7 +34,6 @@ void Widget_Panel::applyPos()
 	}
 
 	//## Vars
-	float scaleX, scaleY;
 	float thirdX = size.x / 3.f;
 	float thirdY = size.y / 3.f;
 
@@ -64,19 +63,24 @@ void Widget_Panel::applyPos()
 void Widget_Panel::applyScale()
 {
 	//## Background
-	float scaleX, scaleY;
-	scaleX = (3*size.x - (2*borderPadding)) / spriteSheet->getSize().x;
-	scaleY = (3*size.y - (2*borderPadding)) / spriteSheet->getSize().y;
+	sf::Vector2f bgScale;
+	bgScale.x = (size.x - (2 * borderPadding)) / (spriteSheet->getSize().x / 3);
+	bgScale.y = (size.y - (2 * borderPadding)) / (spriteSheet->getSize().y / 3);
 
-	background.setScale(scaleX, scaleY);
+	background.setScale(bgScale);
 
 
 
 	//## Border
 	sf::Vector2f middleScale;
-	middleScale.x = (3*size.x - (2 * cornerSize.x)) / spriteSheet->getSize().x;
-	middleScale.y = (3*size.y - (2 * cornerSize.y)) / spriteSheet->getSize().y;
+	sf::Vector2f middleSize;
 
+	middleSize.x = size.x - (2 * cornerSize.y);
+	middleSize.y = size.y - (2 * cornerSize.y);
+
+	middleScale.x = (middleSize.x / (spriteSheet->getSize().x / 3));
+	middleScale.y = (middleSize.y / (spriteSheet->getSize().y / 3));
+	
 	border[1].setScale(middleScale.x, 1);
 
 	border[3].setScale(1, middleScale.y);
@@ -111,10 +115,10 @@ void Widget_Panel::setTexture(sf::Texture* sheet)
 {
 	spriteSheet = sheet;
 
-	int thirdX = spriteSheet->getSize().x / 3;
-	int thirdY = spriteSheet->getSize().y / 3;
+	int thirdX = (spriteSheet->getSize().x / 3);
+	int thirdY = (spriteSheet->getSize().y / 3);
 
-	cornerSize = {spriteSheet->getSize().x / 3.f, spriteSheet->getSize().y / 3.f};
+	cornerSize = {(float)thirdX,(float)thirdY};
 
 	background.setTexture(*spriteSheet);
 	background.setTextureRect({ thirdX,thirdY,thirdX,thirdY });
@@ -152,6 +156,13 @@ void Widget_Panel::setPosition(sf::Vector2f newPos)
 {
 	pos = newPos;
 	this->applyPos();
+}
+
+void Widget_Panel::setBorderPadding(float padding)
+{
+	borderPadding = padding;
+	this->applyPos();
+	this->applyScale();
 }
 
 

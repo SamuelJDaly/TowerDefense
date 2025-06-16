@@ -71,7 +71,10 @@ private:
 
 	//Gui
 	Gui* gui;
-
+	std::vector<Tower> pallete; //Tower Selection
+	int palleteColumns = 2;
+	int palletePadding = 20; //Px between pallete entries
+	float palleteEntrySize = 50;
 
 	//Gameplay
 	Map* map;
@@ -104,12 +107,16 @@ public:
 
 	//Primary Functions
 	void poll(sf::RenderWindow& win, sf::Event& event);
-	void update(float dt);
-	void draw(sf::RenderWindow &win);
-
+	
 	void updateCollision();
 	void updateTargeting();
 	void updateCamera(float dt); //zoom is handled in polling function :(
+	void update(float dt);
+
+	void drawPallete(sf::RenderWindow &win);
+	void draw(sf::RenderWindow &win);
+
+	
 };
 
 

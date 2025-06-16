@@ -9,16 +9,75 @@
 
 void State_Game::initGui()
 {
+	//GUI
 	gui = new Gui();
+	sf::Vector2f palletePos = {800,0};
 
 
 	Widget_Panel* panel = new Widget_Panel();
-	panel->setTexture(textureHandler->lookup("panel_stone"));
-	panel->setSize({ 500,500 });
-	panel->setPosition({20,20});
+	panel->setTexture(textureHandler->lookup("panel_girder"));
+	panel->setSize({ 200,1000 });
+	panel->setPosition({800, 0});
 	panel->setLayer(0);
 
 	gui->addWidget(panel);
+
+	//PALLETE
+
+	Tower towerOne;
+	Tower towerTwo;
+
+	towerOne.setTexture(textureHandler->lookup("tower_1"));
+	towerOne.setCooldown(.25);
+
+	towerTwo.setTexture(textureHandler->lookup("tower_2"));
+	towerTwo.setCooldown(.1);
+
+	Projectile temp, tempTwo;
+	temp.setTexture(textureHandler->lookup("projectile_0"));
+	temp.setRange(600);
+	temp.setDamage(3);
+	temp.setSpeed(200);
+
+	tempTwo.setTexture(textureHandler->lookup("projectile_1"));
+	tempTwo.setRange(600);
+	tempTwo.setDamage(1);
+	tempTwo.setSpeed(200);
+
+	towerOne.setProjectile(temp);
+	towerTwo.setProjectile(tempTwo);
+	towerOne.setSize({ palleteEntrySize, palleteEntrySize });
+	towerTwo.setSize({ palleteEntrySize, palleteEntrySize });
+	towerOne.setPosition(palletePos);
+	towerTwo.setPosition(palletePos);
+
+	pallete.push_back(towerOne);
+	pallete.push_back(towerTwo);
+
+
+	int row = 0;
+	int col = 0;
+
+	for (size_t i = 0; i < pallete.size(); i++) {
+		if (col >= palleteColumns) {
+			row++;
+			col = 0;
+		}
+
+		pallete.at(i).move({70,50});
+		pallete.at(i).move({(palleteEntrySize*col), (palleteEntrySize*row)});
+
+		if (col > 0) {
+			pallete.at(i).move({ (float)palletePadding, 0 });
+		}
+
+		if (row > 0) {
+			pallete.at(i).move({0, (float)palletePadding});
+		}
+
+		col++;
+	}
+
 }
 
 void State_Game::initView()
@@ -52,23 +111,26 @@ void State_Game::initTest()
 {
 	towers.push_back(new Tower());
 
-	towers.at(0)->setTexture(textureHandler->lookup("tower_0"));
+	towers.at(0)->setTexture(textureHandler->lookup("tower_1"));
 	towers.back()->setCooldown(.25);
 
 	Projectile temp;
-	temp.setTexture(textureHandler->lookup("projectile_0"));
+	temp.setTexture(textureHandler->lookup("projectile_1"));
 	temp.setRange(600);
 	temp.setDamage(1);
 	temp.setSpeed(200);
+	temp.setSize({ 4,4 });
 
 	towers.at(0)->setProjectile(temp);
 	towers.at(0)->setPosition({200, 70});
 
 	towers.push_back(new Tower());
 
-	towers.at(1)->setTexture(textureHandler->lookup("tower_0"));
+	towers.at(1)->setTexture(textureHandler->lookup("tower_2"));
 
 	temp.setDamage(5);
+	temp.setTexture(textureHandler->lookup("projectile_2"));
+	temp.setSize({8,2});
 	towers.at(1)->setProjectile(temp);
 	towers.at(1)->setPosition({ 300, 300 });
 	
@@ -257,6 +319,13 @@ void State_Game::update(float dt)
 	updateTargeting();
 }
 
+void State_Game::drawPallete(sf::RenderWindow &win)
+{
+	for (auto i : pallete) {
+		i.draw(win);
+	}
+}
+
 void State_Game::draw(sf::RenderWindow& win)
 {
 	//# Play Field
@@ -280,7 +349,8 @@ void State_Game::draw(sf::RenderWindow& win)
 	//# GUI
 	win.setView(view_gui);
 
-	//gui->draw(win);
+	gui->draw(win);
+	drawPallete(win);
 	
 }
 

@@ -10,6 +10,7 @@ void Engine::initTextures()
 {
 	textureHandler = new TextureHandler();
 
+	textureHandler->addTexture("panel_test", "resource/tex/panel_test.png");
 	textureHandler->addTexture("bg_test", "resource/tex/bg_0.png");
 	textureHandler->addTexture("hostile_0", "resource/tex/hostile_0.png");
 	textureHandler->addTexture("tower_0", "resource/tex/tower_0.png");
@@ -19,6 +20,12 @@ void Engine::initTextures()
 	textureHandler->addTexture("panel_1", "resource/tex/panel_1.png");
 	textureHandler->addTexture("panel_brn", "resource/tex/panel_brn.png");
 	textureHandler->addTexture("panel_stone", "resource/tex/panel_stone.png");
+	textureHandler->addTexture("panel_girder", "resource/tex/panel_girder.png");
+
+	textureHandler->addTexture("tower_1", "resource/tex/tower_1.png");
+	textureHandler->addTexture("tower_2", "resource/tex/tower_2.png");
+	textureHandler->addTexture("projectile_1", "resource/tex/projectile_1.png");
+	textureHandler->addTexture("projectile_2", "resource/tex/projectile_2.png");
 }
 
 void Engine::initState()

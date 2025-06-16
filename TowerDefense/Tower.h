@@ -49,7 +49,8 @@ public:
 	void setPosition(sf::Vector2f newPos);
 	void setDamage(float newDamage);
 	void setSpeed(float newSpeed);
-	
+	void setSize(sf::Vector2f newSize);
+
 	float getSpeed();
 	bool getDead();
 	sf::FloatRect getBounds();
@@ -69,6 +70,8 @@ private:
 	float cooldownThreshold = 1; //in s
 	float cooldownTimer = 0;
 	bool canFire = true;
+
+	sf::Vector2f size = {1,1};
 
 	Projectile projectileType;
 	sf::Vector2f target = {0,0};
@@ -90,6 +93,12 @@ public:
 	void setProjectile(Projectile archetype);
 
 	void setPosition(sf::Vector2f newPosition);
+	sf::Vector2f getPosition();
+
+	void move(sf::Vector2f offset);
+
+	void setSize(sf::Vector2f newSize);
+	sf::Vector2f getSize();
 
 	void setTarget(sf::Vector2f newTarget);
 	void fire(std::vector<Projectile*> &projectileList);

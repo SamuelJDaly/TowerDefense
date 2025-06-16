@@ -88,6 +88,7 @@ public:
 	void setSize(sf::Vector2f newSize);
 	void setColor(sf::Color col);
 	void setPosition(sf::Vector2f newPos);
+	void setBorderPadding(float padding);
 };
 
 
