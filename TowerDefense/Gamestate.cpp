@@ -15,7 +15,7 @@ void State_Game::initGui()
 	Widget_Panel* panel = new Widget_Panel();
 	panel->setTexture(textureHandler->lookup("panel_stone"));
 	panel->setSize({ 500,500 });
-	panel->setPosition({0,0});
+	panel->setPosition({20,20});
 	panel->setLayer(0);
 
 	gui->addWidget(panel);
@@ -280,7 +280,7 @@ void State_Game::draw(sf::RenderWindow& win)
 	//# GUI
 	win.setView(view_gui);
 
-	gui->draw(win);
+	//gui->draw(win);
 	
 }
 

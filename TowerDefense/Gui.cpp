@@ -37,7 +37,6 @@ void Widget_Panel::applyPos()
 	float scaleX, scaleY;
 	float thirdX = size.x / 3.f;
 	float thirdY = size.y / 3.f;
-	int row = 0; int col = 0;
 
 	//## Background
 	background.setPosition({pos.x+borderPadding,pos.y+borderPadding});
