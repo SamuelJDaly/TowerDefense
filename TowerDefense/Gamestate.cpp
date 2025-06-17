@@ -3,7 +3,7 @@
 
 
 
-//##############################################################################################################
+//################################################################################################################
 //				GAME
 ////##############################################################################################################
 
@@ -82,7 +82,7 @@ void State_Game::initGui()
 
 void State_Game::initView()
 {
-	view_playField.setCenter(viewSize_playField.x/2, viewSize_playField.y/2);
+	//view_playField.setCenter(viewSize_playField.x/2, viewSize_playField.y/2);
 	view_playField.setSize(viewSize_playField);
 	//view_gui.setSize(viewSize_gui);
 
@@ -149,10 +149,16 @@ void State_Game::initTest()
 	rounds.top()->start();
 }
 
-State_Game::State_Game(TextureHandler* textureHandler)
+State_Game::State_Game(TextureHandler* textureHandler, sf::RenderWindow* window)
 {
 	this->textureHandler = textureHandler;
-	
+	this->window = window;
+
+	if (!window) {
+		std::cout << "Invalid window!!!" << std::endl;
+		abort();
+	}
+
 	this->initGui();
 	this->initView();
 	this->initMap();
@@ -185,7 +191,7 @@ State_Game::~State_Game()
 void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 {
 	//###	MOUSE
-	//Button
+	//Button Release
 	if (event.type == sf::Event::MouseButtonReleased) {
 		// Get click coords
 		// get the current mouse position in the window
@@ -198,7 +204,13 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 		//## Left Click
 		if (event.key.code == sf::Mouse::Left) {
-			//Select tower
+			
+			if (isPalletePicked) {
+				palleteDeselect();
+			}
+			
+			
+			//Tower Selection
 
 			if (ctrlTower) {
 				ctrlTower->setOverlayColor(sf::Color::White);
@@ -230,6 +242,15 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 		}
 	}
 
+	//Button press
+	if (event.type == sf::Event::MouseButtonPressed) {
+		if (event.key.code == sf::Mouse::Left) {
+			if (!isPalletePicked) {
+				palleteSelect();
+			}
+		}
+	}
+
 
 	//Scroll Wheel
 	if (event.type == sf::Event::MouseWheelMoved) {
@@ -257,6 +278,30 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 		}
 	}
 
+}
+
+void State_Game::palleteSelect()
+{
+	//Check location and create a copy if
+	auto pixelPos = sf::Mouse::getPosition(*window);
+	sf::Vector2f pos = window->mapPixelToCoords(pixelPos, view_gui);
+	for (size_t i = 0; i < pallete.size(); i++) {
+		if (pallete.at(i).contains(pos)) {
+			palletePick = new Tower(pallete.at(i));
+			
+			isPalletePicked = true;
+			break;
+		}
+	}
+}
+
+void State_Game::palleteDeselect()
+{
+	//Check release location
+	towers.push_back(palletePick);
+
+	palletePick = nullptr;
+	isPalletePicked = false;
 }
 
 void State_Game::update(float dt)
@@ -315,6 +360,14 @@ void State_Game::update(float dt)
 		i->update(dt);
 	}
 
+	//Update pallete selection (ie follow mouse)
+	if (isPalletePicked && palletePick) {
+		auto pixelPos = sf::Mouse::getPosition(*window);
+		sf::Vector2f pos = window->mapPixelToCoords(pixelPos, view_playField);
+
+		palletePick->setPosition(pos);
+	}
+
 
 	//Other
 	gui->update(dt);
@@ -327,6 +380,10 @@ void State_Game::drawPallete(sf::RenderWindow &win)
 {
 	for (auto i : pallete) {
 		i.draw(win);
+	}
+
+	if (isPalletePicked && palletePick) {
+		palletePick->draw(win);
 	}
 }
 

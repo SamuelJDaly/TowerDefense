@@ -191,6 +191,18 @@ void Tower::setSize(sf::Vector2f newSize) {
 
 }
 
+void Tower::setScale(float scale)
+{
+	auto baseSize = graph.getTexture()->getSize();
+
+	sf::Vector2f newSize = {(float)(baseSize.x * scale), (float)(baseSize.y * scale)};
+	size = newSize;
+	float scaleX = size.x / graph.getGlobalBounds().width;
+	float scaleY = size.y / graph.getGlobalBounds().height;
+
+	graph.setScale(scaleX, scaleY);
+}
+
 sf::Vector2f Tower::getSize()
 {
 	return size;

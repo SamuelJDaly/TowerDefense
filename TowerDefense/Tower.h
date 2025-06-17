@@ -98,6 +98,7 @@ public:
 	void move(sf::Vector2f offset);
 
 	void setSize(sf::Vector2f newSize);
+	void setScale(float scale);
 	sf::Vector2f getSize();
 
 	void setTarget(sf::Vector2f newTarget);

@@ -56,6 +56,7 @@ class State_Game : public Gamestate {
 private:
 	//# Data
 	//Camera
+	sf::RenderWindow* window;
 	sf::View view_playField;
 	sf::View view_gui;
 	sf::Vector2f viewSize_playField = { 500,500 };
@@ -69,12 +70,16 @@ private:
 	float currZoom = 1;
 	sf::Vector2f zoomBounds = {1.5,.70};
 
+	float towerScale = 1;
+
 	//Gui
 	Gui* gui;
 	std::vector<Tower> pallete; //Tower Selection
 	int palleteColumns = 2;
 	int palletePadding = 20; //Px between pallete entries
 	float palleteEntrySize = 50;
+	bool isPalletePicked = false;
+	Tower* palletePick = nullptr;
 
 	//Gameplay
 	Map* map;
@@ -102,11 +107,13 @@ private:
 
 public:
 	//Constructor and Destructor
-	State_Game(TextureHandler* textureHandler);
+	State_Game(TextureHandler* textureHandler, sf::RenderWindow* window);
 	~State_Game();
 
 	//Primary Functions
 	void poll(sf::RenderWindow& win, sf::Event& event);
+	void palleteSelect();
+	void palleteDeselect();
 	
 	void updateCollision();
 	void updateTargeting();

@@ -30,7 +30,7 @@ void Engine::initTextures()
 
 void Engine::initState()
 {
-	currState = new State_Game(textureHandler);
+	currState = new State_Game(textureHandler, this->win);
 	//currState = new State_Menu(textureHandler);
 }
 
