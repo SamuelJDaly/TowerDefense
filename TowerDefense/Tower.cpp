@@ -197,8 +197,8 @@ void Tower::setScale(float scale)
 
 	sf::Vector2f newSize = {(float)(baseSize.x * scale), (float)(baseSize.y * scale)};
 	size = newSize;
-	float scaleX = size.x / graph.getGlobalBounds().width;
-	float scaleY = size.y / graph.getGlobalBounds().height;
+	float scaleX = size.x / baseSize.x;
+	float scaleY = size.y / baseSize.y;
 
 	graph.setScale(scaleX, scaleY);
 }

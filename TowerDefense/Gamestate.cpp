@@ -11,13 +11,15 @@ void State_Game::initGui()
 {
 	//GUI
 	gui = new Gui();
-	sf::Vector2f palletePos = {800,0};
-
+	
+	palleteSize = { viewSize_gui.x * palleteRatio.x, viewSize_gui.y*palleteRatio.y };
+	palletePos = {viewSize_gui.x - palleteSize.x, 0};
 
 	Widget_Panel* panel = new Widget_Panel();
 	panel->setTexture(textureHandler->lookup("panel_girder"));
-	panel->setSize({ 200,1000 });
-	panel->setPosition({800, 0});
+	panel->setSize(palleteSize);
+
+	panel->setPosition(palletePos);
 	panel->setLayer(0);
 
 	gui->addWidget(panel);
@@ -34,20 +36,20 @@ void State_Game::initGui()
 	towerTwo.setCooldown(.1);
 
 	Projectile temp, tempTwo;
-	temp.setTexture(textureHandler->lookup("projectile_0"));
+	temp.setTexture(textureHandler->lookup("projectile_2"));
 	temp.setRange(600);
-	temp.setDamage(3);
+	temp.setDamage(4);
 	temp.setSpeed(200);
 
 	tempTwo.setTexture(textureHandler->lookup("projectile_1"));
-	tempTwo.setRange(600);
+	tempTwo.setRange(300);
 	tempTwo.setDamage(1);
-	tempTwo.setSpeed(200);
+	tempTwo.setSpeed(250);
 
 	towerOne.setProjectile(temp);
 	towerTwo.setProjectile(tempTwo);
-	towerOne.setSize({ palleteEntrySize, palleteEntrySize });
-	towerTwo.setSize({ palleteEntrySize, palleteEntrySize });
+	towerOne.setScale(towerScale_pallete);
+	towerTwo.setScale(towerScale_pallete);
 	towerOne.setPosition(palletePos);
 	towerTwo.setPosition(palletePos);
 
@@ -64,7 +66,7 @@ void State_Game::initGui()
 			col = 0;
 		}
 
-		pallete.at(i).move({70,50});
+		pallete.at(i).move({50,50});
 		pallete.at(i).move({(palleteEntrySize*col), (palleteEntrySize*row)});
 
 		if (col > 0) {
@@ -82,9 +84,10 @@ void State_Game::initGui()
 
 void State_Game::initView()
 {
-	//view_playField.setCenter(viewSize_playField.x/2, viewSize_playField.y/2);
+	view_playField.setCenter(viewSize_playField.x/2, viewSize_playField.y/2);
 	view_playField.setSize(viewSize_playField);
-	//view_gui.setSize(viewSize_gui);
+	view_gui.setSize(viewSize_gui);
+	view_gui.setCenter(viewSize_gui.x / 2, viewSize_gui.y / 2);
 
 	view_playField.setViewport(viewport_playField);
 	view_gui.setViewport(viewport_gui);
@@ -111,8 +114,9 @@ void State_Game::initTest()
 {
 	towers.push_back(new Tower());
 
-	towers.at(0)->setTexture(textureHandler->lookup("tower_1"));
+	towers.back()->setTexture(textureHandler->lookup("tower_1"));
 	towers.back()->setCooldown(.25);
+	towers.back()->setScale(towerScale_playfield);
 
 	Projectile temp;
 	temp.setTexture(textureHandler->lookup("projectile_1"));
@@ -121,19 +125,19 @@ void State_Game::initTest()
 	temp.setSpeed(200);
 	temp.setSize({ 4,4 });
 
-	towers.at(0)->setProjectile(temp);
-	towers.at(0)->setPosition({200, 70});
+	towers.back()->setProjectile(temp);
+	towers.back()->setPosition({200, 70});
 
 	towers.push_back(new Tower());
 
-	towers.at(1)->setTexture(textureHandler->lookup("tower_2"));
+	towers.back()->setTexture(textureHandler->lookup("tower_2"));
 
 	temp.setDamage(5);
 	temp.setTexture(textureHandler->lookup("projectile_2"));
 	temp.setSize({8,2});
-	towers.at(1)->setProjectile(temp);
-	towers.at(1)->setPosition({ 300, 300 });
-	
+	towers.back()->setProjectile(temp);
+	towers.back()->setPosition({300, 300});
+	towers.back()->setScale(towerScale_playfield);
 
 	Hostile testHostile;
 	testHostile.setTexture(textureHandler->lookup("hostile_0"));
@@ -288,6 +292,7 @@ void State_Game::palleteSelect()
 	for (size_t i = 0; i < pallete.size(); i++) {
 		if (pallete.at(i).contains(pos)) {
 			palletePick = new Tower(pallete.at(i));
+			palletePick->setScale(towerScale_playfield);
 			
 			isPalletePicked = true;
 			break;
@@ -382,14 +387,12 @@ void State_Game::drawPallete(sf::RenderWindow &win)
 		i.draw(win);
 	}
 
-	if (isPalletePicked && palletePick) {
-		palletePick->draw(win);
-	}
+	
 }
 
 void State_Game::draw(sf::RenderWindow& win)
 {
-	//# Play Field
+	//## Play Field
 	win.setView(view_playField);
 
 	//map->draw(win);
@@ -407,7 +410,12 @@ void State_Game::draw(sf::RenderWindow& win)
 		i->draw(win);
 	}
 
-	//# GUI
+	//Pallete pick
+	if (isPalletePicked && palletePick) {
+		palletePick->draw(win);
+	}
+
+	//## GUI
 	win.setView(view_gui);
 
 	gui->draw(win);
@@ -532,4 +540,93 @@ void State_Menu::update(float dt)
 void State_Menu::draw(sf::RenderWindow& win)
 {
 	gui->draw(win);
+}
+
+
+//####################################################################################################################
+//			EDITOR
+//####################################################################################################################
+
+void State_Editor::initGui() {
+	//Gui
+	gui = new Gui();
+
+	//Left Panel
+	Widget_Panel* leftPanel = new Widget_Panel();
+	leftPanel->setTexture(textureHandler->lookup("panel_bevel"));
+	leftPanel->setSize({ viewSize_gui.x * leftPanelRatio, 1*viewSize_gui.y});
+
+	//Bottom Panel
+	Widget_Panel* bottomPanel = new Widget_Panel();
+	bottomPanel->setTexture(textureHandler->lookup("panel_bevel"));
+	
+	sf::Vector2f bottomPanelSize = {viewSize_gui.x-leftPanel->getSize().x, viewSize_gui.y * bottomPanelRatio};
+	bottomPanel->setSize(bottomPanelSize);
+	bottomPanel->setPosition({ leftPanel->getSize().x,   viewSize_gui.y - bottomPanelSize.y});
+
+
+	//Add to gui
+	gui->addWidget(leftPanel);
+	gui->addWidget(bottomPanel);
+}
+
+void State_Editor::initCamera()
+{
+	//Map
+	viewSize_map = {(float)window->getSize().x - (leftPanelRatio * (float)window->getSize().x), (float)window->getSize().y - ((float)window->getSize().y * bottomPanelRatio)};
+	viewport_map = {leftPanelRatio,0,1-leftPanelRatio,1-bottomPanelRatio};
+
+	view_map.setCenter(viewSize_map.x / 2, viewSize_map.y / 2);
+	view_map.setSize(viewSize_map);
+	view_map.setViewport(viewport_map);
+	
+
+	//Gui
+	view_gui.setSize(viewSize_gui);
+	view_gui.setCenter(viewSize_gui.x / 2, viewSize_gui.y / 2);
+	view_gui.setViewport(viewport_gui);
+}
+
+State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* window)
+{
+	this->window = window;
+	this->textureHandler = textureHandler;
+	this->initCamera();
+	this->initGui();
+}
+
+State_Editor::~State_Editor()
+{
+	delete gui;
+}
+
+void State_Editor::loadPallete(int txSize, std::string filepath)
+{
+	//This function sets up the pallete vector by texturing and positioning the sprites;
+}
+
+void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
+
+}
+
+void State_Editor::update(float dt) {
+	gui->update(dt);
+}
+
+void State_Editor::drawPallete(sf::RenderWindow& win) {
+	for (auto i : pallete) {
+		win.draw(i);
+	}
+}
+
+
+void State_Editor::draw(sf::RenderWindow& win) {
+	//Draw Gui
+	win.setView(view_gui);
+	gui->draw(win);
+	drawPallete(win);
+
+	//Draw map
+	win.setView(view_map);
+
 }
