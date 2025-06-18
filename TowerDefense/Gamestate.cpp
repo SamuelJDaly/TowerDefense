@@ -600,17 +600,58 @@ State_Editor::~State_Editor()
 	delete gui;
 }
 
-void State_Editor::loadPallete(int txSize, std::string filepath)
+void State_Editor::loadPallete(int txSize, sf::Texture* texture)
 {
-	//This function sets up the pallete vector by texturing and positioning the sprites;
+	//This function sets up the pallete vector by texturing and positioning the sprites
+	if (!texture) {
+		std::cout << "Invalid Texture..." << std::endl;
+	}
+
+	tileset = texture;
+	
+	int cols = (int)tileset->getSize().x / txSize;
+	int rows = (int)tileset->getSize().y / txSize;
+
+	numTextures = rows * cols;
+
 }
 
 void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 }
 
+void State_Editor::updateCamera(float dt)
+{
+	//Up
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		if (view_map.getCenter().y >= cameraBounds.top) {
+			view_map.move({ 0,-1 * panSpeed * dt });
+		}
+	}
+
+	//Down
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		if (view_map.getCenter().y <= cameraBounds.height) {
+			view_map.move({ 0,panSpeed * dt });
+		}
+	}
+	//Left
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		if (view_map.getCenter().x >= cameraBounds.left) {
+			view_map.move({ -1 * panSpeed * dt,0 });
+		}
+	}
+	//Right
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		if (view_map.getCenter().x <= cameraBounds.width) {
+			view_map.move({ panSpeed * dt,0 });
+		}
+	}
+}
+
 void State_Editor::update(float dt) {
 	gui->update(dt);
+	updateCamera(dt);
 }
 
 void State_Editor::drawPallete(sf::RenderWindow& win) {

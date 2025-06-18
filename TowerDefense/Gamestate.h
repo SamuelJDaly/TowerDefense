@@ -186,6 +186,7 @@ private:
 	sf::Texture* tileset = nullptr;
 	std::vector<sf::Sprite> pallete;
 	int palleteColumns = 3;
+	int numTextures = 0;
 
 	//Map
 	sf::Vector2i mapSize = { 1,1 };
@@ -200,9 +201,11 @@ public:
 	~State_Editor();
 
 	//Primary Functions
-	void loadPallete(int txSize, std::string filepath);
+	void loadPallete(int txSize, sf::Texture* texture);
 
 	void poll(sf::RenderWindow& win, sf::Event& event);
+
+	void updateCamera(float dt);
 	void update(float dt);
 
 	void drawPallete(sf::RenderWindow &win);
