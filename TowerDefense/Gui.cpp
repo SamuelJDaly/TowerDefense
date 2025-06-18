@@ -165,6 +165,10 @@ void Widget_Panel::setBorderPadding(float padding)
 	this->applyScale();
 }
 
+sf::Vector2f Widget_Panel::getSize() {
+	return size;
+}
+
 
 //####################################### LABEL
 Widget_Label::Widget_Label()
