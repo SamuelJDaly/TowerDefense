@@ -169,6 +169,11 @@ sf::Vector2f Widget_Panel::getSize() {
 	return size;
 }
 
+sf::Vector2f Widget_Panel::getPos()
+{
+	return pos;
+}
+
 
 //####################################### LABEL
 Widget_Label::Widget_Label()
