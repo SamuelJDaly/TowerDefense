@@ -152,13 +152,17 @@ int Spritesheet::fload(std::string filepath)
 void Spritesheet::setTextureSize(sf::Vector2i newSize)
 {
 	textureSize = newSize;
-	this->slice();
+	if (texture) {
+		this->slice();
+	}
 }
 
 void Spritesheet::setTextureSize(int width, int height)
 {
 	textureSize = {width, height};
-	this->slice();
+	if (texture) {
+		this->slice();
+	}
 }
 
 void Spritesheet::setTexture(sf::Texture* newTexture)
