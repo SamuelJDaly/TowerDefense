@@ -78,6 +78,6 @@ public:
 
 	sf::IntRect getRect(int idx);
 	sf::IntRect getRect(int x, int y);
-
-
+	std::vector<sf::IntRect> getRects();
+	int getNumTextures();
 };

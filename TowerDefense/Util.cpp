@@ -226,3 +226,13 @@ sf::IntRect Spritesheet::getRect(int x, int y)
 	//Flatten (x,y) and return
 	return rects.at(x+(y*cols));
 }
+
+std::vector<sf::IntRect> Spritesheet::getRects()
+{
+	return rects;
+}
+
+int Spritesheet::getNumTextures()
+{
+	return numTextures;
+}
