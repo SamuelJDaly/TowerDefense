@@ -92,3 +92,137 @@ void pathOffset(Node* head, sf::Vector2f offSet)
 		curr = curr->next;
 	}
 }
+
+
+//#####################################################################################################
+//			SPRITESHEET
+//#####################################################################################################
+
+void Spritesheet::slice()
+{
+	if (!texture) {
+		std::cout << "Could not slice spritesheet: Invalid Texture..." << std::endl;
+		return;
+	}
+
+	rects.clear();
+
+	int cols = (int)(texture->getSize().x / textureSize.x);
+	int rows = (int)(texture->getSize().y / textureSize.y);
+
+	numTextures = cols * rows;
+
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			rects.push_back({ j * textureSize.x,i * textureSize.y,textureSize.x,textureSize.y });
+		}
+	}
+}
+
+Spritesheet::Spritesheet()
+{
+}
+
+Spritesheet::~Spritesheet()
+{
+	if (isLocalTexture) {
+		delete texture;
+	}
+}
+
+int Spritesheet::fload(std::string filepath)
+{
+	
+	texture = new sf::Texture();
+
+	if (!texture->loadFromFile(filepath)) {
+		std::cout << "Could not load texture: " << filepath << std::endl;
+		delete texture;
+		return -1;
+	}
+
+	isLocalTexture = true;
+
+	this->slice();
+
+	
+	return 0;
+}
+
+void Spritesheet::setTextureSize(sf::Vector2f newSize)
+{
+	textureSize = newSize;
+	this->slice();
+}
+
+void Spritesheet::setTextureSize(float width, float height)
+{
+	textureSize = {width, height};
+	this->slice();
+}
+
+void Spritesheet::setTexture(sf::Texture* newTexture)
+{
+	//Check for valid texture
+	if (!newTexture) {
+		std::cout << "Cannot set spritesheet texture: Invalid Texture..." << std::endl;
+		return;
+	}
+	
+	//Check for local texture
+	if (isLocalTexture) {
+		delete texture;
+		isLocalTexture = false;
+	}
+
+	//Assign new texture
+	texture = newTexture;
+	this->slice();
+}
+
+void Spritesheet::setTexture(sf::Texture* newTexture, sf::Vector2f newSize)
+{
+	//Check for valid texture
+	if (!newTexture) {
+		std::cout << "Cannot set spritesheet texture: Invalid Texture..." << std::endl;
+		return;
+	}
+
+	//Check for local texture
+	if (isLocalTexture) {
+		delete texture;
+		isLocalTexture = false;
+	}
+
+	//Assign new texture
+	texture = newTexture;
+	textureSize = newSize;
+	this->slice();
+}
+
+sf::IntRect Spritesheet::getRect(int idx)
+{
+	//Check idx validity
+	if (numTextures <= idx) {
+		std::cout << "Invalid spritesheet index" << std::endl;
+		return {0,0,1,1};
+	}
+	
+	
+	return rects.at(idx);
+}
+
+sf::IntRect Spritesheet::getRect(int x, int y)
+{
+	int cols = (int)(texture->getSize().x / textureSize.x);
+	int rows = (int)(texture->getSize().y / textureSize.y);
+
+	//Check idx validity
+	if (cols <= x || rows <= y) {
+		std::cout << "Invalid spritesheet index" << std::endl;
+		return {0,0,1,1};
+	}
+	
+	//Flatten (x,y) and return
+	return rects.at(x+(y*cols));
+}

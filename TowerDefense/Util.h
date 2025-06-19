@@ -12,7 +12,7 @@
 /*
 Project: Tower Defense, Utility Functions
 Created: 26 MAY 2025
-Updated: 26 MAY 2025
+Updated: 19 JUN 2025
 
 Description:
 	This file contains various utility functions that are common to multiple systems.
@@ -49,3 +49,35 @@ std::istream& operator>>(std::istream& is, Node& obj);
 
 Node* fLoadPath(std::string filepath);
 void pathOffset(Node* head, sf::Vector2f offSet);
+
+
+//##################	SPRITESHEET		###################
+class Spritesheet {
+private:
+	//Data
+	sf::Texture* texture;
+	bool isLocalTexture = 0; //Is the texture locally managed
+	int numTextures = 0;
+	sf::Vector2f textureSize = {1,1};
+	std::vector<sf::IntRect> rects;
+
+	//Util
+	void slice();
+
+public:
+	//Constructor and Destructor
+	Spritesheet();
+	~Spritesheet();
+
+	//Primary Functions
+	int fload(std::string filepath); //Load from file
+	void setTextureSize(sf::Vector2f newSize);
+	void setTextureSize(float width, float height);
+	void setTexture(sf::Texture* newTexture);
+	void setTexture(sf::Texture* newTexture, sf::Vector2f newSize);
+
+	sf::IntRect getRect(int idx);
+	sf::IntRect getRect(int x, int y);
+
+
+};
