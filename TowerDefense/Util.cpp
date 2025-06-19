@@ -149,13 +149,13 @@ int Spritesheet::fload(std::string filepath)
 	return 0;
 }
 
-void Spritesheet::setTextureSize(sf::Vector2f newSize)
+void Spritesheet::setTextureSize(sf::Vector2i newSize)
 {
 	textureSize = newSize;
 	this->slice();
 }
 
-void Spritesheet::setTextureSize(float width, float height)
+void Spritesheet::setTextureSize(int width, int height)
 {
 	textureSize = {width, height};
 	this->slice();
@@ -180,7 +180,7 @@ void Spritesheet::setTexture(sf::Texture* newTexture)
 	this->slice();
 }
 
-void Spritesheet::setTexture(sf::Texture* newTexture, sf::Vector2f newSize)
+void Spritesheet::setTexture(sf::Texture* newTexture, sf::Vector2i newSize)
 {
 	//Check for valid texture
 	if (!newTexture) {
@@ -230,6 +230,11 @@ sf::IntRect Spritesheet::getRect(int x, int y)
 std::vector<sf::IntRect> Spritesheet::getRects()
 {
 	return rects;
+}
+
+sf::Texture Spritesheet::getTexture()
+{
+	return *texture;
 }
 
 int Spritesheet::getNumTextures()

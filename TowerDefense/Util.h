@@ -58,7 +58,7 @@ private:
 	sf::Texture* texture;
 	bool isLocalTexture = 0; //Is the texture locally managed
 	int numTextures = 0;
-	sf::Vector2f textureSize = {1,1};
+	sf::Vector2i textureSize = {1,1};
 	std::vector<sf::IntRect> rects;
 
 	//Util
@@ -71,13 +71,14 @@ public:
 
 	//Primary Functions
 	int fload(std::string filepath); //Load from file
-	void setTextureSize(sf::Vector2f newSize);
-	void setTextureSize(float width, float height);
+	void setTextureSize(sf::Vector2i newSize);
+	void setTextureSize(int width, int height);
 	void setTexture(sf::Texture* newTexture);
-	void setTexture(sf::Texture* newTexture, sf::Vector2f newSize);
+	void setTexture(sf::Texture* newTexture, sf::Vector2i newSize);
 
 	sf::IntRect getRect(int idx);
 	sf::IntRect getRect(int x, int y);
 	std::vector<sf::IntRect> getRects();
+	sf::Texture getTexture();
 	int getNumTextures();
 };
