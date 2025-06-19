@@ -16,6 +16,7 @@ Description:
 		-Panel: A 9 slice border and a background. Helps divide the window up and make widgets more visible.
 		-Label: SFML Text object with a wrapper to make it a widget. Displays text.
 		-Button: Clickable control to fire of certain events. The exact mechanism is not yet implemented.
+		-Textbox: Text object with a background rectangle, optionally editable
 
 	GUI:
 		-List of Widgets
@@ -47,6 +48,7 @@ public:
 	int getID();
 
 	//Virtual Functions
+	virtual void poll(sf::RenderWindow &win, sf::Event &event) = 0;
 	virtual void update(const float dt) = 0;
 	virtual void draw(sf::RenderWindow& win) = 0;
 };
@@ -81,6 +83,7 @@ public:
 	~Widget_Panel();
 
 	//Primary Functions
+	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(const float dt);
 	void draw(sf::RenderWindow &win);
 	
@@ -109,12 +112,56 @@ public:
 	~Widget_Label();
 
 	//Primary Functions
+	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(float dt);
 	void draw(sf::RenderWindow &win);
 	
 	void setText(std::string newText);
 	void setFont(sf::Font* newFont);
 	void setSize(sf::Vector2i size);
+	void setCharacterSize(unsigned int size);
+};
+
+
+//###########################################	TEXT BOX
+class Widget_Textbox : public Widget {
+private:
+	//Data
+	sf::Vector2f pos = {0,0};
+	sf::Vector2f size = {1,1};
+	sf::Text textObject;
+	std::string text = "";
+	sf::Font* font;
+	unsigned int charSize = 12;
+	sf::Vector2f margins = { 2,2 };
+
+	float blinkTimer = 0;
+	float blinkThreshold = 1; //seconds between blink
+	bool isCursorVisible = false;
+	sf::Vertex cursor[2];
+
+	sf::RectangleShape rectangle;
+
+	bool editable = true;
+	bool active = false;
+
+	//Util
+	void init();
+	void arrange();
+
+public:
+	//Constructor and Destructor
+	Widget_Textbox();
+	~Widget_Textbox();
+
+	//Primary functions
+	void poll(sf::RenderWindow& win, sf::Event& event);
+	void update(float dt);
+	void draw(sf::RenderWindow& win);
+
+	void setText(std::string newText);
+	void setFont(sf::Font* newFont);
+	void setSize(sf::Vector2f newSize);
 	void setCharacterSize(unsigned int size);
 };
 
@@ -142,6 +189,7 @@ public:
 	~Gui();
 
 	//Primary Functions
+	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(const float dt);
 	void draw(sf::RenderWindow &win);
 

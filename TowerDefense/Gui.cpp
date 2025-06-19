@@ -97,6 +97,10 @@ Widget_Panel::~Widget_Panel()
 {
 }
 
+void Widget_Panel::poll(sf::RenderWindow& win, sf::Event& event)
+{
+}
+
 void Widget_Panel::update(const float dt)
 {
 }
@@ -184,6 +188,11 @@ Widget_Label::~Widget_Label()
 {
 }
 
+void Widget_Label::poll(sf::RenderWindow& win, sf::Event& event)
+{
+	
+}
+
 void Widget_Label::update(float dt)
 {
 }
@@ -215,6 +224,113 @@ void Widget_Label::setCharacterSize(unsigned int size)
 }
 
 
+//####################################### TEXT BOX
+
+void Widget_Textbox::init()
+{
+	//Rectangle
+	rectangle.setFillColor(sf::Color::White);
+	rectangle.setOutlineColor(sf::Color::Black);
+	rectangle.setOutlineThickness(1);
+	rectangle.setSize({ charSize + (2 * margins.x), charSize + (2 * margins.y) });
+
+	//Text
+	textObject.setCharacterSize(charSize);
+	textObject.setColor(sf::Color::Black);
+
+	//Cursor
+	cursor[0].color = sf::Color::Black;
+	cursor[1].color = sf::Color::Black;
+}
+
+void Widget_Textbox::arrange()
+{
+
+}
+
+Widget_Textbox::Widget_Textbox()
+{
+	this->init();
+}
+
+Widget_Textbox::~Widget_Textbox()
+{
+}
+
+
+void Widget_Textbox::poll(sf::RenderWindow& win, sf::Event& event)
+{
+	if (event.type == sf::Event::MouseButtonPressed) {
+		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
+		sf::Vector2f fPos = {(float)pixelPos.x, (float)pixelPos.y};
+
+		if (rectangle.getGlobalBounds().contains(fPos)) {
+			active = true;
+			
+		}
+		else {
+			active = false;
+		}
+	}
+}
+
+void Widget_Textbox::update(float dt)
+{
+	//Cursor Blink
+	blinkTimer += dt;
+	if (blinkTimer >= blinkThreshold) {
+		isCursorVisible = !isCursorVisible;
+		blinkTimer = 0;
+	}
+}
+
+void Widget_Textbox::draw(sf::RenderWindow& win)
+{
+	//Box
+	win.draw(rectangle);
+
+	//Text
+	win.draw(textObject);
+
+	//Cursor
+	if (active && isCursorVisible) {
+		win.draw(cursor, 2, sf::Lines);
+	}
+}
+
+void Widget_Textbox::setText(std::string newText)
+{
+	textObject.setString(newText);
+	this->arrange();
+}
+
+void Widget_Textbox::setFont(sf::Font* newFont)
+{
+	if (!newFont) {
+		std::cout << "Cannot set font: Invalid Font" << std::endl;
+		return;
+	}
+
+	font = newFont;
+
+	textObject.setFont(*font);
+	this->arrange();
+}
+
+void Widget_Textbox::setSize(sf::Vector2f newSize)
+{
+	size = newSize;
+	this->arrange();
+}
+
+void Widget_Textbox::setCharacterSize(unsigned int size)
+{
+	charSize = size;
+	textObject.setCharacterSize(charSize);
+	this->arrange();
+}
+
+
 //############################################################################################
 //				GUI
 //############################################################################################
@@ -232,6 +348,16 @@ Gui::~Gui()
 		}
 
 		delete widgets.at(i);
+	}
+}
+
+void Gui::poll(sf::RenderWindow& win, sf::Event& event)
+{
+	//Poll widgets
+	for (size_t i = 0; i < widgets.size(); i++) {
+		for (size_t j = 0; j < widgets.at(i)->size(); j++) {
+			widgets.at(i)->at(j)->poll(win, event);
+		}
 	}
 }
 
@@ -339,5 +465,3 @@ void Gui::setMaxLayers(unsigned int max)
 {
 	maxLayers = max;
 }
-
-
