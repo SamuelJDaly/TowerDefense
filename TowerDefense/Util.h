@@ -55,7 +55,7 @@ void pathOffset(Node* head, sf::Vector2f offSet);
 class Spritesheet {
 private:
 	//Data
-	sf::Texture* texture;
+	sf::Texture* sheet;
 	bool isLocalTexture = 0; //Is the texture locally managed
 	int numTextures = 0;
 	sf::Vector2i textureSize = {1,1};
