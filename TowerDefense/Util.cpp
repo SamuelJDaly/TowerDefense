@@ -23,6 +23,11 @@ float degToRad(float degrees)
 	return (degrees * PI) / 180;
 }
 
+void printRectI(sf::IntRect targ)
+{
+	std::cout << "{" << targ.left << ", " << targ.top << ", " << targ.width << ", " << targ.height << "}" << std::endl;
+}
+
 std::istream& operator>>(std::istream& is, Node& obj)
 {
 	//Get pos
@@ -114,11 +119,10 @@ void Spritesheet::slice()
 
 	numTextures = cols * rows;
 
-	std::cout << numTextures << " slices created" << std::endl;
-
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
 			rects.push_back({ j * textureSize.x,i * textureSize.y,textureSize.x,textureSize.y });
+			std::cout << j * textureSize.x << "," << i * textureSize.y << "," << textureSize.x << "," << textureSize.y << std::endl;
 		}
 	}
 }
@@ -240,9 +244,9 @@ std::vector<sf::IntRect> Spritesheet::getRects()
 	return rects;
 }
 
-sf::Texture Spritesheet::getTexture()
+sf::Texture* Spritesheet::getTexture()
 {
-	return *sheet;
+	return sheet;
 }
 
 int Spritesheet::getNumTextures()

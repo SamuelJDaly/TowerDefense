@@ -35,6 +35,8 @@ sf::Vector2f diff(sf::Vector2f A, sf::Vector2f B);
 float radToDeg(float radians);
 float degToRad(float degrees);
 
+void printRectI(sf::IntRect targ);
+
 //##################	NODE	###################
 struct Node {
 	sf::Vector2f pos;
@@ -79,6 +81,6 @@ public:
 	sf::IntRect getRect(int idx);
 	sf::IntRect getRect(int x, int y);
 	std::vector<sf::IntRect> getRects();
-	sf::Texture getTexture();
+	sf::Texture* getTexture();
 	int getNumTextures();
 };
