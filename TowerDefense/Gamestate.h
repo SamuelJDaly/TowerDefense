@@ -197,8 +197,10 @@ private:
 	sf::RectangleShape palleteBorder;
 	int palleteSelect = -1;
 	sf::RectangleShape selectBorder;
+	bool isPainting = false;
 
 	//Map
+	sf::FloatRect mapBoundry;
 	sf::Vector2i mapSize = { 10,10 };
 	float tileSize = 50;
 	sf::Image blankImage;
@@ -208,6 +210,7 @@ private:
 	sf::Color gridColor = sf::Color::Black;
 	std::vector<sf::Vertex> grid_horizontal;
 	std::vector<sf::Vertex> grid_vertical;
+	
 
 	//## Util
 	void initGui();
@@ -228,6 +231,7 @@ public:
 	void poll(sf::RenderWindow& win, sf::Event& event);
 
 	void updateCamera(float dt);
+	void updatePainting();
 	void update(float dt);
 
 	void drawMap(sf::RenderWindow& win);

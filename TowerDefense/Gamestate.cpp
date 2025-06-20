@@ -845,9 +845,30 @@ void State_Editor::updateCamera(float dt)
 	}
 }
 
+void State_Editor::updatePainting()
+{
+	if (!isPainting) {
+		return;
+	}
+
+	//Get Mouse Pos
+	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+	sf::Vector2f mousePos_map = window->mapPixelToCoords(pixelPos, view_map);
+
+	//Check if inside map
+	if (!mapBoundry.contains(mousePos_map)) {
+		return;
+	}
+
+	//Convert mouse pos to map index
+	//Flat index: index = y * tileSize + x
+
+}
+
 void State_Editor::update(float dt) {
 	gui->update(dt);
 	updateCamera(dt);
+	updatePainting();
 }
 
 void State_Editor::drawMap(sf::RenderWindow& win)
