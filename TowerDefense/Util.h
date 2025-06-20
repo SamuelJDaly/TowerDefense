@@ -36,6 +36,7 @@ float radToDeg(float radians);
 float degToRad(float degrees);
 
 void printRectI(sf::IntRect targ);
+void printRectF(sf::FloatRect targ);
 
 //##################	NODE	###################
 struct Node {

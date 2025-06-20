@@ -28,6 +28,11 @@ void printRectI(sf::IntRect targ)
 	std::cout << "{" << targ.left << ", " << targ.top << ", " << targ.width << ", " << targ.height << "}" << std::endl;
 }
 
+void printRectF(sf::FloatRect targ)
+{
+	std::cout << "{" << targ.left << ", " << targ.top << ", " << targ.width << ", " << targ.height << "}" << std::endl;
+}
+
 std::istream& operator>>(std::istream& is, Node& obj)
 {
 	//Get pos
