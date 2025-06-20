@@ -236,16 +236,41 @@ void Widget_Textbox::init()
 
 	//Text
 	textObject.setCharacterSize(charSize);
-	textObject.setColor(sf::Color::Black);
+	textObject.setFillColor(sf::Color::Black);
 
 	//Cursor
 	cursor[0].color = sf::Color::Black;
 	cursor[1].color = sf::Color::Black;
 }
 
+void Widget_Textbox::arrangeCursor()
+{
+	sf::Vector2f cursorPos = textObject.getPosition();
+	cursorPos.x += textObject.getGlobalBounds().width + 2;
+	cursorPos.y += (.25 * textObject.getGlobalBounds().height);
+
+	cursor[0].position = cursorPos;
+	cursorPos.y += textObject.getGlobalBounds().height + (.5 * textObject.getGlobalBounds().height);
+	cursor[1].position = cursorPos;
+
+}
+
 void Widget_Textbox::arrange()
 {
 
+	//## Positioning
+	//Rectangle
+	rectangle.setPosition(pos);
+
+	//Text
+	sf::Vector2f textPos = pos;
+	textPos.x += margins.x;
+	//textPos.y += margins.y;
+	textObject.setPosition(textPos);
+
+	//Cursor
+	this->arrangeCursor();
+	
 }
 
 Widget_Textbox::Widget_Textbox()
@@ -264,12 +289,22 @@ void Widget_Textbox::poll(sf::RenderWindow& win, sf::Event& event)
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
 		sf::Vector2f fPos = {(float)pixelPos.x, (float)pixelPos.y};
 
-		if (rectangle.getGlobalBounds().contains(fPos)) {
+		if (editable && rectangle.getGlobalBounds().contains(fPos)) {
 			active = true;
 			
 		}
 		else {
 			active = false;
+		}
+	}
+	
+	//Typing
+	if (active && event.type == sf::Event::TextEntered) {
+		if (event.text.unicode < 0x80) // it's printable
+		{
+			char key = (char)event.text.unicode;
+			textObject.setString(textObject.getString() + key);
+			this->arrangeCursor();
 		}
 	}
 }
@@ -298,6 +333,12 @@ void Widget_Textbox::draw(sf::RenderWindow& win)
 	}
 }
 
+void Widget_Textbox::setPos(sf::Vector2f newPos)
+{
+	pos = newPos;
+	this->arrange();
+}
+
 void Widget_Textbox::setText(std::string newText)
 {
 	textObject.setString(newText);
@@ -320,6 +361,9 @@ void Widget_Textbox::setFont(sf::Font* newFont)
 void Widget_Textbox::setSize(sf::Vector2f newSize)
 {
 	size = newSize;
+
+	rectangle.setSize(newSize);
+
 	this->arrange();
 }
 

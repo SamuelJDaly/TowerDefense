@@ -16,7 +16,7 @@ Description:
 		-Panel: A 9 slice border and a background. Helps divide the window up and make widgets more visible.
 		-Label: SFML Text object with a wrapper to make it a widget. Displays text.
 		-Button: Clickable control to fire of certain events. The exact mechanism is not yet implemented.
-		-Textbox: Text object with a background rectangle, optionally editable
+		-Textbox: Text object with a background rectangle, optionally editable. For now it handles a single line of text.
 
 	GUI:
 		-List of Widgets
@@ -136,7 +136,7 @@ private:
 	sf::Vector2f margins = { 2,2 };
 
 	float blinkTimer = 0;
-	float blinkThreshold = 1; //seconds between blink
+	float blinkThreshold = .75; //seconds between blink
 	bool isCursorVisible = false;
 	sf::Vertex cursor[2];
 
@@ -147,6 +147,7 @@ private:
 
 	//Util
 	void init();
+	void arrangeCursor();
 	void arrange();
 
 public:
@@ -158,6 +159,8 @@ public:
 	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(float dt);
 	void draw(sf::RenderWindow& win);
+
+	void setPos(sf::Vector2f newPos);
 
 	void setText(std::string newText);
 	void setFont(sf::Font* newFont);
