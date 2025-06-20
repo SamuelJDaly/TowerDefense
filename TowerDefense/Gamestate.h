@@ -185,6 +185,7 @@ private:
 	//Gui
 	float leftPanelRatio = .25; //What fraction of view does left panel cover (x axis)
 	float bottomPanelRatio = .2; //(y axis)
+	sf::Vector2f bottomPanelPos = { 0,0 };
 
 	//Texture Select
 	Spritesheet spritesheet;
@@ -218,6 +219,13 @@ private:
 	std::vector<sf::Vertex> grid_vertical;
 	bool isChanged = false;
 
+	//Path
+	sf::CircleShape nodeDisplay;
+	sf::CircleShape nodeButton;
+	bool nodePlace = false;
+	Node* pathHead = nullptr;
+	Node* pathEnd = nullptr;
+	std::vector<sf::Vertex> pathLines;
 	
 
 	//## Util
@@ -225,6 +233,9 @@ private:
 	void initCamera();
 	void initTest();
 	void initMap();
+	void initPathTool();
+
+	void addNode(sf::Vector2f pos);
 
 public:
 	//Constructor and Destructor
@@ -238,11 +249,14 @@ public:
 
 	void poll(sf::RenderWindow& win, sf::Event& event);
 
+	void updatePathTool();
 	void updateCamera(float dt);
 	void updatePainting();
 	void update(float dt);
 
 	void drawMap(sf::RenderWindow& win);
 	void drawPallete(sf::RenderWindow &win);
+	void drawPathTool(sf::RenderWindow& win);
+	void drawPath(sf::RenderWindow& win);
 	void draw(sf::RenderWindow& win);
 };

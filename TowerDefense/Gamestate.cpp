@@ -567,7 +567,8 @@ void State_Editor::initGui() {
 	
 	sf::Vector2f bottomPanelSize = {viewSize_gui.x-leftPanel->getSize().x, viewSize_gui.y * bottomPanelRatio};
 	bottomPanel->setSize(bottomPanelSize);
-	bottomPanel->setPosition({ leftPanel->getSize().x,   viewSize_gui.y - bottomPanelSize.y});
+	bottomPanelPos = { leftPanel->getSize().x,   viewSize_gui.y - bottomPanelSize.y };
+	bottomPanel->setPosition(bottomPanelPos);
 
 	//Text box
 	Widget_Textbox* textBox = new Widget_Textbox();
@@ -679,6 +680,48 @@ void State_Editor::initMap()
 
 }
 
+void State_Editor::initPathTool()
+{
+	nodeButton.setRadius(10);
+	nodeButton.setFillColor(sf::Color::Blue);
+	nodeButton.setPosition(bottomPanelPos);
+	nodeButton.move(20,20);
+
+
+	nodeDisplay.setRadius(10);
+	nodeDisplay.setFillColor(sf::Color::Blue);
+	nodeDisplay.setPosition(nodeButton.getPosition());
+}
+
+void State_Editor::addNode(sf::Vector2f pos)
+{
+	//Create new node
+	Node* newNode = new Node();
+	newNode->pos = pos;
+	newNode->type = NodeType::BEGIN;
+
+	if (!pathHead) {
+		pathHead = newNode;
+		return;
+	}
+
+	if (!pathEnd) {
+		pathEnd = newNode;
+		pathHead->next = newNode;
+		newNode->type = NodeType::END;
+		return;
+	}
+
+	pathEnd->type = NodeType::PATH;
+	newNode->type = NodeType::END;
+	pathEnd->next = newNode;
+	pathEnd = newNode;
+
+	
+
+
+}
+
 //########################################	CONSTRUCTORS AND DESTRUCTOR
 
 State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* window)
@@ -697,6 +740,7 @@ State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* win
 	this->initGui();
 	this->initTest();
 	this->initMap();
+	this->initPathTool();
 }
 
 State_Editor::~State_Editor()
@@ -704,6 +748,22 @@ State_Editor::~State_Editor()
 	delete gui;
 	delete font;
 	delete blankTexture;
+
+	//Delete path
+	Node* curr = pathHead;
+	Node* next = nullptr;
+
+	while (curr) {
+		//Store next
+		next = curr->next;
+
+		//Delete curr
+		delete curr;
+
+		//Iterate
+		curr = next;
+	}
+
 }
 
 //########################################	MISC
@@ -805,12 +865,32 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				}
 			}
 
+			//Path Tool select
+			if (nodePlace && !nodeButton.getGlobalBounds().contains(guiPos)) {
+				nodePlace = false;
+			}
+
+			if (!nodePlace && nodeButton.getGlobalBounds().contains(guiPos)) {
+				nodePlace = true;
+			}
+
+			
+
 			
 
 		}
-		
-		//Sample
+
+		//Right
+		if (event.key.code == sf::Mouse::Right) {
+			//Path Tool place
+			if (nodePlace && mapBoundry.contains(mapPos)) {
+				this->addNode(mapPos);
+			}
+		}
+
+		//Middle
 		if (event.key.code == sf::Mouse::Middle) {
+			//Sample
 			if (mapBoundry.contains(mapPos)) {
 				int idxX = (int)(mapPos.x / tileSize);
 				int idxY = (int)(mapPos.y / tileSize);
@@ -871,6 +951,29 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 
 //########################################	UPDATING
+void State_Editor::updatePathTool()
+{
+	//Get Mouse Pos
+	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+	sf::Vector2f mousePos_map = window->mapPixelToCoords(pixelPos, view_map);
+	sf::Vector2f mousePos_gui = window->mapPixelToCoords(pixelPos, view_gui);
+
+	if (nodeButton.getGlobalBounds().contains(mousePos_gui)) {
+		nodeButton.setFillColor(sf::Color(40, 40, 255, 255));
+	}
+	else {
+		nodeButton.setFillColor(sf::Color(0,0,255,255));
+	}
+
+	if (!nodePlace) {
+		return;
+	}
+	
+
+
+	nodeDisplay.setPosition(mousePos_map);
+}
+
 void State_Editor::updateCamera(float dt)
 {
 	//Up
@@ -933,6 +1036,7 @@ void State_Editor::update(float dt) {
 	gui->update(dt);
 	updateCamera(dt);
 	updatePainting();
+	updatePathTool();
 
 	if (isChanged && isPress_ctrl && isPress_z) {
 		//Undo
@@ -980,15 +1084,68 @@ void State_Editor::drawPallete(sf::RenderWindow& win) {
 	win.draw(palleteBorder);
 }
 
+void State_Editor::drawPathTool(sf::RenderWindow& win) {
+	win.draw(nodeButton);
+}
+
+void State_Editor::drawPath(sf::RenderWindow& win)
+{
+	//Path lines
+	for (size_t i = 0; i < pathLines.size(); i += 2) {
+		sf::Vertex pathLine[2] = { pathLines.at(i), pathLines.at(i + 1) };
+		win.draw(pathLine, 2, sf::Lines);
+	}
+
+	//Path nodes
+	sf::CircleShape point;
+	point.setRadius(10);
+	point.setOrigin({ point.getRadius(), point.getRadius() });
+
+	Node* curr = pathHead;
+	Node* last = nullptr;
+
+	sf::Color currCol = sf::Color::Blue;
+	sf::Color lastCol = sf::Color::Blue;
+
+	while (curr) {
+		//Draw point
+		point.setPosition(curr->pos);
+		switch (curr->type) {
+		case NodeType::BEGIN:
+			point.setFillColor(sf::Color::Green);
+			currCol = sf::Color::Green;
+			break;
+		case NodeType::PATH:
+			point.setFillColor(sf::Color::Blue);
+			currCol = sf::Color::Blue;
+			break;
+		case NodeType::END:
+			point.setFillColor(sf::Color::Red);
+			currCol = sf::Color::Red;
+			break;
+		}
+
+		win.draw(point);
+
+	}
+
+	//Node Cursor
+	if (nodePlace) {
+		win.draw(nodeDisplay);
+	}
+}
 
 void State_Editor::draw(sf::RenderWindow& win) {
 	//Draw map
 	win.setView(view_map);
 	this->drawMap(win);
+	this->drawPath(win);
 
 
 	//Draw Gui
 	win.setView(view_gui);
 	gui->draw(win);
 	this->drawPallete(win);
+	this->drawPathTool(win);
+
 }

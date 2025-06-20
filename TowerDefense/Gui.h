@@ -25,7 +25,7 @@ Description:
 */
 
 //############################################################################################
-//				ELEMENTS
+//				WIDGETS
 //############################################################################################
 
 //#################################### BASE CLASS
@@ -169,7 +169,31 @@ public:
 };
 
 
-
+//###########################################	BUTTON
+//class Widget_Button : public Widget {
+//private:
+//	//Data
+//	sf::Sprite graph;
+//	bool state = false;
+//	float debounce = .25; //in seconds
+//
+//public:
+//	//Constructor and Destructor
+//	Widget_Button();
+//	~Widget_Button();
+//
+//
+//	//Primary Functions
+//	void toggle(); //Set state and keep it there
+//	void click(); //Set state temporarily
+//
+//	void poll(sf::RenderWindow& win, sf::Event& event) = 0;
+//	void update(const float dt);
+//	void draw(sf::RenderWindow& win);
+//	
+//	bool getState();
+//
+//};
 
 //############################################################################################
 //				GUI
