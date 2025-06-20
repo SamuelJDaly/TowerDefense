@@ -266,8 +266,6 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 			currZoom = zoom;
 			view_playField.zoom(currZoom);
 		}
-
-		std::cout << currZoom << std::endl;
 		
 	}
 
@@ -383,8 +381,8 @@ void State_Game::update(float dt)
 
 void State_Game::drawPallete(sf::RenderWindow &win)
 {
-	for (auto i : pallete) {
-		i.draw(win);
+	for (size_t i = 0; i < pallete.size(); i++) {
+		pallete.at(i).draw(win);
 	}
 
 	
@@ -509,7 +507,7 @@ void State_Menu::initGui()
 	gui->addWidget(panel);
 	gui->addWidget(panel2);
 	gui->addWidget(label);
-	
+
 
 }
 
@@ -550,6 +548,11 @@ void State_Menu::draw(sf::RenderWindow& win)
 void State_Editor::initGui() {
 	//Gui
 	gui = new Gui();
+	font = new sf::Font();
+
+	if (!font->loadFromFile("resource/font/jmhtype.ttf")) {
+		return;
+	}
 
 	//Left Panel
 	Widget_Panel* leftPanel = new Widget_Panel();
@@ -564,10 +567,39 @@ void State_Editor::initGui() {
 	bottomPanel->setSize(bottomPanelSize);
 	bottomPanel->setPosition({ leftPanel->getSize().x,   viewSize_gui.y - bottomPanelSize.y});
 
+	//Text box
+	Widget_Textbox* textBox = new Widget_Textbox();
+	textBox->setFont(font);
+	textBox->setLayer(2);
+	textBox->setPos({10,10});
+	textBox->setText("Test");
+	textBox->setSize({200,20});
 
 	//Add to gui
 	gui->addWidget(leftPanel);
 	gui->addWidget(bottomPanel);
+	gui->addWidget(textBox);
+
+
+	//Pallete setup
+	palleteSize.x = palleteRatio.x * leftPanel->getSize().x;
+	palleteSize.y = palleteRatio.y * leftPanel->getSize().y;
+
+	palletePos.x = .5 * (leftPanel->getSize().x - palleteSize.x) + leftPanel->getPos().x;
+	palletePos.y = .5 * (leftPanel->getSize().y - palleteSize.y) + leftPanel->getPos().y;
+
+
+	palleteBorder.setFillColor(sf::Color::Transparent);
+	palleteBorder.setOutlineColor(sf::Color::Black);
+	palleteBorder.setOutlineThickness(1);
+	palleteBorder.setPosition({ palletePos.x - 1, palletePos.y - 1});
+	palleteBorder.setSize({palleteSize.x + 2, palleteSize.y + 2});
+
+	selectBorder.setFillColor(sf::Color::Transparent);
+	selectBorder.setOutlineColor(sf::Color::Green);
+	selectBorder.setOutlineThickness(1);
+
+
 }
 
 void State_Editor::initCamera()
@@ -587,37 +619,201 @@ void State_Editor::initCamera()
 	view_gui.setViewport(viewport_gui);
 }
 
+void State_Editor::initTest()
+{
+	this->loadPallete(16,"resource/tex/tileset_0.png");
+}
+
+void State_Editor::initMap()
+{
+	float scale = tileSize / blankTexture->getSize().x;
+
+	//Map
+	for (int i = 0; i < mapSize.y;i++) {
+		std::vector<int> dataRow;
+		std::vector<sf::Sprite> displayRow;
+		for (int j = 0; j < mapSize.x;j++) {
+			dataRow.push_back(-1);
+			sf::Sprite curr;
+			curr.setTexture(*blankTexture);
+			curr.setScale(scale,scale);
+			curr.setPosition({j*tileSize, i*tileSize});
+
+			displayRow.push_back(curr);
+		}
+		map.push_back(dataRow);
+		mapDisplay.push_back(displayRow);
+	}
+
+	//Grid
+	for (int i = 0; i <= mapSize.x; i++) {
+		sf::Vertex a;
+		sf::Vertex b;
+		a.color = gridColor;
+		b.color = gridColor;
+
+		a.position = { i * tileSize , 0};
+		b.position = { i * tileSize, tileSize * mapSize.y };
+
+		grid_vertical.push_back(a);
+		grid_vertical.push_back(b);
+	}
+
+	for (int i = 0; i <= mapSize.y; i++) {
+		sf::Vertex a;
+		sf::Vertex b;
+		a.color = gridColor;
+		b.color = gridColor;
+
+		a.position = {0, i *tileSize};
+		b.position = {tileSize * mapSize.x, i * tileSize };
+
+		grid_horizontal.push_back(a);
+		grid_horizontal.push_back(b);
+	}
+}
+
 State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* window)
 {
+	//Create blank texture
+	blankImage.create(1,1,sf::Color::White);
+
+	blankTexture = new sf::Texture();
+	blankTexture->loadFromImage(blankImage);
+
+
+	//Init State
 	this->window = window;
 	this->textureHandler = textureHandler;
 	this->initCamera();
 	this->initGui();
+	this->initTest();
+	this->initMap();
 }
 
 State_Editor::~State_Editor()
 {
 	delete gui;
+	delete font;
+	delete blankTexture;
 }
 
-void State_Editor::loadPallete(int txSize, sf::Texture* texture)
+void State_Editor::loadPallete(int txSize, std::string filepath)
 {
-	//This function sets up the pallete vector by texturing and positioning the sprites
-	if (!texture) {
-		std::cout << "Invalid Texture..." << std::endl;
+	//This function sets up the pallete vector by texturing, scaling, and positioning the sprites
+	spritesheet.setTextureSize(txSize, txSize);
+	spritesheet.fload(filepath);
+	
+
+	//Loop through spritesheet textures
+	int row = 0;
+	int col = 0;
+	for (int i = 0; i < spritesheet.getNumTextures(); i++) {
+		sf::Sprite curr;
+
+		//Texturing
+		curr.setTexture(*spritesheet.getTexture());
+		curr.setTextureRect(spritesheet.getRect(i));
+
+		//Scaling
+		float colX = palleteSize.x / palleteColumns; //col width = width of pallete / num columns
+
+		float scale = colX / curr.getTextureRect().width; //scale = width of column / width of texture
+
+		curr.setScale(scale, scale);
+
+		//Positioning
+		float posX = palletePos.x + (colX * col);
+		float posY = palletePos.y + (colX * row); //Bc we are encforcing square tiles we just reuse colX
+		curr.setPosition(posX,posY);
+
+		//Iterate row and column
+		col++;
+		if (col >= palleteColumns) {
+			col = 0;
+			row++;
+		}
+
+		//Add to pallete
+		pallete.push_back(curr);
 	}
 
-	tileset = texture;
-	
-	int cols = (int)tileset->getSize().x / txSize;
-	int rows = (int)tileset->getSize().y / txSize;
+	//Set up selection border
+	selectBorder.setSize({ (float)pallete.at(0).getGlobalBounds().width, (float)pallete.at(0).getGlobalBounds().height });
 
-	numTextures = rows * cols;
+}
 
+void State_Editor::saveMap(std::string filepath)
+{
+	std::ofstream outFile;
+
+	outFile.open(filepath);
+
+	if (!outFile.is_open()) {
+		std::cout << "Could not open file: " << filepath << std::endl;
+		return;
+	}
+
+	//Write size
+	outFile << mapSize.x << mapSize.y << "\n";
+
+	//Write tiles
+	for (int i = 0; i < mapSize.y; i++) {
+		for (int j = 0; j < mapSize.x; j++) {
+			outFile << map.at(i).at(j);
+		}
+		outFile << "\n";
+	}
 }
 
 void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
+	if (event.type == sf::Event::MouseButtonReleased) {
+		// Get click coords
+		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
+		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
+		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
+		
 
+		if (event.key.code == sf::Mouse::Left) {
+			palleteSelect = -1;
+			for (size_t i = 0; i < pallete.size(); i++) {
+				if (pallete.at(i).getGlobalBounds().contains(guiPos)) {
+					palleteSelect = i;
+					selectBorder.setPosition(pallete.at(i).getPosition());
+					break;
+				}
+			}
+		}
+
+		
+	}
+
+	if (event.type == sf::Event::MouseButtonPressed) {
+		// Get click coords
+		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
+		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
+		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
+		if (event.key.code == sf::Mouse::Right) {
+			for (int i = 0; i < mapSize.y; i++) {
+				for (int j = 0; j < mapSize.x; j++) {
+					if (mapDisplay.at(i).at(j).getGlobalBounds().contains(mapPos)) {
+						if (palleteSelect < 0 || palleteSelect >= spritesheet.getNumTextures()) {
+
+						}
+						else {
+							float scale = tileSize / spritesheet.getRect(palleteSelect).width;
+							map.at(i).at(j) = palleteSelect;
+							mapDisplay.at(i).at(j).setTexture(*spritesheet.getTexture());
+							mapDisplay.at(i).at(j).setTextureRect(spritesheet.getRect(palleteSelect));
+							mapDisplay.at(i).at(j).setScale(scale, scale);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	gui->poll(win, event);
 }
 
 void State_Editor::updateCamera(float dt)
@@ -654,20 +850,48 @@ void State_Editor::update(float dt) {
 	updateCamera(dt);
 }
 
-void State_Editor::drawPallete(sf::RenderWindow& win) {
-	for (auto i : pallete) {
-		win.draw(i);
+void State_Editor::drawMap(sf::RenderWindow& win)
+{
+	//Tiles
+	for (size_t i = 0; i < mapDisplay.size(); i++) {
+		for (size_t j = 0; j < mapDisplay.at(i).size(); j++) {
+			win.draw(mapDisplay.at(i).at(j));
+		}
 	}
+
+	//Grid
+	for (size_t i = 0; i < grid_horizontal.size(); i+=2) {
+		sf::Vertex gridLine[2] = {grid_horizontal.at(i), grid_horizontal.at(i+1)};
+		win.draw(gridLine, 2, sf::Lines);
+	}
+
+	for (size_t i = 0; i < grid_vertical.size(); i += 2) {
+		sf::Vertex gridLine[2] = { grid_vertical.at(i), grid_vertical.at(i + 1) };
+		win.draw(gridLine, 2, sf::Lines);
+	}
+}
+
+void State_Editor::drawPallete(sf::RenderWindow& win) {
+	for (size_t i = 0; i < pallete.size(); i++) {
+		win.draw(pallete.at(i));
+	}
+
+	if (palleteSelect >= 0) {
+		win.draw(selectBorder);
+	}
+
+	win.draw(palleteBorder);
 }
 
 
 void State_Editor::draw(sf::RenderWindow& win) {
+	//Draw map
+	win.setView(view_map);
+	this->drawMap(win);
+
+
 	//Draw Gui
 	win.setView(view_gui);
 	gui->draw(win);
-	drawPallete(win);
-
-	//Draw map
-	win.setView(view_map);
-
+	this->drawPallete(win);
 }

@@ -10,7 +10,7 @@
 /*
 Project: Tower Defense, Gamestate System
 Created: 26 MAY 2025
-Updated: 18 JUN 2025
+Updated: 19 JUN 2025
 
 Description:
 	This file contains the Gamestate System. This is what actually ties the various systems (tower, hostile, map, etc...) together and manages their interactions.
@@ -26,11 +26,14 @@ Description:
 			This is where any draw calls happen.
 
 
-	Currently there are two states:
+	Currently there are three states:
 		Menu:
 			The menu state is not yet implemented. It will contain a gui based system to allow for starting the game, and changing game options.
 		Game:
 			The Game state is where the actual play happens. It contains the map, the towers, the hostiles, and all the other gameplay related components.
+		Editor:
+			The Editor state allows for the creation of levels without hard coding or manually editing a text file. This includes setting textures for the level,
+			creating paths for the enemies, and setting up the spawn schedule for the rounds.
 */
 
 
@@ -163,6 +166,7 @@ private:
 	sf::RenderWindow* window;
 	Gui* gui;
 	sf::Texture* activeTileset = nullptr;
+	sf::Font* font;
 
 	//Camera
 	sf::View view_map;
@@ -183,17 +187,33 @@ private:
 	float bottomPanelRatio = .2; //(y axis)
 
 	//Texture Select
-	sf::Texture* tileset = nullptr;
+	Spritesheet spritesheet;
 	std::vector<sf::Sprite> pallete;
 	int palleteColumns = 3;
 	int numTextures = 0;
+	sf::Vector2f palletePos = {0,0};
+	sf::Vector2f palleteSize = { 1,1 };
+	sf::Vector2f palleteRatio = {.75,.75};
+	sf::RectangleShape palleteBorder;
+	int palleteSelect = -1;
+	sf::RectangleShape selectBorder;
 
 	//Map
-	sf::Vector2i mapSize = { 1,1 };
+	sf::Vector2i mapSize = { 10,10 };
+	float tileSize = 50;
+	sf::Image blankImage;
+	sf::Texture* blankTexture;
+	std::vector<std::vector<int>> map;
+	std::vector<std::vector<sf::Sprite>> mapDisplay;
+	sf::Color gridColor = sf::Color::Black;
+	std::vector<sf::Vertex> grid_horizontal;
+	std::vector<sf::Vertex> grid_vertical;
 
 	//## Util
 	void initGui();
 	void initCamera();
+	void initTest();
+	void initMap();
 
 public:
 	//Constructor and Destructor
@@ -201,13 +221,16 @@ public:
 	~State_Editor();
 
 	//Primary Functions
-	void loadPallete(int txSize, sf::Texture* texture);
+	void loadPallete(int txSize, std::string filepath);
+
+	void saveMap(std::string filepath);
 
 	void poll(sf::RenderWindow& win, sf::Event& event);
 
 	void updateCamera(float dt);
 	void update(float dt);
 
+	void drawMap(sf::RenderWindow& win);
 	void drawPallete(sf::RenderWindow &win);
 	void draw(sf::RenderWindow& win);
 };
