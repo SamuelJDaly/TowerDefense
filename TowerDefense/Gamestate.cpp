@@ -545,6 +545,8 @@ void State_Menu::draw(sf::RenderWindow& win)
 //			EDITOR
 //####################################################################################################################
 
+
+//########################################	UTIL
 void State_Editor::initGui() {
 	//Gui
 	gui = new Gui();
@@ -671,7 +673,13 @@ void State_Editor::initMap()
 		grid_horizontal.push_back(a);
 		grid_horizontal.push_back(b);
 	}
+
+	//Boundry
+	mapBoundry = {0,0,mapSize.x * tileSize, mapSize.y * tileSize};
+
 }
+
+//########################################	CONSTRUCTORS AND DESTRUCTOR
 
 State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* window)
 {
@@ -697,6 +705,8 @@ State_Editor::~State_Editor()
 	delete font;
 	delete blankTexture;
 }
+
+//########################################	MISC
 
 void State_Editor::loadPallete(int txSize, std::string filepath)
 {
@@ -766,6 +776,8 @@ void State_Editor::saveMap(std::string filepath)
 	}
 }
 
+//########################################	POLLING
+
 void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 	if (event.type == sf::Event::MouseButtonReleased) {
 		// Get click coords
@@ -775,17 +787,44 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		
 
 		if (event.key.code == sf::Mouse::Left) {
-			palleteSelect = -1;
-			for (size_t i = 0; i < pallete.size(); i++) {
-				if (pallete.at(i).getGlobalBounds().contains(guiPos)) {
-					palleteSelect = i;
-					selectBorder.setPosition(pallete.at(i).getPosition());
-					break;
+			//Painting
+			if (isPainting) {
+				isPainting = false;
+			}
+
+			
+			//Pallete select
+			if (palleteBorder.getGlobalBounds().contains(guiPos)) {
+				palleteSelect = -1;
+				for (size_t i = 0; i < pallete.size(); i++) {
+					if (pallete.at(i).getGlobalBounds().contains(guiPos)) {
+						palleteSelect = (int)i;
+						selectBorder.setPosition(pallete.at(i).getPosition());
+						break;
+					}
 				}
+			}
+
+			
+
+		}
+		
+		//Sample
+		if (event.key.code == sf::Mouse::Middle) {
+			if (mapBoundry.contains(mapPos)) {
+				int idxX = (int)(mapPos.x / tileSize);
+				int idxY = (int)(mapPos.y / tileSize);
+
+				int sample = map.at(idxY).at(idxX);
+
+				if (sample >= 0) {
+					palleteSelect = sample;
+					selectBorder.setPosition(pallete.at(sample).getPosition());
+				}
+
 			}
 		}
 
-		
 	}
 
 	if (event.type == sf::Event::MouseButtonPressed) {
@@ -793,29 +832,45 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
 		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
 		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
-		if (event.key.code == sf::Mouse::Right) {
-			for (int i = 0; i < mapSize.y; i++) {
-				for (int j = 0; j < mapSize.x; j++) {
-					if (mapDisplay.at(i).at(j).getGlobalBounds().contains(mapPos)) {
-						if (palleteSelect < 0 || palleteSelect >= spritesheet.getNumTextures()) {
 
-						}
-						else {
-							float scale = tileSize / spritesheet.getRect(palleteSelect).width;
-							map.at(i).at(j) = palleteSelect;
-							mapDisplay.at(i).at(j).setTexture(*spritesheet.getTexture());
-							mapDisplay.at(i).at(j).setTextureRect(spritesheet.getRect(palleteSelect));
-							mapDisplay.at(i).at(j).setScale(scale, scale);
-						}
-					}
-				}
+		//Left
+		if (event.key.code == sf::Mouse::Left) {
+			//Painting
+			if (mapBoundry.contains(mapPos)) {
+				isPainting = true;
+				prevMap = map;
+				prevMapDisplay = mapDisplay;
 			}
+		}
+
+
+	}
+
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::LControl) {
+			isPress_ctrl = true;
+		}
+
+		if (event.key.code == sf::Keyboard::Z) {
+			isPress_z = true;
+		}
+	}
+
+	if (event.type == sf::Event::KeyReleased) {
+		if (event.key.code == sf::Keyboard::LControl) {
+			isPress_ctrl = false;
+		}
+
+		if (event.key.code == sf::Keyboard::Z) {
+			isPress_z = false;
 		}
 	}
 
 	gui->poll(win, event);
 }
 
+
+//########################################	UPDATING
 void State_Editor::updateCamera(float dt)
 {
 	//Up
@@ -847,7 +902,7 @@ void State_Editor::updateCamera(float dt)
 
 void State_Editor::updatePainting()
 {
-	if (!isPainting) {
+	if (!isPainting || palleteSelect == -1) {
 		return;
 	}
 
@@ -861,7 +916,16 @@ void State_Editor::updatePainting()
 	}
 
 	//Convert mouse pos to map index
-	//Flat index: index = y * tileSize + x
+	int idxX = (int)(mousePos_map.x / tileSize);
+	int idxY = (int)(mousePos_map.y / tileSize);
+
+	float scale = tileSize / spritesheet.getRect(palleteSelect).width;
+	map.at(idxY).at(idxX) = palleteSelect;
+	mapDisplay.at(idxY).at(idxX).setTexture(*spritesheet.getTexture());
+	mapDisplay.at(idxY).at(idxX).setTextureRect(spritesheet.getRect(palleteSelect));
+	mapDisplay.at(idxY).at(idxX).setScale(scale, scale);
+
+	isChanged = true;
 
 }
 
@@ -869,7 +933,19 @@ void State_Editor::update(float dt) {
 	gui->update(dt);
 	updateCamera(dt);
 	updatePainting();
+
+	if (isChanged && isPress_ctrl && isPress_z) {
+		//Undo
+		isChanged = false;
+		map = prevMap;
+		mapDisplay = prevMapDisplay;
+	}
+
 }
+
+
+
+//########################################	DRAWING
 
 void State_Editor::drawMap(sf::RenderWindow& win)
 {

@@ -199,6 +199,10 @@ private:
 	sf::RectangleShape selectBorder;
 	bool isPainting = false;
 
+	//Shortcuts
+	bool isPress_ctrl = false;
+	bool isPress_z = false;
+
 	//Map
 	sf::FloatRect mapBoundry;
 	sf::Vector2i mapSize = { 10,10 };
@@ -206,10 +210,14 @@ private:
 	sf::Image blankImage;
 	sf::Texture* blankTexture;
 	std::vector<std::vector<int>> map;
+	std::vector<std::vector<int>> prevMap;
 	std::vector<std::vector<sf::Sprite>> mapDisplay;
+	std::vector<std::vector<sf::Sprite>> prevMapDisplay;
 	sf::Color gridColor = sf::Color::Black;
 	std::vector<sf::Vertex> grid_horizontal;
 	std::vector<sf::Vertex> grid_vertical;
+	bool isChanged = false;
+
 	
 
 	//## Util
