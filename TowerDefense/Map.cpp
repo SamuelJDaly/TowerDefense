@@ -156,7 +156,7 @@ void Map::draw(sf::RenderWindow& win)
 
 void Map::loadPath(std::string filepath)
 {
-	Node* temp = fLoadPath(filepath);
+	Node* temp = fReadPath(filepath);
 	if (!temp) {
 		std::cout << "Path not loaded..." << std::endl;
 		return;
@@ -358,7 +358,7 @@ void TileMap::setBackground(sf::Texture* texture, sf::Vector2f size)
 
 void TileMap::loadPath(std::string filepath)
 {
-	Node* temp = fLoadPath(filepath);
+	Node* temp = fReadPath(filepath);
 	if (!temp) {
 		std::cout << "Path not loaded..." << std::endl;
 		return;

@@ -49,8 +49,10 @@ struct Node {
 };
 
 std::istream& operator>>(std::istream& is, Node& obj);
+std::ostream& operator<<(std::ostream& os, Node& obj);
 
-Node* fLoadPath(std::string filepath);
+Node* fReadPath(std::string filepath);
+void fWritePath(std::string filepath, Node* pathHead);
 void pathOffset(Node* head, sf::Vector2f offSet);
 
 

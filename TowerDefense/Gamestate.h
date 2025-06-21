@@ -71,7 +71,7 @@ private:
 	float panSpeed = 300;
 	float zoomSpeed = .03;
 	float currZoom = 1;
-	sf::Vector2f zoomBounds = {1.5,.70};
+	sf::Vector2f zoomBounds = {1.5f,.70f};
 
 	float towerScale_pallete = 1.5;
 	float towerScale_playfield = 1.25;
@@ -83,7 +83,7 @@ private:
 	int palletePadding = 20; //Px between pallete entries
 	sf::Vector2f palletePos;
 	sf::Vector2f palleteSize = {1,1};
-	sf::Vector2f palleteRatio = {.15,1}; //What proportion of the screen pallete takes up
+	sf::Vector2f palleteRatio = {.15f,1.f}; //What proportion of the screen pallete takes up
 	float palleteEntrySize = 50; //How big the pallete options are
 	bool isPalletePicked = false;
 	Tower* palletePick = nullptr;
@@ -171,10 +171,10 @@ private:
 	//Camera
 	sf::View view_map;
 	sf::View view_gui;
-	sf::Vector2f viewSize_map = { 1280,720 };
-	sf::Vector2f viewSize_gui = { 1280,720 };
-	sf::FloatRect viewport_map = { .25,0,1,.2};
-	sf::FloatRect viewport_gui = { 0,0,1,1 };
+	sf::Vector2f viewSize_map = { 1280.f,720.f };
+	sf::Vector2f viewSize_gui = { 1280.f,720.f };
+	sf::FloatRect viewport_map = { .25f,0.f,1.f,.2f};
+	sf::FloatRect viewport_gui = { 0.f,0.f,1.f,1.f };
 
 	sf::FloatRect cameraBounds = { -100,-100,600,600 }; //How much can the camera offset
 	float panSpeed = 300;
@@ -198,11 +198,8 @@ private:
 	sf::RectangleShape palleteBorder;
 	int palleteSelect = -1;
 	sf::RectangleShape selectBorder;
-	bool isPainting = false;
-
-	//Shortcuts
-	bool isPress_ctrl = false;
-	bool isPress_z = false;
+	
+	
 
 	//Map
 	sf::FloatRect mapBoundry;
@@ -217,16 +214,25 @@ private:
 	sf::Color gridColor = sf::Color::Black;
 	std::vector<sf::Vertex> grid_horizontal;
 	std::vector<sf::Vertex> grid_vertical;
-	bool isChanged = false;
+	
 
 	//Path
 	sf::CircleShape nodeDisplay;
 	sf::CircleShape nodeButton;
-	bool nodePlace = false;
 	Node* pathHead = nullptr;
 	Node* pathEnd = nullptr;
 	std::vector<sf::Vertex> pathLines;
-	
+
+	//General
+	std::string filename = "resource/map/editor";
+
+	bool isPainting = false;
+	bool nodePlace = false;
+	bool isChanged = false;
+
+	bool isPress_ctrl = false;
+	bool isPress_z = false;
+	bool isPress_s = false;
 
 	//## Util
 	void initGui();
@@ -246,6 +252,7 @@ public:
 	void loadPallete(int txSize, std::string filepath);
 
 	void saveMap(std::string filepath);
+	void savePath(std::string filepath);
 
 	void poll(sf::RenderWindow& win, sf::Event& event);
 

@@ -47,7 +47,18 @@ std::istream& operator>>(std::istream& is, Node& obj)
 	return is;
 }
 
-Node* fLoadPath(std::string filepath)
+std::ostream& operator<<(std::ostream& os, Node& obj)
+{
+	//Output pos
+	os << obj.pos.x << " " << obj.pos.y << " ";
+
+	//Output type as int
+	os << static_cast<int>(obj.type);
+	
+	return os;
+}
+
+Node* fReadPath(std::string filepath)
 {
 	//This function loads a set of nodes from a given filepath
 	Node* pathHead = nullptr;
@@ -88,6 +99,35 @@ Node* fLoadPath(std::string filepath)
 	inFile.close();
 
 	return pathHead;
+}
+
+void fWritePath(std::string filepath, Node* pathHead)
+{
+	//Check for valid path
+	if (!pathHead) {
+		return;
+	}
+
+	//Open output file
+	std::ofstream outFile;
+	outFile.open(filepath);
+
+	if (!outFile.is_open()) {
+		std::cout << "Could not open file: " << filepath << std::endl;
+		return;
+	}
+
+	Node* curr = pathHead;
+
+	while (curr) {
+		outFile << *curr << "\n";
+		//Iterate
+		curr = curr->next;
+	}
+
+	//Close output file
+	outFile.close();
+
 }
 
 void pathOffset(Node* head, sf::Vector2f offSet)

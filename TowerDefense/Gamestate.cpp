@@ -688,9 +688,11 @@ void State_Editor::initPathTool()
 	nodeButton.move(20,20);
 
 
-	nodeDisplay.setRadius(10);
+	float radius = 10;
+	nodeDisplay.setRadius(radius);
 	nodeDisplay.setFillColor(sf::Color::Blue);
 	nodeDisplay.setPosition(nodeButton.getPosition());
+	nodeDisplay.setOrigin({ radius,radius });
 }
 
 void State_Editor::addNode(sf::Vector2f pos)
@@ -698,6 +700,7 @@ void State_Editor::addNode(sf::Vector2f pos)
 	//Create new node
 	Node* newNode = new Node();
 	newNode->pos = pos;
+	newNode->next = nullptr;
 	newNode->type = NodeType::BEGIN;
 
 	if (!pathHead) {
@@ -708,17 +711,19 @@ void State_Editor::addNode(sf::Vector2f pos)
 	if (!pathEnd) {
 		pathEnd = newNode;
 		pathHead->next = newNode;
+		newNode->last = pathHead;
 		newNode->type = NodeType::END;
 		return;
 	}
 
 	pathEnd->type = NodeType::PATH;
 	newNode->type = NodeType::END;
+	newNode->last = pathEnd;
 	pathEnd->next = newNode;
 	pathEnd = newNode;
 
 	
-
+	return;
 
 }
 
@@ -766,7 +771,7 @@ State_Editor::~State_Editor()
 
 }
 
-//########################################	MISC
+//###############################################################################################	MISC
 
 void State_Editor::loadPallete(int txSize, std::string filepath)
 {
@@ -825,18 +830,29 @@ void State_Editor::saveMap(std::string filepath)
 	}
 
 	//Write size
-	outFile << mapSize.x << mapSize.y << "\n";
+	outFile << mapSize.x << " " << mapSize.y << "\n";
 
 	//Write tiles
 	for (int i = 0; i < mapSize.y; i++) {
 		for (int j = 0; j < mapSize.x; j++) {
-			outFile << map.at(i).at(j);
+			outFile << map.at(i).at(j) << " ";
 		}
 		outFile << "\n";
 	}
+
+	//Close outfile
+	outFile.close();
 }
 
-//########################################	POLLING
+void State_Editor::savePath(std::string filepath)
+{
+	if (!pathHead) {
+		return;
+	}
+	fWritePath(filepath, pathHead);
+}
+
+//####################################################################	POLLING
 
 void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 	if (event.type == sf::Event::MouseButtonReleased) {
@@ -845,7 +861,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
 		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
 		
-
+		//## LEFT
 		if (event.key.code == sf::Mouse::Left) {
 			//Painting
 			if (isPainting) {
@@ -855,6 +871,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			
 			//Pallete select
 			if (palleteBorder.getGlobalBounds().contains(guiPos)) {
+				nodePlace = false;
 				palleteSelect = -1;
 				for (size_t i = 0; i < pallete.size(); i++) {
 					if (pallete.at(i).getGlobalBounds().contains(guiPos)) {
@@ -872,6 +889,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 			if (!nodePlace && nodeButton.getGlobalBounds().contains(guiPos)) {
 				nodePlace = true;
+				isPainting = false;
 			}
 
 			
@@ -880,7 +898,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 		}
 
-		//Right
+		//## RIGHT
 		if (event.key.code == sf::Mouse::Right) {
 			//Path Tool place
 			if (nodePlace && mapBoundry.contains(mapPos)) {
@@ -888,7 +906,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			}
 		}
 
-		//Middle
+		//## MIDDLE
 		if (event.key.code == sf::Mouse::Middle) {
 			//Sample
 			if (mapBoundry.contains(mapPos)) {
@@ -934,6 +952,10 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		if (event.key.code == sf::Keyboard::Z) {
 			isPress_z = true;
 		}
+
+		if (event.key.code == sf::Keyboard::S) {
+			isPress_s = true;
+		}
 	}
 
 	if (event.type == sf::Event::KeyReleased) {
@@ -943,6 +965,10 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 		if (event.key.code == sf::Keyboard::Z) {
 			isPress_z = false;
+		}
+
+		if (event.key.code == sf::Keyboard::S) {
+			isPress_s = false;
 		}
 	}
 
@@ -959,7 +985,7 @@ void State_Editor::updatePathTool()
 	sf::Vector2f mousePos_gui = window->mapPixelToCoords(pixelPos, view_gui);
 
 	if (nodeButton.getGlobalBounds().contains(mousePos_gui)) {
-		nodeButton.setFillColor(sf::Color(40, 40, 255, 255));
+		nodeButton.setFillColor(sf::Color(0, 0, 200, 255));
 	}
 	else {
 		nodeButton.setFillColor(sf::Color(0,0,255,255));
@@ -1045,6 +1071,12 @@ void State_Editor::update(float dt) {
 		mapDisplay = prevMapDisplay;
 	}
 
+	if (isPress_ctrl && isPress_s) {
+		//Save
+		this->saveMap(filename + "_tilemap.txt");
+		this->savePath(filename + "_path.txt");
+	}
+
 }
 
 
@@ -1126,6 +1158,21 @@ void State_Editor::drawPath(sf::RenderWindow& win)
 		}
 
 		win.draw(point);
+
+		//Draw lines
+		sf::Vertex line[] = { sf::Vertex(sf::Vector2f(0,0)), sf::Vertex(sf::Vector2f(0,0)) };
+		line[0].position = curr->pos;
+		line[0].color = currCol;
+		if (last) {
+			line[1].position = last->pos;
+			line[1].color = lastCol;
+			win.draw(line, 2, sf::Lines);
+		}
+
+		//Get next node
+		last = curr;
+		lastCol = currCol;
+		curr = curr->next;
 
 	}
 
