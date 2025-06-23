@@ -185,6 +185,14 @@ private:
 	//Gui
 	float leftPanelRatio = .25; //What fraction of view does left panel cover (x axis)
 	float bottomPanelRatio = .2; //(y axis)
+	Widget_Button* btn_save;
+	Widget_Button* btn_SizeUpX;
+	Widget_Button* btn_SizeDnX;
+	Widget_Button* btn_SizeUpY;
+	Widget_Button* btn_SizeDnY;
+	Widget_Panel* pnl_left;
+	Widget_Panel* pnl_bottom;
+	Widget_Label* label_mapSize;
 	sf::Vector2f bottomPanelPos = { 0,0 };
 
 	//Texture Select
@@ -239,9 +247,13 @@ private:
 	void initCamera();
 	void initTest();
 	void initMap();
+	void initPalleteTool();
 	void initPathTool();
 
 	void addNode(sf::Vector2f pos);
+	void resizeMapX(int newX);
+	void resizeMapY(int newY);
+	void refreshGrid();
 
 public:
 	//Constructor and Destructor
@@ -253,6 +265,7 @@ public:
 
 	void saveMap(std::string filepath);
 	void savePath(std::string filepath);
+	void save();
 
 	void poll(sf::RenderWindow& win, sf::Event& event);
 

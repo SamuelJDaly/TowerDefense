@@ -548,7 +548,7 @@ void State_Menu::draw(sf::RenderWindow& win)
 
 //########################################	UTIL
 void State_Editor::initGui() {
-	//Gui
+	//## Gui
 	gui = new Gui();
 	font = new sf::Font();
 
@@ -556,53 +556,69 @@ void State_Editor::initGui() {
 		return;
 	}
 
-	//Left Panel
-	Widget_Panel* leftPanel = new Widget_Panel();
-	leftPanel->setTexture(textureHandler->lookup("panel_bevel"));
-	leftPanel->setSize({ viewSize_gui.x * leftPanelRatio, 1*viewSize_gui.y});
+	//## Left Panel
+	pnl_left = new Widget_Panel();
+	pnl_left->setTexture(textureHandler->lookup("panel_bevel"));
+	pnl_left->setSize({ viewSize_gui.x * leftPanelRatio, 1*viewSize_gui.y});
 
-	//Bottom Panel
-	Widget_Panel* bottomPanel = new Widget_Panel();
-	bottomPanel->setTexture(textureHandler->lookup("panel_bevel"));
+	//## Bottom Panel
+	pnl_bottom = new Widget_Panel();
+	pnl_bottom->setTexture(textureHandler->lookup("panel_bevel"));
 	
-	sf::Vector2f bottomPanelSize = {viewSize_gui.x-leftPanel->getSize().x, viewSize_gui.y * bottomPanelRatio};
-	bottomPanel->setSize(bottomPanelSize);
-	bottomPanelPos = { leftPanel->getSize().x,   viewSize_gui.y - bottomPanelSize.y };
-	bottomPanel->setPosition(bottomPanelPos);
-
-	//Text box
-	Widget_Textbox* textBox = new Widget_Textbox();
-	textBox->setFont(font);
-	textBox->setLayer(2);
-	textBox->setPos({10,10});
-	textBox->setText("Test");
-	textBox->setSize({200,20});
-
-	//Add to gui
-	gui->addWidget(leftPanel);
-	gui->addWidget(bottomPanel);
-	gui->addWidget(textBox);
+	sf::Vector2f pnl_bottomSize = {viewSize_gui.x-pnl_left->getSize().x, viewSize_gui.y * bottomPanelRatio};
+	pnl_bottom->setSize(pnl_bottomSize);
+	bottomPanelPos = { pnl_left->getSize().x,   viewSize_gui.y - pnl_bottomSize.y };
+	pnl_bottom->setPosition(bottomPanelPos);
 
 
-	//Pallete setup
-	palleteSize.x = palleteRatio.x * leftPanel->getSize().x;
-	palleteSize.y = palleteRatio.y * leftPanel->getSize().y;
+	//## Save button
+	btn_save = new Widget_Button();
+	btn_save->setLayer(2);
+	btn_save->setPosition(pnl_left->getPos());
+	btn_save->move({ 20,20 });
+	btn_save->setTexture(textureHandler->lookup("btn_save"));
+	btn_save->setSize({20,20});
 
-	palletePos.x = .5 * (leftPanel->getSize().x - palleteSize.x) + leftPanel->getPos().x;
-	palletePos.y = .5 * (leftPanel->getSize().y - palleteSize.y) + leftPanel->getPos().y;
+	//## Size buttons
+	//X increase
+	btn_SizeUpX = new Widget_Button();
+	btn_SizeUpX->setLayer(2);
+	btn_SizeUpX->setPosition(pnl_left->getPos());
+	btn_SizeUpX->move({70, pnl_left->getSize().y - 60});
+	btn_SizeUpX->setTexture(textureHandler->lookup("btn_plus"));
+	btn_SizeUpX->setSize({ 20,20 });
 
+	//X decrease
+	btn_SizeDnX = new Widget_Button(*btn_SizeUpX);
+	btn_SizeDnX->setTexture(textureHandler->lookup("btn_minus"));
+	btn_SizeDnX->move({0,25});
 
-	palleteBorder.setFillColor(sf::Color::Transparent);
-	palleteBorder.setOutlineColor(sf::Color::Black);
-	palleteBorder.setOutlineThickness(1);
-	palleteBorder.setPosition({ palletePos.x - 1, palletePos.y - 1});
-	palleteBorder.setSize({palleteSize.x + 2, palleteSize.y + 2});
+	//Y increase
+	btn_SizeUpY = new Widget_Button(*btn_SizeUpX);
+	btn_SizeUpY->move({85,0});
 
-	selectBorder.setFillColor(sf::Color::Transparent);
-	selectBorder.setOutlineColor(sf::Color::Green);
-	selectBorder.setOutlineThickness(1);
+	//Y decrease
+	btn_SizeDnY = new Widget_Button(*btn_SizeDnX);
+	btn_SizeDnY->move({85,0});
 
+	//## Map size label
+	label_mapSize = new Widget_Label();
+	label_mapSize->setPosition(pnl_left->getPos());
+	label_mapSize->move({ 100, pnl_left->getSize().y - 50 });
+	label_mapSize->setFont(font);
+	label_mapSize->setCharacterSize(14);
+	label_mapSize->setText("10 x 10");
+	
 
+	//## Add to gui
+	gui->addWidget(pnl_left);
+	gui->addWidget(pnl_bottom);
+	gui->addWidget(btn_save);
+	gui->addWidget(btn_SizeUpX);
+	gui->addWidget(btn_SizeDnX);
+	gui->addWidget(btn_SizeUpY);
+	gui->addWidget(btn_SizeDnY);
+	gui->addWidget(label_mapSize);
 }
 
 void State_Editor::initCamera()
@@ -680,6 +696,27 @@ void State_Editor::initMap()
 
 }
 
+void State_Editor::initPalleteTool()
+{
+	//Pallete setup
+	palleteSize.x = palleteRatio.x * pnl_left->getSize().x;
+	palleteSize.y = palleteRatio.y * pnl_left->getSize().y;
+
+	palletePos.x = .5 * (pnl_left->getSize().x - palleteSize.x) + pnl_left->getPos().x;
+	palletePos.y = .5 * (pnl_left->getSize().y - palleteSize.y) + pnl_left->getPos().y;
+
+
+	palleteBorder.setFillColor(sf::Color::Transparent);
+	palleteBorder.setOutlineColor(sf::Color::Black);
+	palleteBorder.setOutlineThickness(1);
+	palleteBorder.setPosition({ palletePos.x - 1, palletePos.y - 1 });
+	palleteBorder.setSize({ palleteSize.x + 2, palleteSize.y + 2 });
+
+	selectBorder.setFillColor(sf::Color::Transparent);
+	selectBorder.setOutlineColor(sf::Color::Green);
+	selectBorder.setOutlineThickness(1);
+}
+
 void State_Editor::initPathTool()
 {
 	nodeButton.setRadius(10);
@@ -727,6 +764,122 @@ void State_Editor::addNode(sf::Vector2f pos)
 
 }
 
+void State_Editor::resizeMapX(int newX)
+{
+	//Increase
+	if (newX > mapSize.x) {
+		for (int i = 0; i < mapSize.y; i++) {
+			for (int j = mapSize.x; j < newX; j++) {
+				map.at(i).push_back(-1);
+
+				sf::Sprite curr;
+				curr.setTexture(*blankTexture);
+				curr.setScale(tileSize / blankTexture->getSize().x, tileSize / blankTexture->getSize().y);
+				curr.setPosition(tileSize*j, tileSize*i);
+				mapDisplay.at(i).push_back(curr);
+			}
+		}
+	}
+
+	//Decrease
+	if (newX < mapSize.x) {
+		//Check for min size
+		if (newX < 0) {
+			return;
+		}
+
+		//Shrink
+		for (int i = 0; i < mapSize.y; i++) {
+			for (int j = newX; j < mapSize.x; j++) {
+				map.at(i).pop_back();
+				mapDisplay.at(i).pop_back();
+			}
+		}
+	}
+
+	//Store new size
+	mapSize.x = newX;
+	refreshGrid();
+}
+
+void State_Editor::resizeMapY(int newY)
+{
+	//Increase
+	if (newY > mapSize.y) {
+		for (int i = mapSize.y; i < newY; i++) {
+			std::vector<int> dataRow;
+			std::vector<sf::Sprite> displayRow;
+
+			for (int j = 0; j < mapSize.x; j++) {
+				dataRow.push_back(-1);
+				sf::Sprite curr;
+				curr.setTexture(*blankTexture);
+				curr.setScale(tileSize / blankTexture->getSize().x, tileSize / blankTexture->getSize().y);
+				curr.setPosition(tileSize * j, tileSize * i);
+				displayRow.push_back(curr);
+			}
+
+			map.push_back(dataRow);
+			mapDisplay.push_back(displayRow);
+		}
+	}
+
+	//Decrease
+	if (newY < mapSize.y) {
+		//Check for min size
+		if (newY < 0) {
+			return;
+		}
+
+		//Shrink
+		for (int i = newY; i < mapSize.y; i++) {
+			map.pop_back();
+			mapDisplay.pop_back();
+		}
+	}
+
+	//Store new size
+	mapSize.y = newY;
+	refreshGrid();
+}
+
+void State_Editor::refreshGrid()
+{
+	//Clear
+	grid_horizontal.clear();
+	grid_vertical.clear();
+
+	//Set up
+	for (int i = 0; i <= mapSize.x; i++) {
+		sf::Vertex a;
+		sf::Vertex b;
+		a.color = gridColor;
+		b.color = gridColor;
+
+		a.position = { i * tileSize , 0 };
+		b.position = { i * tileSize, tileSize * mapSize.y };
+
+		grid_vertical.push_back(a);
+		grid_vertical.push_back(b);
+	}
+
+	for (int i = 0; i <= mapSize.y; i++) {
+		sf::Vertex a;
+		sf::Vertex b;
+		a.color = gridColor;
+		b.color = gridColor;
+
+		a.position = { 0, i * tileSize };
+		b.position = { tileSize * mapSize.x, i * tileSize };
+
+		grid_horizontal.push_back(a);
+		grid_horizontal.push_back(b);
+	}
+
+	//Boundry
+	mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
+}
+
 //########################################	CONSTRUCTORS AND DESTRUCTOR
 
 State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* window)
@@ -743,8 +896,9 @@ State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* win
 	this->textureHandler = textureHandler;
 	this->initCamera();
 	this->initGui();
-	this->initTest();
 	this->initMap();
+	this->initPalleteTool();
+	this->initTest();
 	this->initPathTool();
 }
 
@@ -852,7 +1006,13 @@ void State_Editor::savePath(std::string filepath)
 	fWritePath(filepath, pathHead);
 }
 
-//####################################################################	POLLING
+void State_Editor::save()
+{
+	this->saveMap(filename + "_tilemap.txt");
+	this->savePath(filename + "_path.txt");
+}
+
+//################################################################################	POLLING
 
 void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 	if (event.type == sf::Event::MouseButtonReleased) {
@@ -893,6 +1053,31 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			}
 
 			
+			//Resize buttons
+			if (btn_SizeDnX->getState() == ButtonState::PRESS) {
+				//Then reduce size
+				resizeMapX(mapSize.x-1);
+				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+			}
+
+			if (btn_SizeUpX->getState() == ButtonState::PRESS) {
+				//Then increase size
+				resizeMapX(mapSize.x+1);
+				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+			}
+
+			if (btn_SizeDnY->getState() == ButtonState::PRESS) {
+				//Then reduce size
+				resizeMapY(mapSize.y-1);
+				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+			}
+
+			if (btn_SizeUpY->getState() == ButtonState::PRESS) {
+				//Then increase size
+				resizeMapY(mapSize.y+1);
+				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+			}
+
 
 			
 
@@ -1002,6 +1187,10 @@ void State_Editor::updatePathTool()
 
 void State_Editor::updateCamera(float dt)
 {
+	if (isPress_ctrl) {
+		return;
+	}
+
 	//Up
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 		if (view_map.getCenter().y >= cameraBounds.top) {
@@ -1071,10 +1260,10 @@ void State_Editor::update(float dt) {
 		mapDisplay = prevMapDisplay;
 	}
 
-	if (isPress_ctrl && isPress_s) {
+	if (btn_save->getState() == ButtonState::PRESS || (isPress_ctrl && isPress_s)) {
 		//Save
-		this->saveMap(filename + "_tilemap.txt");
-		this->savePath(filename + "_path.txt");
+		std::cout << "Saving..." << std::endl;
+		this->save();
 	}
 
 }

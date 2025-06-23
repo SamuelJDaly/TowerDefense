@@ -27,6 +27,10 @@ void Engine::initTextures()
 	textureHandler->addTexture("tower_2", "resource/tex/tower_2.png");
 	textureHandler->addTexture("projectile_1", "resource/tex/projectile_1.png");
 	textureHandler->addTexture("projectile_2", "resource/tex/projectile_2.png");
+
+	textureHandler->addTexture("btn_save", "resource/tex/btn_save.png");
+	textureHandler->addTexture("btn_plus", "resource/tex/btn_plus.png");
+	textureHandler->addTexture("btn_minus", "resource/tex/btn_minus.png");
 }
 
 void Engine::initState()

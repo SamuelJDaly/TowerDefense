@@ -115,6 +115,8 @@ public:
 	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(float dt);
 	void draw(sf::RenderWindow &win);
+	void setPosition(sf::Vector2f newPos);
+	void move(sf::Vector2f offset);
 	
 	void setText(std::string newText);
 	void setFont(sf::Font* newFont);
@@ -170,30 +172,40 @@ public:
 
 
 //###########################################	BUTTON
-//class Widget_Button : public Widget {
-//private:
-//	//Data
-//	sf::Sprite graph;
-//	bool state = false;
-//	float debounce = .25; //in seconds
-//
-//public:
-//	//Constructor and Destructor
-//	Widget_Button();
-//	~Widget_Button();
-//
-//
-//	//Primary Functions
-//	void toggle(); //Set state and keep it there
-//	void click(); //Set state temporarily
-//
-//	void poll(sf::RenderWindow& win, sf::Event& event) = 0;
-//	void update(const float dt);
-//	void draw(sf::RenderWindow& win);
-//	
-//	bool getState();
-//
-//};
+enum class ButtonState {
+	PRESS, UNPRESS, HOVER
+};
+
+class Widget_Button : public Widget {
+private:
+	//Data
+	sf::Sprite graph;
+	ButtonState state = ButtonState::UNPRESS;
+	ButtonState lastState = ButtonState::UNPRESS;
+
+public:
+	//Constructor and Destructor
+	Widget_Button();
+	~Widget_Button();
+
+
+	//Primary Functions
+	void setState(ButtonState newState);
+	void setPosition(sf::Vector2f pos);
+	void move(sf::Vector2f offset);
+	void setSize(sf::Vector2f size);
+	void setTexture(sf::Texture* texture);
+	void setTextureRect(sf::IntRect rect);
+
+
+	void poll(sf::RenderWindow& win, sf::Event& event);
+	void update(const float dt);
+	void draw(sf::RenderWindow& win);
+	
+	ButtonState getState();
+	bool contains(sf::Vector2f pos);
+
+};
 
 //############################################################################################
 //				GUI

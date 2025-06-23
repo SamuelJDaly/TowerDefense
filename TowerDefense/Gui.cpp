@@ -202,6 +202,16 @@ void Widget_Label::draw(sf::RenderWindow& win)
 	win.draw(label);
 }
 
+void Widget_Label::setPosition(sf::Vector2f newPos)
+{
+	label.setPosition(newPos);
+}
+
+void Widget_Label::move(sf::Vector2f offset)
+{
+	label.move(offset);
+}
+
 void Widget_Label::setText(std::string newText)
 {
 	text = newText;
@@ -374,6 +384,129 @@ void Widget_Textbox::setCharacterSize(unsigned int size)
 	this->arrange();
 }
 
+//####################################	BUTTON
+Widget_Button::Widget_Button()
+{
+}
+
+Widget_Button::~Widget_Button()
+{
+}
+
+void Widget_Button::setState(ButtonState newState)
+{
+	state = newState;
+}
+
+void Widget_Button::setPosition(sf::Vector2f pos)
+{
+	graph.setPosition(pos);
+}
+
+void Widget_Button::move(sf::Vector2f offset)
+{
+	graph.move(offset);
+}
+
+void Widget_Button::setSize(sf::Vector2f size)
+{
+	float scaleX = size.x / graph.getGlobalBounds().width;
+	float scaleY = size.y / graph.getGlobalBounds().height;
+
+	graph.setScale(scaleX, scaleY);
+}
+
+void Widget_Button::setTexture(sf::Texture* texture)
+{
+	//Check for valid ptr
+	if (!texture) {
+		std::cout << "Invalid Button Texture..." << std::endl;
+		return;
+	}
+
+	graph.setTexture(*texture);
+}
+
+void Widget_Button::setTextureRect(sf::IntRect rect)
+{
+	graph.setTextureRect(rect);
+}
+
+void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
+{
+	if (event.type == sf::Event::MouseMoved) {
+		//Get Mouse Pos
+		sf::Vector2i mousePos = sf::Mouse::getPosition(win);
+		if (graph.getGlobalBounds().contains({(float)mousePos.x, (float)mousePos.y})) {
+			lastState = state;
+			state = ButtonState::HOVER;
+		}
+		else {
+			lastState = state;
+			state = ButtonState::UNPRESS;
+		}
+
+		if (lastState != state) {
+			if (state == ButtonState::HOVER) {
+				graph.setColor(sf::Color(200, 200, 200, 255));
+			}
+			else {
+				graph.setColor(sf::Color::White);
+			}
+
+		}
+
+	}
+
+	if (event.type == sf::Event::MouseButtonPressed) {
+		if (state == ButtonState::HOVER) {
+			lastState = state;
+			state = ButtonState::PRESS;
+		}
+	}
+
+	if (event.type == sf::Event::MouseButtonReleased) {
+		sf::Vector2i mousePos = sf::Mouse::getPosition(win);
+		if (state == ButtonState::PRESS) {
+			lastState = state;
+			if (graph.getGlobalBounds().contains({ (float)mousePos.x, (float)mousePos.y })) {
+				lastState = state;
+				state = ButtonState::HOVER;
+			}
+			else {
+				lastState = state;
+				state = ButtonState::UNPRESS;
+			}
+		}
+	}
+
+}
+
+void Widget_Button::update(const float dt)
+{
+	
+}
+
+void Widget_Button::draw(sf::RenderWindow& win)
+{
+	win.draw(graph);
+}
+
+ButtonState Widget_Button::getState()
+{
+	return state;
+}
+
+bool Widget_Button::contains(sf::Vector2f pos)
+{
+	if (graph.getGlobalBounds().contains(pos)) {
+		return true;
+	}
+
+	return false;
+}
+
+
 
 //############################################################################################
 //				GUI
@@ -509,3 +642,4 @@ void Gui::setMaxLayers(unsigned int max)
 {
 	maxLayers = max;
 }
+
