@@ -22,9 +22,11 @@ void Engine::initTextures()
 	textureHandler->addTexture("panel_stone", "resource/tex/panel_stone.png");
 	textureHandler->addTexture("panel_girder", "resource/tex/panel_girder.png");
 	textureHandler->addTexture("panel_bevel", "resource/tex/panel_bevelGrey.png");
+	textureHandler->addTexture("tileset_dither", "resource/tex/tileset_dither.png");
 
 	textureHandler->addTexture("tower_1", "resource/tex/tower_1.png");
 	textureHandler->addTexture("tower_2", "resource/tex/tower_2.png");
+	textureHandler->addTexture("tower_cannon", "resource/tex/tower_cannon.png");
 	textureHandler->addTexture("projectile_1", "resource/tex/projectile_1.png");
 	textureHandler->addTexture("projectile_2", "resource/tex/projectile_2.png");
 
@@ -35,8 +37,8 @@ void Engine::initTextures()
 
 void Engine::initState()
 {
-	//currState = new State_Game(textureHandler, this->win);
-	currState = new State_Editor(textureHandler, this->win);
+	currState = new State_Game(textureHandler, this->win);
+	//currState = new State_Editor(textureHandler, this->win);
 	//currState = new State_Menu(textureHandler);
 }
 

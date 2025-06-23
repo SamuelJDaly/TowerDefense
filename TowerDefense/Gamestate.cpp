@@ -95,11 +95,10 @@ void State_Game::initView()
 
 void State_Game::initMap()
 {
-	map = new Map(textureHandler);
-	tileMap = new TileMap(textureHandler->lookup("tileset_0"));
-	tileMap->loadFromFile("resource/map/map_0_tilemap.txt");
+	tileMap = new TileMap(textureHandler->lookup("tileset_dither"));
+	tileMap->loadFromFile("resource/map/editor_tilemap.txt", *textureHandler);
 	tileMap->refreshTilemap();
-	tileMap->loadPath("resource/map/map_0_path.txt");
+	tileMap->loadPath("resource/map/editor_path.txt");
 }
 
 void State_Game::initHostiles()
@@ -114,7 +113,7 @@ void State_Game::initTest()
 {
 	towers.push_back(new Tower());
 
-	towers.back()->setTexture(textureHandler->lookup("tower_1"));
+	towers.back()->setTexture(textureHandler->lookup("tower_cannon"));
 	towers.back()->setCooldown(.25);
 	towers.back()->setScale(towerScale_playfield);
 
@@ -173,7 +172,6 @@ State_Game::State_Game(TextureHandler* textureHandler, sf::RenderWindow* window)
 
 State_Game::~State_Game()
 {
-	delete map;
 
 	delete tileMap;
 
@@ -309,7 +307,6 @@ void State_Game::palleteDeselect()
 
 void State_Game::update(float dt)
 {
-	map->update(dt);
 	tileMap->update(dt);
 	
 	//Update current round
@@ -640,7 +637,7 @@ void State_Editor::initCamera()
 
 void State_Editor::initTest()
 {
-	this->loadPallete(16,"resource/tex/tileset_0.png");
+	this->loadPallete(16,"resource/tex/tileset_dither.png");
 }
 
 void State_Editor::initMap()
@@ -1157,6 +1154,19 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		}
 	}
 
+	//Scroll Wheel
+	if (event.type == sf::Event::MouseWheelMoved) {
+		float zoom = currZoom - (zoomSpeed * event.mouseWheel.delta);
+
+		if (zoom < zoomBounds.x && zoom >= zoomBounds.y) {
+
+			view_map.zoom(1 / currZoom);
+			currZoom = zoom;
+			view_map.zoom(currZoom);
+		}
+
+	}
+
 	gui->poll(win, event);
 }
 
@@ -1319,7 +1329,7 @@ void State_Editor::drawPath(sf::RenderWindow& win)
 
 	//Path nodes
 	sf::CircleShape point;
-	point.setRadius(10);
+	point.setRadius(5);
 	point.setOrigin({ point.getRadius(), point.getRadius() });
 
 	Node* curr = pathHead;

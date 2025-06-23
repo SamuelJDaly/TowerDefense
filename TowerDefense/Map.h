@@ -45,35 +45,8 @@ public:
 	sf::Vector2i getType();
 };
 
-//###################	MAP		#######################
-class Map
-{
-private:
-	//Data
-	TextureHandler* textureHandler = nullptr;
-	sf::Sprite background;
 
-	Node* pathHead = nullptr;
-
-	bool doDrawNodes = true;
-
-	//Util
-	void drawNodes(sf::RenderWindow &win);
-
-public:
-	//Constructors and Destructors
-	Map(TextureHandler* textureHandler);
-	~Map();
-
-	//Primary Functions
-	void update(float dt);
-	void draw(sf::RenderWindow &win);
-	void loadPath(std::string filepath);
-	Node* getPath();
-};
-
-
-//##################	TILEMAP	#######################
+//##################	MAP		#######################
 class TileMap
 {
 private:
@@ -83,12 +56,16 @@ private:
 	unsigned int width = 0;
 	unsigned int height = 0;
 	int tileSize = 16;
+	int textureSize = 16;
 
 	bool hasBackground = false;
 	sf::Sprite background;
 
 	Node* pathHead = nullptr;
 	bool doDrawNodes = true;
+
+	std::string tileSetPath = "";
+	std::string tileSetName = "";
 
 	//Util
 	void DrawNodes(sf::RenderWindow &win);
@@ -102,7 +79,7 @@ public:
 	void update(float deltaTime);
 	void draw(sf::RenderWindow& window);
 
-	void loadFromFile(std::string filepath);
+	void loadFromFile(std::string filepath, TextureHandler &textureHandler);
 	void setTileset(sf::Texture* newTileset);
 	void refreshTilemap();
 

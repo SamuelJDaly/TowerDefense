@@ -89,7 +89,6 @@ private:
 	Tower* palletePick = nullptr;
 
 	//Gameplay
-	Map* map;
 	TileMap* tileMap;
 	std::vector<Hostile*> hostiles;
 	std::vector<Tower*> towers;
@@ -180,7 +179,7 @@ private:
 	float panSpeed = 300;
 	float zoomSpeed = .03;
 	float currZoom = 1;
-	sf::Vector2f zoomBounds = { 1.5,.70 };
+	sf::Vector2f zoomBounds = { 1.7,.50 };
 
 	//Gui
 	float leftPanelRatio = .25; //What fraction of view does left panel cover (x axis)

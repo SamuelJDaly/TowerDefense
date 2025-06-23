@@ -39,8 +39,8 @@ void Tile::setType(sf::Vector2i newType)
 void Tile::setSize(float size)
 {
 	//Calculate scale
-	float scaleX = size / sprite.getLocalBounds().width;
-	float scaleY = size / sprite.getLocalBounds().height;
+	float scaleX = size / sprite.getGlobalBounds().width;
+	float scaleY = size / sprite.getGlobalBounds().height;
 
 	//Set scale
 	sprite.setScale({ scaleX, scaleY });
@@ -55,119 +55,6 @@ void Tile::setPosition(sf::Vector2f pos)
 sf::Vector2i Tile::getType()
 {
 	return type;
-}
-
-
-//################################################################################################
-//MAP
-
-void Map::drawNodes(sf::RenderWindow& win)
-{
-	sf::CircleShape point;
-	point.setRadius(2);
-	point.setOrigin({point.getRadius(), point.getRadius()});
-
-	Node* curr = pathHead;
-	Node* last = nullptr;
-
-	sf::Color currCol = sf::Color::Blue;
-	sf::Color lastCol = sf::Color::Blue;
-
-	sf::Vertex line[] = {sf::Vertex(sf::Vector2f(0,0)), sf::Vertex(sf::Vector2f(0,0)) };
-
-	while (curr) {
-		//Draw point
-		point.setPosition(curr->pos);
-		switch (curr->type) {
-		case NodeType::BEGIN:
-			point.setFillColor(sf::Color::Green);
-			currCol = sf::Color::Green;
-			break;
-		case NodeType::PATH:
-			point.setFillColor(sf::Color::Blue);
-			currCol = sf::Color::Blue;
-			break;
-		case NodeType::END:
-			point.setFillColor(sf::Color::Red);
-			currCol = sf::Color::Red;
-			break;
-		}
-
-		win.draw(point);
-
-		//Draw lines
-		line[0].position = curr->pos;
-		line[0].color = currCol;
-		if (last) {
-			line[1].position = last->pos;
-			line[1].color = lastCol;
-			win.draw(line, 2, sf::Lines);
-		}
-
-		//Get next node
-		last = curr;
-		lastCol = currCol;
-		curr = curr->next;
-	}
-}
-
-Map::Map(TextureHandler* textureHandler)
-{
-	this->textureHandler = textureHandler;
-
-	background.setTexture(*textureHandler->lookup("bg_test"));
-	loadPath("resource/map/map_0_path.txt");
-}
-
-Map::~Map()
-{
-	//Delete path
-	Node* curr = pathHead;
-	Node* next = nullptr;
-
-	while (curr) {
-		//Store next
-		next = curr->next;
-
-		//Delete curr
-		delete curr;
-
-		//Iterate
-		curr = next;
-	}
-
-
-}
-
-void Map::update(float dt)
-{
-}
-
-void Map::draw(sf::RenderWindow& win)
-{
-	//Draw Background
-	win.draw(background);
-
-	//Draw nodes
-	if (doDrawNodes) {
-		this->drawNodes(win);
-	}
-}
-
-void Map::loadPath(std::string filepath)
-{
-	Node* temp = fReadPath(filepath);
-	if (!temp) {
-		std::cout << "Path not loaded..." << std::endl;
-		return;
-	}
-
-	pathHead = temp;
-}
-
-Node* Map::getPath()
-{
-	return pathHead;
 }
 
 
@@ -260,7 +147,7 @@ void TileMap::draw(sf::RenderWindow& window)
 	}
 }
 
-void TileMap::loadFromFile(std::string filepath)
+void TileMap::loadFromFile(std::string filepath, TextureHandler& textureHandler)
 {
 	std::ifstream inFile;
 
@@ -275,7 +162,19 @@ void TileMap::loadFromFile(std::string filepath)
 	//## Read File
 	//Dimensions
 	inFile >> width >> height;
+	inFile >> tileSize >> textureSize;
+	inFile >> tileSetName >> tileSetPath;
 
+	//Try to find tileset texture
+	tileset = textureHandler.lookup(tileSetName);
+	if (!tileset) {
+		//Then load into texture handler
+		textureHandler.addTexture(tileSetName, tileSetPath);
+		tileset = textureHandler.lookup(tileSetName);
+	}
+
+	int texturesPerRow = tileset->getSize().x / textureSize;
+	int numRows = tileset->getSize().y / textureSize;
 
 	//Allocate tilemap
 	for (int i = 0; i < height; i++) {
@@ -296,7 +195,7 @@ void TileMap::loadFromFile(std::string filepath)
 	int posX = 0;
 	int posY = 0;
 
-	while (inFile >> curr >> next) {
+	while (inFile >> curr) {
 		if (posX >= width) {
 			//Go to the next row
 			posX = 0;
@@ -309,10 +208,10 @@ void TileMap::loadFromFile(std::string filepath)
 		}
 
 		//Set texture rect
-		int left = tileSize * curr;
-		int top = tileSize * next;
+		int left = textureSize * curr;
+		int top = textureSize;
 		//std::cout << "Rect: " << left << ", " << top << std::endl;
-		tilemap.at(posY)->at(posX)->setTextureRect({ left,top,tileSize,tileSize });
+		tilemap.at(posY)->at(posX)->setTextureRect({ left,top,textureSize,textureSize });
 		tilemap.at(posY)->at(posX)->setType({ curr,next });
 
 		posX++;
@@ -333,9 +232,9 @@ void TileMap::refreshTilemap()
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < height; j++) {
 			tilemap.at(i)->at(j)->setTexture(tileset);
-			int left = tilemap.at(i)->at(j)->getType().x * tileSize;
-			int top = tilemap.at(i)->at(j)->getType().y * tileSize;
-			tilemap.at(i)->at(j)->setTextureRect({ left, top, tileSize, tileSize });
+			int left = tilemap.at(i)->at(j)->getType().x * textureSize;
+			int top = tilemap.at(i)->at(j)->getType().y * textureSize;
+			tilemap.at(i)->at(j)->setTextureRect({ left, top, textureSize, textureSize });
 			tilemap.at(i)->at(j)->setPosition({ float(j * tileSize),float(i * tileSize) });
 			tilemap.at(i)->at(j)->setSize(tileSize);
 		}
