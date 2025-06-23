@@ -9,7 +9,7 @@
 /*
 Project: Tower Defense, Map System
 Created: 26 MAY 2025
-Updated: 26 MAY 2025
+Updated: 23 JUN 2025
 
 Description:
 	This file contains the map system. The original idea was to use a simple map with a single background image, which was called the "Map".
@@ -25,7 +25,7 @@ private:
 	//Data
 	sf::Sprite sprite;
 	bool solid = false;
-	sf::Vector2i type = { -1,-1 };
+	int type;
 
 public:
 	//Constructor and Destructor
@@ -39,10 +39,10 @@ public:
 
 	void setTexture(sf::Texture* texture);
 	void setTextureRect(sf::IntRect rect);
-	void setType(sf::Vector2i newType);
+	void setType(int newType);
 	void setSize(float size);
 	void setPosition(sf::Vector2f pos);
-	sf::Vector2i getType();
+	int getType();
 };
 
 
@@ -52,9 +52,9 @@ class TileMap
 private:
 	//Data
 	std::vector<std::vector<Tile*>*> tilemap;
-	sf::Texture* tileset;
-	unsigned int width = 0;
-	unsigned int height = 0;
+	Spritesheet tileset;
+	int width = 0;
+	int height = 0;
 	int tileSize = 16;
 	int textureSize = 16;
 
@@ -68,11 +68,11 @@ private:
 	std::string tileSetName = "";
 
 	//Util
-	void DrawNodes(sf::RenderWindow &win);
+	
 
 public:
 	//Constructor and Destructor
-	TileMap(sf::Texture* initTileset);
+	TileMap();
 	~TileMap();
 
 	//Primary Functions
