@@ -34,6 +34,7 @@ protected:
 	//Common Data
 	unsigned int layer = 0;
 	int ID = 0;
+	bool isFocus = false;
 
 	sf::Vector2f size = { 1,1 };
 	sf::Vector2f pos = {0,0};
@@ -42,10 +43,11 @@ public:
 	//Common Functions
 	void setLayer(int newLayer);
 	void setID(int newID);
-	
+	void setFocus(bool state = true);
 
 	int getLayer();
 	int getID();
+	bool getFocus();
 
 	//Virtual Functions
 	virtual void poll(sf::RenderWindow &win, sf::Event &event) = 0;
@@ -151,6 +153,7 @@ private:
 	void init();
 	void arrangeCursor();
 	void arrange();
+	void backspace();
 
 public:
 	//Constructor and Destructor
@@ -182,6 +185,9 @@ private:
 	sf::Sprite graph;
 	ButtonState state = ButtonState::UNPRESS;
 	ButtonState lastState = ButtonState::UNPRESS;
+
+	//Util
+	
 
 public:
 	//Constructor and Destructor
@@ -218,6 +224,7 @@ private:
 	int numLayers = 0;
 	int IDCounter = 0;
 	std::queue<int> removedIDs;
+	bool hasFocus = false;
 
 	//Util
 
@@ -237,6 +244,8 @@ public:
 	void remWidget(int ID);
 
 	void setMaxLayers(unsigned int max);
+	
+	bool getFocus();
 };
 
 

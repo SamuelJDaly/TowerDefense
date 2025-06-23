@@ -185,7 +185,7 @@ void TileMap::refreshTilemap()
 			tilemap.at(i)->at(j)->setTextureRect(tileset.getRect(idx));
 			//Set Position and scale
 			tilemap.at(i)->at(j)->setPosition({ float(j * tileSize),float(i * tileSize) });
-			tilemap.at(i)->at(j)->setSize(tileSize);
+			tilemap.at(i)->at(j)->setSize((float)tileSize);
 		}
 	}
 }
@@ -213,8 +213,6 @@ void TileMap::loadPath(std::string filepath)
 	}
 
 	pathHead = temp;
-
-	pathOffset(pathHead, { (float)(tileSize / 2.0), (float)(tileSize / 2.0) });
 }
 
 Node* TileMap::getPath()

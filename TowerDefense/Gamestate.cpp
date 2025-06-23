@@ -16,7 +16,7 @@ void State_Game::initGui()
 	palletePos = {viewSize_gui.x - palleteSize.x, 0};
 
 	Widget_Panel* panel = new Widget_Panel();
-	panel->setTexture(textureHandler->lookup("panel_girder"));
+	panel->setTexture(textureHandler->lookup("panel_simpleWhite"));
 	panel->setSize(palleteSize);
 
 	panel->setPosition(palletePos);
@@ -95,7 +95,8 @@ void State_Game::initView()
 
 void State_Game::initMap()
 {
-	tileMap = new TileMap(textureHandler->lookup("tileset_dither"));
+	tileMap = new TileMap();
+	tileMap->setTileset(textureHandler->lookup("tileset_dither"));
 	tileMap->loadFromFile("resource/map/editor_tilemap.txt", *textureHandler);
 	tileMap->refreshTilemap();
 	tileMap->loadPath("resource/map/editor_path.txt");
@@ -111,21 +112,24 @@ void State_Game::initHostiles()
 
 void State_Game::initTest()
 {
-	towers.push_back(new Tower());
-
-	towers.back()->setTexture(textureHandler->lookup("tower_cannon"));
-	towers.back()->setCooldown(.25);
-	towers.back()->setScale(towerScale_playfield);
 
 	Projectile temp;
 	temp.setTexture(textureHandler->lookup("projectile_1"));
 	temp.setRange(600);
-	temp.setDamage(1);
+	temp.setDamage(7);
 	temp.setSpeed(200);
-	temp.setSize({ 4,4 });
+	temp.setSize({ 7,7 });
+
+	towers.push_back(new Tower());
+
+	towers.back()->setTexture(textureHandler->lookup("tower_cannon"));
+	towers.back()->setCooldown(1);
+	towers.back()->setScale(towerScale_playfield);
+
+	
 
 	towers.back()->setProjectile(temp);
-	towers.back()->setPosition({200, 70});
+	towers.back()->setPosition({200, 20});
 
 	towers.push_back(new Tower());
 
@@ -549,7 +553,7 @@ void State_Editor::initGui() {
 	gui = new Gui();
 	font = new sf::Font();
 
-	if (!font->loadFromFile("resource/font/jmhtype.ttf")) {
+	if (!font->loadFromFile("resource/font/roboto_regular.ttf")) {
 		return;
 	}
 
@@ -607,6 +611,13 @@ void State_Editor::initGui() {
 	label_mapSize->setText("10 x 10");
 	
 
+	//## Text box
+	Widget_Textbox* textbox = new Widget_Textbox();
+	textbox->setPos({ 40,20 });
+	textbox->setFont(font);
+	textbox->setCharacterSize(12);
+	textbox->setSize({100,20});
+
 	//## Add to gui
 	gui->addWidget(pnl_left);
 	gui->addWidget(pnl_bottom);
@@ -616,6 +627,7 @@ void State_Editor::initGui() {
 	gui->addWidget(btn_SizeUpY);
 	gui->addWidget(btn_SizeDnY);
 	gui->addWidget(label_mapSize);
+	gui->addWidget(textbox);
 }
 
 void State_Editor::initCamera()
@@ -1197,7 +1209,7 @@ void State_Editor::updatePathTool()
 
 void State_Editor::updateCamera(float dt)
 {
-	if (isPress_ctrl) {
+	if (isPress_ctrl || gui->getFocus()) {
 		return;
 	}
 

@@ -15,6 +15,11 @@ void Widget::setID(int newID)
 	ID = newID;
 }
 
+void Widget::setFocus(bool state)
+{
+	isFocus = state;
+}
+
 int Widget::getLayer()
 {
 	return layer;
@@ -23,6 +28,11 @@ int Widget::getLayer()
 int Widget::getID()
 {
 	return ID;
+}
+
+bool Widget::getFocus()
+{
+	return isFocus;
 }
 
 //#################################### PANEL
@@ -275,12 +285,24 @@ void Widget_Textbox::arrange()
 	//Text
 	sf::Vector2f textPos = pos;
 	textPos.x += margins.x;
+	textPos.y = rectangle.getPosition().y + (.5 * textObject.getGlobalBounds().height);
 	//textPos.y += margins.y;
 	textObject.setPosition(textPos);
 
 	//Cursor
 	this->arrangeCursor();
 	
+}
+
+void Widget_Textbox::backspace()
+{
+	if (text == "") {
+		return;
+	}
+	//For now have it delete the last character of the text
+	text.pop_back();
+	textObject.setString(text);
+	this->arrangeCursor();
 }
 
 Widget_Textbox::Widget_Textbox()
@@ -301,20 +323,29 @@ void Widget_Textbox::poll(sf::RenderWindow& win, sf::Event& event)
 
 		if (editable && rectangle.getGlobalBounds().contains(fPos)) {
 			active = true;
+			isFocus = true;
 			
 		}
 		else {
 			active = false;
+			isFocus = false;
 		}
 	}
 	
 	//Typing
 	if (active && event.type == sf::Event::TextEntered) {
-		if (event.text.unicode < 0x80) // it's printable
+		if (event.text.unicode < 0x80 && event.text.unicode > 0x19) // it's printable
 		{
 			char key = (char)event.text.unicode;
-			textObject.setString(textObject.getString() + key);
+			text += key;
+			textObject.setString(text);
 			this->arrangeCursor();
+		}
+	}
+
+	if (active && event.type == sf::Event::KeyReleased) {
+		if (event.key.code == sf::Keyboard::BackSpace) {
+			this->backspace();
 		}
 	}
 }
@@ -540,10 +571,14 @@ void Gui::poll(sf::RenderWindow& win, sf::Event& event)
 
 void Gui::update(const float dt)
 {
+	hasFocus = false;
 	//Update widgets
 	for (size_t i = 0; i < widgets.size(); i++) {
 		for (size_t j = 0; j < widgets.at(i)->size(); j++) {
 			widgets.at(i)->at(j)->update(dt);
+			if (widgets.at(i)->at(j)->getFocus()) {
+				hasFocus = true;
+			}
 		}
 	}
 }
@@ -641,5 +676,10 @@ void Gui::remWidget(int ID)
 void Gui::setMaxLayers(unsigned int max)
 {
 	maxLayers = max;
+}
+
+bool Gui::getFocus()
+{
+	return hasFocus;
 }
 

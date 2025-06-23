@@ -10,7 +10,7 @@
 /*
 Project: Tower Defense, Gamestate System
 Created: 26 MAY 2025
-Updated: 19 JUN 2025
+Updated: 23 JUN 2025
 
 Description:
 	This file contains the Gamestate System. This is what actually ties the various systems (tower, hostile, map, etc...) together and manages their interactions.
@@ -68,13 +68,13 @@ private:
 	sf::FloatRect viewport_gui = {0,0,1,1};
 
 	sf::FloatRect cameraBounds = {-100,-100,600,600}; //How much can the camera offset
-	float panSpeed = 300;
-	float zoomSpeed = .03;
-	float currZoom = 1;
+	float panSpeed = 300.f;
+	float zoomSpeed = .03f;
+	float currZoom = 1.f;
 	sf::Vector2f zoomBounds = {1.5f,.70f};
 
-	float towerScale_pallete = 1.5;
-	float towerScale_playfield = 1.25;
+	float towerScale_pallete = 1.5f;
+	float towerScale_playfield = 1.25f;
 
 	//Gui
 	Gui* gui;
@@ -84,7 +84,7 @@ private:
 	sf::Vector2f palletePos;
 	sf::Vector2f palleteSize = {1,1};
 	sf::Vector2f palleteRatio = {.15f,1.f}; //What proportion of the screen pallete takes up
-	float palleteEntrySize = 50; //How big the pallete options are
+	float palleteEntrySize = 50.f; //How big the pallete options are
 	bool isPalletePicked = false;
 	Tower* palletePick = nullptr;
 
@@ -175,15 +175,15 @@ private:
 	sf::FloatRect viewport_map = { .25f,0.f,1.f,.2f};
 	sf::FloatRect viewport_gui = { 0.f,0.f,1.f,1.f };
 
-	sf::FloatRect cameraBounds = { -100,-100,600,600 }; //How much can the camera offset
-	float panSpeed = 300;
-	float zoomSpeed = .03;
-	float currZoom = 1;
-	sf::Vector2f zoomBounds = { 1.7,.50 };
+	sf::FloatRect cameraBounds = { -100.f,-100.f,600.f,600.f }; //How much can the camera offset
+	float panSpeed = 300.f;
+	float zoomSpeed = .03f;
+	float currZoom = 1.f;
+	sf::Vector2f zoomBounds = { 1.7f,.50f };
 
 	//Gui
-	float leftPanelRatio = .25; //What fraction of view does left panel cover (x axis)
-	float bottomPanelRatio = .2; //(y axis)
+	float leftPanelRatio = .25f; //What fraction of view does left panel cover (x axis)
+	float bottomPanelRatio = .2f; //(y axis)
 	Widget_Button* btn_save;
 	Widget_Button* btn_SizeUpX;
 	Widget_Button* btn_SizeDnX;
@@ -192,7 +192,7 @@ private:
 	Widget_Panel* pnl_left;
 	Widget_Panel* pnl_bottom;
 	Widget_Label* label_mapSize;
-	sf::Vector2f bottomPanelPos = { 0,0 };
+	sf::Vector2f bottomPanelPos = { 0.f,0.f };
 
 	//Texture Select
 	Spritesheet spritesheet;
@@ -211,7 +211,7 @@ private:
 	//Map
 	sf::FloatRect mapBoundry;
 	sf::Vector2i mapSize = { 10,10 };
-	float tileSize = 50;
+	float tileSize = 50.f;
 	sf::Image blankImage;
 	sf::Texture* blankTexture;
 	std::vector<std::vector<int>> map;
