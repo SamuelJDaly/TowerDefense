@@ -143,6 +143,60 @@ void pathOffset(Node* head, sf::Vector2f offSet)
 	}
 }
 
+void drawPath(Node* pathHead, sf::RenderWindow& win)
+{
+	if (!pathHead) {
+		return;
+	}
+
+	sf::CircleShape point;
+	point.setRadius(2);
+	point.setOrigin({ point.getRadius(), point.getRadius() });
+
+	Node* curr = pathHead;
+	Node* last = nullptr;
+
+	sf::Color currCol = sf::Color::Blue;
+	sf::Color lastCol = sf::Color::Blue;
+
+	sf::Vertex line[] = { sf::Vertex(sf::Vector2f(0,0)), sf::Vertex(sf::Vector2f(0,0)) };
+
+	while (curr) {
+		//Draw point
+		point.setPosition(curr->pos);
+		switch (curr->type) {
+		case NodeType::BEGIN:
+			point.setFillColor(sf::Color::Green);
+			currCol = sf::Color::Green;
+			break;
+		case NodeType::PATH:
+			point.setFillColor(sf::Color::Blue);
+			currCol = sf::Color::Blue;
+			break;
+		case NodeType::END:
+			point.setFillColor(sf::Color::Red);
+			currCol = sf::Color::Red;
+			break;
+		}
+
+		win.draw(point);
+
+		//Draw lines
+		line[0].position = curr->pos;
+		line[0].color = currCol;
+		if (last) {
+			line[1].position = last->pos;
+			line[1].color = lastCol;
+			win.draw(line, 2, sf::Lines);
+		}
+
+		//Get next node
+		last = curr;
+		lastCol = currCol;
+		curr = curr->next;
+	}
+}
+
 
 //#####################################################################################################
 //			SPRITESHEET
@@ -157,7 +211,7 @@ void Spritesheet::slice()
 
 	rects.clear();
 
-	std::cout << sheet->getSize().x << ", " << sheet->getSize().y << std::endl;
+	//std::cout << sheet->getSize().x << ", " << sheet->getSize().y << std::endl;
 
 	int cols = (int)std::ceilf((float)sheet->getSize().x / (float)textureSize.x);
 	int rows = (int)std::ceilf((float)sheet->getSize().y / (float)textureSize.y);
@@ -167,7 +221,7 @@ void Spritesheet::slice()
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
 			rects.push_back({ j * textureSize.x,i * textureSize.y,textureSize.x,textureSize.y });
-			std::cout << j * textureSize.x << "," << i * textureSize.y << "," << textureSize.x << "," << textureSize.y << std::endl;
+			//std::cout << j * textureSize.x << "," << i * textureSize.y << "," << textureSize.x << "," << textureSize.y << std::endl;
 		}
 	}
 }

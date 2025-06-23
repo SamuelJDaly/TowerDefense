@@ -12,7 +12,7 @@
 /*
 Project: Tower Defense, Utility Functions
 Created: 26 MAY 2025
-Updated: 19 JUN 2025
+Updated: 24 JUN 2025
 
 Description:
 	This file contains various utility functions that are common to multiple systems.
@@ -54,6 +54,7 @@ std::ostream& operator<<(std::ostream& os, Node& obj);
 Node* fReadPath(std::string filepath);
 void fWritePath(std::string filepath, Node* pathHead);
 void pathOffset(Node* head, sf::Vector2f offSet);
+void drawPath(Node* pathHead, sf::RenderWindow &win);
 
 
 //##################	SPRITESHEET		###################
