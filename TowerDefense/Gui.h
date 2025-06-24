@@ -171,6 +171,8 @@ public:
 	void setFont(sf::Font* newFont);
 	void setSize(sf::Vector2f newSize);
 	void setCharacterSize(unsigned int size);
+
+	std::string getText();
 };
 
 

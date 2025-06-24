@@ -249,6 +249,7 @@ int Spritesheet::fload(std::string filepath)
 	}
 
 	isLocalTexture = true;
+	texturePath = filepath;
 
 	this->slice();
 
@@ -351,4 +352,14 @@ sf::Texture* Spritesheet::getTexture()
 int Spritesheet::getNumTextures()
 {
 	return numTextures;
+}
+
+sf::Vector2i Spritesheet::getTextureSize()
+{
+	return textureSize;
+}
+
+std::string Spritesheet::getTexturePath()
+{
+	return texturePath;
 }

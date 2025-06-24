@@ -415,6 +415,11 @@ void Widget_Textbox::setCharacterSize(unsigned int size)
 	this->arrange();
 }
 
+std::string Widget_Textbox::getText()
+{
+	return text;
+}
+
 //####################################	BUTTON
 Widget_Button::Widget_Button()
 {

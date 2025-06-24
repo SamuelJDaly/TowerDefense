@@ -169,6 +169,36 @@ void TileMap::loadFromFile(std::string filepath, TextureHandler& textureHandler)
 	inFile.close();
 }
 
+void TileMap::writeToFile(std::string filepath)
+{
+	std::ofstream outFile;
+
+	//Open File
+	outFile.open(filepath);
+
+	if (!outFile.is_open()) {
+		std::cout << "Could not open file: " << filepath << std::endl;
+		return;
+	}
+
+	//Header
+	outFile << width << " " << height << "\n";
+	outFile << tileSize << " " << textureSize << "\n";
+	outFile << tileSetName << " " << tileSetPath << "\n";
+
+
+	//Tiles
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			outFile << tilemap.at(i)->at(j)->getType() << " ";
+		}
+		outFile << "\n";
+	}
+
+	//Close File
+	outFile.close();
+}
+
 void TileMap::setTileset(sf::Texture* newTileset)
 {
 	tileset.setTexture(newTileset);

@@ -34,6 +34,7 @@ void Engine::initTextures()
 	textureHandler->addTexture("btn_save", "resource/tex/btn_save.png");
 	textureHandler->addTexture("btn_plus", "resource/tex/btn_plus.png");
 	textureHandler->addTexture("btn_minus", "resource/tex/btn_minus.png");
+	textureHandler->addTexture("btn_pallete", "resource/tex/btn_pallete.png");
 }
 
 void Engine::initState()

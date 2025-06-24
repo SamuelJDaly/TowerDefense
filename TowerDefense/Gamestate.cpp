@@ -602,6 +602,13 @@ void State_Editor::initGui() {
 	btn_SizeDnY = new Widget_Button(*btn_SizeDnX);
 	btn_SizeDnY->move({85,0});
 
+	//## Load Tilset Button
+	btn_loadTilset = new Widget_Button();
+	btn_loadTilset->setTexture(textureHandler->lookup("btn_pallete"));
+	btn_loadTilset->setPosition({20,40});
+	btn_loadTilset->setLayer(2);
+	btn_loadTilset->setSize({ 20,20 });
+
 	//## Map size label
 	label_mapSize = new Widget_Label();
 	label_mapSize->setPosition(pnl_left->getPos());
@@ -612,22 +619,23 @@ void State_Editor::initGui() {
 	
 
 	//## Text box
-	Widget_Textbox* textbox = new Widget_Textbox();
-	textbox->setPos({ 40,20 });
-	textbox->setFont(font);
-	textbox->setCharacterSize(12);
-	textbox->setSize({100,20});
+	txtBx_palletePath = new Widget_Textbox();
+	txtBx_palletePath->setPos({ 40,20 });
+	txtBx_palletePath->setFont(font);
+	txtBx_palletePath->setCharacterSize(12);
+	txtBx_palletePath->setSize({100,20});
 
 	//## Add to gui
 	gui->addWidget(pnl_left);
 	gui->addWidget(pnl_bottom);
 	gui->addWidget(btn_save);
+	gui->addWidget(btn_loadTilset);
 	gui->addWidget(btn_SizeUpX);
 	gui->addWidget(btn_SizeDnX);
 	gui->addWidget(btn_SizeUpY);
 	gui->addWidget(btn_SizeDnY);
 	gui->addWidget(label_mapSize);
-	gui->addWidget(textbox);
+	gui->addWidget(txtBx_palletePath);
 }
 
 void State_Editor::initCamera()
@@ -939,6 +947,23 @@ State_Editor::~State_Editor()
 void State_Editor::loadPallete(int txSize, std::string filepath)
 {
 	//This function sets up the pallete vector by texturing, scaling, and positioning the sprites
+	//## Check for valid filepath
+
+	//Empty
+	if (filepath == "") {
+		return;
+	}
+
+	//Does not exist
+	std::ifstream inFile;
+	inFile.open(filepath);
+	if (!inFile) {
+		return;
+	}
+
+	inFile.close();
+
+	
 	spritesheet.setTextureSize(txSize, txSize);
 	spritesheet.fload(filepath);
 	
@@ -994,6 +1019,8 @@ void State_Editor::saveMap(std::string filepath)
 
 	//Write size
 	outFile << mapSize.x << " " << mapSize.y << "\n";
+	outFile << tileSize << " " << spritesheet.getTextureSize().x << "\n";
+	outFile << "test" << " " << spritesheet.getTexturePath() << "\n";
 
 	//Write tiles
 	for (int i = 0; i < mapSize.y; i++) {
@@ -1064,29 +1091,33 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			
 			//Resize buttons
 			if (btn_SizeDnX->getState() == ButtonState::PRESS) {
-				//Then reduce size
+				//Then reduce X size
 				resizeMapX(mapSize.x-1);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
 			if (btn_SizeUpX->getState() == ButtonState::PRESS) {
-				//Then increase size
+				//Then increase X size
 				resizeMapX(mapSize.x+1);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
 			if (btn_SizeDnY->getState() == ButtonState::PRESS) {
-				//Then reduce size
+				//Then reduce Y size
 				resizeMapY(mapSize.y-1);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
 			if (btn_SizeUpY->getState() == ButtonState::PRESS) {
-				//Then increase size
+				//Then increase Y size
 				resizeMapY(mapSize.y+1);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
+			if (btn_loadTilset->getState() == ButtonState::PRESS) {
+				//Then load the pallete
+				this->loadPallete(16, txtBx_palletePath->getText());
+			}
 
 			
 

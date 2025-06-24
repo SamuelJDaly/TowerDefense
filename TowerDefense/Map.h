@@ -80,6 +80,7 @@ public:
 	void draw(sf::RenderWindow& window);
 
 	void loadFromFile(std::string filepath, TextureHandler &textureHandler);
+	void writeToFile(std::string filepath);
 	void setTileset(sf::Texture* newTileset);
 	void refreshTilemap();
 

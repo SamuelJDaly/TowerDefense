@@ -62,6 +62,7 @@ class Spritesheet {
 private:
 	//Data
 	sf::Texture* sheet;
+	std::string texturePath = "";
 	bool isLocalTexture = 0; //Is the texture locally managed
 	int numTextures = 0;
 	sf::Vector2i textureSize = {1,1};
@@ -87,4 +88,6 @@ public:
 	std::vector<sf::IntRect> getRects();
 	sf::Texture* getTexture();
 	int getNumTextures();
+	sf::Vector2i getTextureSize();
+	std::string getTexturePath();
 };

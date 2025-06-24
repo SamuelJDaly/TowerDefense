@@ -189,9 +189,11 @@ private:
 	Widget_Button* btn_SizeDnX;
 	Widget_Button* btn_SizeUpY;
 	Widget_Button* btn_SizeDnY;
+	Widget_Button* btn_loadTilset;
 	Widget_Panel* pnl_left;
 	Widget_Panel* pnl_bottom;
 	Widget_Label* label_mapSize;
+	Widget_Textbox* txtBx_palletePath;
 	sf::Vector2f bottomPanelPos = { 0.f,0.f };
 
 	//Texture Select
@@ -214,6 +216,7 @@ private:
 	float tileSize = 50.f;
 	sf::Image blankImage;
 	sf::Texture* blankTexture;
+	TileMap tilemap;
 	std::vector<std::vector<int>> map;
 	std::vector<std::vector<int>> prevMap;
 	std::vector<std::vector<sf::Sprite>> mapDisplay;
