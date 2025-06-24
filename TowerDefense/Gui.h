@@ -131,8 +131,8 @@ public:
 class Widget_Textbox : public Widget {
 private:
 	//Data
-	sf::Vector2f pos = {0,0};
-	sf::Vector2f size = {1,1};
+	sf::Vector2f pos = {0.f,0.f};
+	sf::Vector2f size = {1.f,1.f};
 	sf::Text textObject;
 	std::string text = "";
 	sf::Font* font;
@@ -140,14 +140,21 @@ private:
 	sf::Vector2f margins = { 2,2 };
 
 	float blinkTimer = 0;
-	float blinkThreshold = .75; //seconds between blink
+	float blinkThreshold = .75f; //seconds between blink
 	bool isCursorVisible = false;
 	sf::Vertex cursor[2];
+
+	float backspaceThresholdLow = .05f;
+	float backspaceAcceleration = .008f;
+	float backspaceThresholdCurr = .1f;
+	float backspaceThresholdHigh = .1f;
+	float backspaceTimer = 0.f;
 
 	sf::RectangleShape rectangle;
 
 	bool editable = true;
 	bool active = false;
+	bool isBackspace = false;
 
 	//Util
 	void init();

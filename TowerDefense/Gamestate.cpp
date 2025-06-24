@@ -620,10 +620,10 @@ void State_Editor::initGui() {
 
 	//## Text box
 	txtBx_palletePath = new Widget_Textbox();
-	txtBx_palletePath->setPos({ 40,20 });
+	txtBx_palletePath->setPos({ 50,20 });
 	txtBx_palletePath->setFont(font);
 	txtBx_palletePath->setCharacterSize(12);
-	txtBx_palletePath->setSize({100,20});
+	txtBx_palletePath->setSize({200,20});
 
 	//## Add to gui
 	gui->addWidget(pnl_left);

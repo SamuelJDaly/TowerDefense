@@ -343,9 +343,20 @@ void Widget_Textbox::poll(sf::RenderWindow& win, sf::Event& event)
 		}
 	}
 
+
+	//Key Press
+	if (active && event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::BackSpace) {
+			isBackspace = true;
+			backspaceTimer = backspaceThresholdHigh;
+		}
+	}
+
+	//Key Release
 	if (active && event.type == sf::Event::KeyReleased) {
 		if (event.key.code == sf::Keyboard::BackSpace) {
-			this->backspace();
+			isBackspace = false;
+			backspaceThresholdCurr = backspaceThresholdHigh;
 		}
 	}
 }
@@ -357,6 +368,18 @@ void Widget_Textbox::update(float dt)
 	if (blinkTimer >= blinkThreshold) {
 		isCursorVisible = !isCursorVisible;
 		blinkTimer = 0;
+	}
+
+	//Backspace
+	backspaceTimer += dt;
+	if (backspaceTimer >= backspaceThresholdCurr) {
+		if (isBackspace) {
+			backspace();
+			if (backspaceThresholdCurr >= backspaceThresholdLow) {
+				backspaceThresholdCurr -= backspaceAcceleration;
+			}
+		}
+		backspaceTimer = 0;
 	}
 }
 
