@@ -143,6 +143,7 @@ private:
 	float blinkThreshold = .75f; //seconds between blink
 	bool isCursorVisible = false;
 	sf::Vertex cursor[2];
+	sf::Vector2i selection = {0,0};
 
 	float backspaceThresholdLow = .05f;
 	float backspaceAcceleration = .008f;
@@ -173,6 +174,7 @@ public:
 	void draw(sf::RenderWindow& win);
 
 	void setPos(sf::Vector2f newPos);
+	void move(sf::Vector2f offset);
 
 	void setText(std::string newText);
 	void setFont(sf::Font* newFont);

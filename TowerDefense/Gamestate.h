@@ -96,7 +96,7 @@ private:
 	std::stack<Round*> rounds;
 	Tower* ctrlTower = nullptr;
 
-	int hp = 10;
+	float hp = 10.f;
 	
 
 	//textureHandler (base class)
@@ -194,6 +194,7 @@ private:
 	Widget_Panel* pnl_bottom;
 	Widget_Label* label_mapSize;
 	Widget_Textbox* txtBx_palletePath;
+	Widget_Textbox* txtBx_mapPath;
 	sf::Vector2f bottomPanelPos = { 0.f,0.f };
 
 	//Texture Select
@@ -201,8 +202,8 @@ private:
 	std::vector<sf::Sprite> pallete;
 	int palleteColumns = 3;
 	int numTextures = 0;
-	sf::Vector2f palletePos = {0,0};
-	sf::Vector2f palleteSize = { 1,1 };
+	sf::Vector2f palletePos = {0.f,0.f};
+	sf::Vector2f palleteSize = { 1.f,1.f };
 	sf::Vector2f palleteRatio = {.75,.75};
 	sf::RectangleShape palleteBorder;
 	int palleteSelect = -1;

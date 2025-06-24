@@ -10,7 +10,7 @@
 /*
 Project: Tower Defense, Hostile System
 Created: 26 MAY 2025
-Updated: 26 MAY 2025
+Updated: 24 JUN 2025
 
 Description:
 	This file contains the Hostile system. This system implements the enemies that the player must defeat in order to stay alive.
@@ -27,18 +27,18 @@ private:
 	//Data
 	sf::Texture* texture;
 	sf::Sprite graph;
-	sf::Vector2f scale = {1,1};
-	sf::Vector2f size = { 1,1 };
+	sf::Vector2f scale = {1.f,1.f};
+	sf::Vector2f size = { 1.f,1.f };
 
-	float speed = 30;
-	float hp = 10;
+	float speed = 30.f;
+	float hp = 10.f;
 	bool isDead = false;
 	bool isPathDone = false;
 	std::vector<DamageType> resistance;
 	std::vector<DamageType>weakness;
 
 	sf::Vector2f target;
-	float targetThreshold = .1; //How close graph has to be to reach target
+	float targetThreshold = .1f; //How close graph has to be to reach target
 
 	Node* pathHead = nullptr;
 	Node* currNode = nullptr;
@@ -66,7 +66,7 @@ public:
 	sf::FloatRect getBounds();
 	sf::Vector2f getPos();
 	bool getPathDone();
-	int getHp();
+	float getHp();
 };
 
 //######################	ROUND		############################

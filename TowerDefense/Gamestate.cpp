@@ -30,10 +30,10 @@ void State_Game::initGui()
 	Tower towerTwo;
 
 	towerOne.setTexture(textureHandler->lookup("tower_1"));
-	towerOne.setCooldown(.25);
+	towerOne.setCooldown(.25f);
 
 	towerTwo.setTexture(textureHandler->lookup("tower_2"));
-	towerTwo.setCooldown(.1);
+	towerTwo.setCooldown(.1f);
 
 	Projectile temp, tempTwo;
 	temp.setTexture(textureHandler->lookup("projectile_2"));
@@ -605,7 +605,7 @@ void State_Editor::initGui() {
 	//## Load Tilset Button
 	btn_loadTilset = new Widget_Button();
 	btn_loadTilset->setTexture(textureHandler->lookup("btn_pallete"));
-	btn_loadTilset->setPosition({20,40});
+	btn_loadTilset->setPosition({20,50});
 	btn_loadTilset->setLayer(2);
 	btn_loadTilset->setSize({ 20,20 });
 
@@ -614,16 +614,21 @@ void State_Editor::initGui() {
 	label_mapSize->setPosition(pnl_left->getPos());
 	label_mapSize->move({ 100, pnl_left->getSize().y - 50 });
 	label_mapSize->setFont(font);
-	label_mapSize->setCharacterSize(14);
+	label_mapSize->setCharacterSize(14);	
 	label_mapSize->setText("10 x 10");
 	
 
 	//## Text box
-	txtBx_palletePath = new Widget_Textbox();
-	txtBx_palletePath->setPos({ 50,20 });
-	txtBx_palletePath->setFont(font);
-	txtBx_palletePath->setCharacterSize(12);
-	txtBx_palletePath->setSize({200,20});
+	//Map Path 
+	txtBx_mapPath = new Widget_Textbox();
+	txtBx_mapPath->setPos({ 50,20 });
+	txtBx_mapPath->setFont(font);
+	txtBx_mapPath->setCharacterSize(12);
+	txtBx_mapPath->setSize({ 200,20 });
+
+	//Pallete Path
+	txtBx_palletePath = new Widget_Textbox(*txtBx_mapPath);
+	txtBx_palletePath->move({0.f,30.f});
 
 	//## Add to gui
 	gui->addWidget(pnl_left);
@@ -636,6 +641,7 @@ void State_Editor::initGui() {
 	gui->addWidget(btn_SizeDnY);
 	gui->addWidget(label_mapSize);
 	gui->addWidget(txtBx_palletePath);
+	gui->addWidget(txtBx_mapPath);
 }
 
 void State_Editor::initCamera()
@@ -719,8 +725,8 @@ void State_Editor::initPalleteTool()
 	palleteSize.x = palleteRatio.x * pnl_left->getSize().x;
 	palleteSize.y = palleteRatio.y * pnl_left->getSize().y;
 
-	palletePos.x = .5 * (pnl_left->getSize().x - palleteSize.x) + pnl_left->getPos().x;
-	palletePos.y = .5 * (pnl_left->getSize().y - palleteSize.y) + pnl_left->getPos().y;
+	palletePos.x = .5f * (pnl_left->getSize().x - palleteSize.x) + pnl_left->getPos().x;
+	palletePos.y = .5f * (pnl_left->getSize().y - palleteSize.y) + pnl_left->getPos().y;
 
 
 	palleteBorder.setFillColor(sf::Color::Transparent);

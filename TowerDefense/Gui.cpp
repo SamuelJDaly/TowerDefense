@@ -36,6 +36,8 @@ bool Widget::getFocus()
 }
 
 //#################################### PANEL
+#pragma region Panel
+
 void Widget_Panel::applyPos()
 {
 	//Guard
@@ -188,8 +190,11 @@ sf::Vector2f Widget_Panel::getPos()
 	return pos;
 }
 
+#pragma endregion
 
 //####################################### LABEL
+#pragma region Label
+
 Widget_Label::Widget_Label()
 {
 }
@@ -243,9 +248,10 @@ void Widget_Label::setCharacterSize(unsigned int size)
 	label.setCharacterSize(size);
 }
 
+#pragma endregion
 
 //####################################### TEXT BOX
-
+#pragma region Text Box
 void Widget_Textbox::init()
 {
 	//Rectangle
@@ -403,6 +409,13 @@ void Widget_Textbox::setPos(sf::Vector2f newPos)
 	this->arrange();
 }
 
+void Widget_Textbox::move(sf::Vector2f offset)
+{
+	pos.x += offset.x;
+	pos.y += offset.y;
+	this->arrange();
+}
+
 void Widget_Textbox::setText(std::string newText)
 {
 	textObject.setString(newText);
@@ -443,7 +456,11 @@ std::string Widget_Textbox::getText()
 	return text;
 }
 
+#pragma endregion
+
 //####################################	BUTTON
+#pragma region Button
+
 Widget_Button::Widget_Button()
 {
 }

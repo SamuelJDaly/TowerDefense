@@ -104,7 +104,7 @@ void Hostile::takeDamage(float amount, DamageType type)
 	//Check for resistance
 	for (auto i : resistance) {
 		if (i == type) {
-			amount -= base * MODIFIER_RESISTANCE;
+			amount -= base * (float)MODIFIER_RESISTANCE;
 			break;
 		}
 	}
@@ -112,7 +112,7 @@ void Hostile::takeDamage(float amount, DamageType type)
 	//Check for weakness
 	for (auto i : weakness) {
 		if (i == type) {
-			amount += base * MODIFIER_WEAKNESS;
+			amount += base * (float)MODIFIER_WEAKNESS;
 			break;
 		}
 	}
@@ -135,7 +135,7 @@ bool Hostile::getPathDone()
 	return isPathDone;
 }
 
-int Hostile::getHp()
+float Hostile::getHp()
 {
 	return hp;
 }
