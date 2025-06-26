@@ -270,6 +270,10 @@ public:
 	void savePath(std::string filepath);
 	void save();
 
+	void loadMap(std::string filepath);
+	void loadPath(std::string filepath);
+	void load(std::string mapname);
+
 	void poll(sf::RenderWindow& win, sf::Event& event);
 
 	void updatePathTool();

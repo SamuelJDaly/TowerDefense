@@ -948,7 +948,7 @@ State_Editor::~State_Editor()
 
 }
 
-//###############################################################################################	MISC
+//###############################################################################################	GENERAL
 
 void State_Editor::loadPallete(int txSize, std::string filepath)
 {
@@ -1053,6 +1053,20 @@ void State_Editor::save()
 	this->saveMap(filename + "_tilemap.txt");
 	this->savePath(filename + "_path.txt");
 }
+
+void State_Editor::loadMap(std::string filepath) {
+	tilemap.loadFromFile(filepath,*textureHandler);
+}
+
+void State_Editor::loadPath(std::string filepath) {
+	//NOT IMPLEMENTED
+}
+
+void State_Editor::load(std::string mapname) {
+	loadMap(mapname);
+	loadPath(mapname);
+}
+
 
 //################################################################################	POLLING
 
