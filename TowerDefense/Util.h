@@ -12,7 +12,7 @@
 /*
 Project: Tower Defense, Utility Functions
 Created: 26 MAY 2025
-Updated: 24 JUN 2025
+Updated: 16 OCT 2025
 
 Description:
 	This file contains various utility functions that are common to multiple systems.
@@ -61,9 +61,9 @@ void drawPath(Node* pathHead, sf::RenderWindow &win);
 class Spritesheet {
 private:
 	//Data
-	sf::Texture* sheet;
-	std::string texturePath = "";
-	bool isLocalTexture = 0; //Is the texture locally managed
+	sf::Texture* sheet = nullptr;
+	sf::Texture blankTexture;
+	std::string texturePath = "unset";
 	int numTextures = 0;
 	sf::Vector2i textureSize = {1,1};
 	std::vector<sf::IntRect> rects;
@@ -90,4 +90,5 @@ public:
 	int getNumTextures();
 	sf::Vector2i getTextureSize();
 	std::string getTexturePath();
+	bool containsIdx(int idx);
 };

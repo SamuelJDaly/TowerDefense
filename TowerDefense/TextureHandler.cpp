@@ -36,7 +36,7 @@ sf::Texture* TextureHandler::lookup(std::string key)
     auto it = textures.find(key);
 
     if (it == textures.end()) {
-        std::cout << "Texture not found: " << key << std::endl;
+        std::cout << "Texture not found: [" << key << "]" << std::endl;
         return nullptr;
     }
     else {

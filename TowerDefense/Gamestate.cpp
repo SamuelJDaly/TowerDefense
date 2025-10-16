@@ -96,7 +96,7 @@ void State_Game::initView()
 void State_Game::initMap()
 {
 	tileMap = new TileMap();
-	tileMap->setTileset(textureHandler->lookup("tileset_dither"));
+	//tileMap->setTileset(textureHandler->lookup("tileset_dither"));
 	tileMap->loadFromFile("resource/map/editor_tilemap.txt", *textureHandler);
 	tileMap->refreshTilemap();
 	tileMap->loadPath("resource/map/editor_path.txt");
@@ -661,33 +661,15 @@ void State_Editor::initCamera()
 	view_gui.setViewport(viewport_gui);
 }
 
-void State_Editor::initTest()
-{
-	this->loadPallete(16,"resource/tex/tileset_dither.png");
-}
-
 void State_Editor::initMap()
 {
-	float scale = tileSize / blankTexture->getSize().x;
+	//## Tile Map
+	tilemap = new TileMap(); //alloc
+	tilemap->setTilesize(tileSize); //tilesize
+	tilemap->resize(mapSize.x, mapSize.y); //dims
 
-	//Map
-	for (int i = 0; i < mapSize.y;i++) {
-		std::vector<int> dataRow;
-		std::vector<sf::Sprite> displayRow;
-		for (int j = 0; j < mapSize.x;j++) {
-			dataRow.push_back(-1);
-			sf::Sprite curr;
-			curr.setTexture(*blankTexture);
-			curr.setScale(scale,scale);
-			curr.setPosition({j*tileSize, i*tileSize});
-
-			displayRow.push_back(curr);
-		}
-		map.push_back(dataRow);
-		mapDisplay.push_back(displayRow);
-	}
-
-	//Grid
+	//## Grid
+	//Vertical lines
 	for (int i = 0; i <= mapSize.x; i++) {
 		sf::Vertex a;
 		sf::Vertex b;
@@ -701,6 +683,7 @@ void State_Editor::initMap()
 		grid_vertical.push_back(b);
 	}
 
+	//Horizontal lines
 	for (int i = 0; i <= mapSize.y; i++) {
 		sf::Vertex a;
 		sf::Vertex b;
@@ -714,27 +697,30 @@ void State_Editor::initMap()
 		grid_horizontal.push_back(b);
 	}
 
-	//Boundry
+	//Boundry (used for mouse click logic)
 	mapBoundry = {0,0,mapSize.x * tileSize, mapSize.y * tileSize};
 
 }
 
 void State_Editor::initPalleteTool()
 {
-	//Pallete setup
+	//## Pallete setup
+
+	//Size and positioning
 	palleteSize.x = palleteRatio.x * pnl_left->getSize().x;
 	palleteSize.y = palleteRatio.y * pnl_left->getSize().y;
 
 	palletePos.x = .5f * (pnl_left->getSize().x - palleteSize.x) + pnl_left->getPos().x;
 	palletePos.y = .5f * (pnl_left->getSize().y - palleteSize.y) + pnl_left->getPos().y;
-
-
+	
+	//Border Box
 	palleteBorder.setFillColor(sf::Color::Transparent);
 	palleteBorder.setOutlineColor(sf::Color::Black);
 	palleteBorder.setOutlineThickness(1);
 	palleteBorder.setPosition({ palletePos.x - 1, palletePos.y - 1 });
 	palleteBorder.setSize({ palleteSize.x + 2, palleteSize.y + 2 });
 
+	//Selection box
 	selectBorder.setFillColor(sf::Color::Transparent);
 	selectBorder.setOutlineColor(sf::Color::Green);
 	selectBorder.setOutlineThickness(1);
@@ -753,6 +739,11 @@ void State_Editor::initPathTool()
 	nodeDisplay.setFillColor(sf::Color::Blue);
 	nodeDisplay.setPosition(nodeButton.getPosition());
 	nodeDisplay.setOrigin({ radius,radius });
+}
+
+void State_Editor::initTest()
+{
+	this->loadPallete(16, "resource/tex/tileset_dither.png");
 }
 
 void State_Editor::addNode(sf::Vector2f pos)
@@ -785,85 +776,6 @@ void State_Editor::addNode(sf::Vector2f pos)
 	
 	return;
 
-}
-
-void State_Editor::resizeMapX(int newX)
-{
-	//Increase
-	if (newX > mapSize.x) {
-		for (int i = 0; i < mapSize.y; i++) {
-			for (int j = mapSize.x; j < newX; j++) {
-				map.at(i).push_back(-1);
-
-				sf::Sprite curr;
-				curr.setTexture(*blankTexture);
-				curr.setScale(tileSize / blankTexture->getSize().x, tileSize / blankTexture->getSize().y);
-				curr.setPosition(tileSize*j, tileSize*i);
-				mapDisplay.at(i).push_back(curr);
-			}
-		}
-	}
-
-	//Decrease
-	if (newX < mapSize.x) {
-		//Check for min size
-		if (newX < 0) {
-			return;
-		}
-
-		//Shrink
-		for (int i = 0; i < mapSize.y; i++) {
-			for (int j = newX; j < mapSize.x; j++) {
-				map.at(i).pop_back();
-				mapDisplay.at(i).pop_back();
-			}
-		}
-	}
-
-	//Store new size
-	mapSize.x = newX;
-	refreshGrid();
-}
-
-void State_Editor::resizeMapY(int newY)
-{
-	//Increase
-	if (newY > mapSize.y) {
-		for (int i = mapSize.y; i < newY; i++) {
-			std::vector<int> dataRow;
-			std::vector<sf::Sprite> displayRow;
-
-			for (int j = 0; j < mapSize.x; j++) {
-				dataRow.push_back(-1);
-				sf::Sprite curr;
-				curr.setTexture(*blankTexture);
-				curr.setScale(tileSize / blankTexture->getSize().x, tileSize / blankTexture->getSize().y);
-				curr.setPosition(tileSize * j, tileSize * i);
-				displayRow.push_back(curr);
-			}
-
-			map.push_back(dataRow);
-			mapDisplay.push_back(displayRow);
-		}
-	}
-
-	//Decrease
-	if (newY < mapSize.y) {
-		//Check for min size
-		if (newY < 0) {
-			return;
-		}
-
-		//Shrink
-		for (int i = newY; i < mapSize.y; i++) {
-			map.pop_back();
-			mapDisplay.pop_back();
-		}
-	}
-
-	//Store new size
-	mapSize.y = newY;
-	refreshGrid();
 }
 
 void State_Editor::refreshGrid()
@@ -919,10 +831,10 @@ State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* win
 	this->textureHandler = textureHandler;
 	this->initCamera();
 	this->initGui();
-	this->initMap();
 	this->initPalleteTool();
-	this->initTest();
+	this->initMap();
 	this->initPathTool();
+	this->initTest();
 }
 
 State_Editor::~State_Editor()
@@ -946,6 +858,8 @@ State_Editor::~State_Editor()
 		curr = next;
 	}
 
+	delete tilemap;
+
 }
 
 //###############################################################################################	GENERAL
@@ -954,27 +868,26 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 {
 	//This function sets up the pallete vector by texturing, scaling, and positioning the sprites
 	//## Check for valid filepath
-
-	//Empty
-	if (filepath == "") {
-		return;
-	}
-
-	//Does not exist
 	std::ifstream inFile;
 	inFile.open(filepath);
 	if (!inFile) {
+		std::cout << "Cannot open file: " << filepath << std::endl;
 		return;
 	}
 
-	inFile.close();
-
 	
+	inFile.close();
+	
+
 	spritesheet.setTextureSize(txSize, txSize);
+	if (!spritesheet.fload(filepath)) {
+		std::cout << "Spritesheet load failed" << std::endl;
+	}
+
 	spritesheet.fload(filepath);
 	
 
-	//Loop through spritesheet textures
+	//Assign each spritesheet texture to a representative sprite in the pallete (ie what user clicks on to select given texture)
 	int row = 0;
 	int col = 0;
 	for (int i = 0; i < spritesheet.getNumTextures(); i++) {
@@ -1010,34 +923,13 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 	//Set up selection border
 	selectBorder.setSize({ (float)pallete.at(0).getGlobalBounds().width, (float)pallete.at(0).getGlobalBounds().height });
 
+	//Update the tilemap spritesheet data
+	tilemap->setTileset(spritesheet);
 }
 
 void State_Editor::saveMap(std::string filepath)
 {
-	std::ofstream outFile;
-
-	outFile.open(filepath);
-
-	if (!outFile.is_open()) {
-		std::cout << "Could not open file: " << filepath << std::endl;
-		return;
-	}
-
-	//Write size
-	outFile << mapSize.x << " " << mapSize.y << "\n";
-	outFile << tileSize << " " << spritesheet.getTextureSize().x << "\n";
-	outFile << "test" << " " << spritesheet.getTexturePath() << "\n";
-
-	//Write tiles
-	for (int i = 0; i < mapSize.y; i++) {
-		for (int j = 0; j < mapSize.x; j++) {
-			outFile << map.at(i).at(j) << " ";
-		}
-		outFile << "\n";
-	}
-
-	//Close outfile
-	outFile.close();
+	tilemap->writeToFile(filepath);
 }
 
 void State_Editor::savePath(std::string filepath)
@@ -1055,7 +947,7 @@ void State_Editor::save()
 }
 
 void State_Editor::loadMap(std::string filepath) {
-	tilemap.loadFromFile(filepath,*textureHandler);
+	tilemap->loadFromFile(filepath,*textureHandler);
 }
 
 void State_Editor::loadPath(std::string filepath) {
@@ -1112,25 +1004,25 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			//Resize buttons
 			if (btn_SizeDnX->getState() == ButtonState::PRESS) {
 				//Then reduce X size
-				resizeMapX(mapSize.x-1);
+				tilemap->resize(mapSize.x-1, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
 			if (btn_SizeUpX->getState() == ButtonState::PRESS) {
 				//Then increase X size
-				resizeMapX(mapSize.x+1);
+				tilemap->resize(mapSize.x+1, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
 			if (btn_SizeDnY->getState() == ButtonState::PRESS) {
 				//Then reduce Y size
-				resizeMapY(mapSize.y-1);
+				tilemap->resize(mapSize.x,mapSize.y-1);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
 			if (btn_SizeUpY->getState() == ButtonState::PRESS) {
 				//Then increase Y size
-				resizeMapY(mapSize.y+1);
+				tilemap->resize(mapSize.x, mapSize.y + 1);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
 			}
 
@@ -1158,7 +1050,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				int idxX = (int)(mapPos.x / tileSize);
 				int idxY = (int)(mapPos.y / tileSize);
 
-				int sample = map.at(idxY).at(idxX);
+				int sample = tilemap->getType(idxX, idxY);
 
 				if (sample >= 0) {
 					palleteSelect = sample;
@@ -1181,8 +1073,6 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			//Painting
 			if (mapBoundry.contains(mapPos)) {
 				isPainting = true;
-				prevMap = map;
-				prevMapDisplay = mapDisplay;
 			}
 		}
 
@@ -1310,11 +1200,7 @@ void State_Editor::updatePainting()
 	int idxX = (int)(mousePos_map.x / tileSize);
 	int idxY = (int)(mousePos_map.y / tileSize);
 
-	float scale = tileSize / spritesheet.getRect(palleteSelect).width;
-	map.at(idxY).at(idxX) = palleteSelect;
-	mapDisplay.at(idxY).at(idxX).setTexture(*spritesheet.getTexture());
-	mapDisplay.at(idxY).at(idxX).setTextureRect(spritesheet.getRect(palleteSelect));
-	mapDisplay.at(idxY).at(idxX).setScale(scale, scale);
+	tilemap->modTile(idxX, idxY, palleteSelect);
 
 	isChanged = true;
 
@@ -1325,13 +1211,6 @@ void State_Editor::update(float dt) {
 	updateCamera(dt);
 	updatePainting();
 	updatePathTool();
-
-	if (isChanged && isPress_ctrl && isPress_z) {
-		//Undo
-		isChanged = false;
-		map = prevMap;
-		mapDisplay = prevMapDisplay;
-	}
 
 	if (btn_save->getState() == ButtonState::PRESS || (isPress_ctrl && isPress_s)) {
 		//Save
@@ -1348,11 +1227,7 @@ void State_Editor::update(float dt) {
 void State_Editor::drawMap(sf::RenderWindow& win)
 {
 	//Tiles
-	for (size_t i = 0; i < mapDisplay.size(); i++) {
-		for (size_t j = 0; j < mapDisplay.at(i).size(); j++) {
-			win.draw(mapDisplay.at(i).at(j));
-		}
-	}
+	tilemap->draw(win);
 
 	//Grid
 	for (size_t i = 0; i < grid_horizontal.size(); i+=2) {

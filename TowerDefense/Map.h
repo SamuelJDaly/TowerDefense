@@ -25,7 +25,7 @@ private:
 	//Data
 	sf::Sprite sprite;
 	bool solid = false;
-	int type;
+	int type = -1;
 
 public:
 	//Constructor and Destructor
@@ -56,7 +56,7 @@ private:
 	int width = 0;
 	int height = 0;
 	int tileSize = 16;
-	int textureSize = 16;
+	int textureSize = 1;
 
 	bool hasBackground = false;
 	sf::Sprite background;
@@ -68,7 +68,7 @@ private:
 	std::string tileSetName = "";
 
 	//Util
-	
+
 
 public:
 	//Constructor and Destructor
@@ -81,8 +81,13 @@ public:
 
 	void loadFromFile(std::string filepath, TextureHandler &textureHandler);
 	void writeToFile(std::string filepath);
-	void setTileset(sf::Texture* newTileset);
+	void setTileset(Spritesheet newSet);
 	void refreshTilemap();
+	void modTile(int x, int y, int type);
+	void resize(int newWidth, int newHeight);
+	int getType(int x, int y);
+
+	void setTilesize(float newSize);
 
 	void setBackground(sf::Texture* texture, sf::Vector2f size);
 

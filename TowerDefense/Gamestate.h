@@ -217,12 +217,8 @@ private:
 	float tileSize = 50.f;
 	sf::Image blankImage;
 	sf::Texture* blankTexture;
-	TileMap tilemap;
-	std::vector<std::vector<int>> map;
-	std::vector<std::vector<int>> prevMap;
-	std::vector<std::vector<sf::Sprite>> mapDisplay;
-	std::vector<std::vector<sf::Sprite>> prevMapDisplay;
-	sf::Color gridColor = sf::Color::Black;
+	TileMap* tilemap;
+	sf::Color gridColor = sf::Color::Red;
 	std::vector<sf::Vertex> grid_horizontal;
 	std::vector<sf::Vertex> grid_vertical;
 	
@@ -254,8 +250,6 @@ private:
 	void initPathTool();
 
 	void addNode(sf::Vector2f pos);
-	void resizeMapX(int newX);
-	void resizeMapY(int newY);
 	void refreshGrid();
 
 public:

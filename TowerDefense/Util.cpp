@@ -228,13 +228,16 @@ void Spritesheet::slice()
 
 Spritesheet::Spritesheet()
 {
+	//Set up blank texture
+	sf::Image blankImg;
+	blankImg.create(1,1, sf::Color::White);
+
+	blankTexture.loadFromImage(blankImg);
 }
 
 Spritesheet::~Spritesheet()
 {
-	if (isLocalTexture) {
-		delete sheet;
-	}
+	
 }
 
 int Spritesheet::fload(std::string filepath)
@@ -248,13 +251,12 @@ int Spritesheet::fload(std::string filepath)
 		return -1;
 	}
 
-	isLocalTexture = true;
 	texturePath = filepath;
 
 	this->slice();
 
 	
-	return 0;
+	return 1;
 }
 
 void Spritesheet::setTextureSize(sf::Vector2i newSize)
@@ -280,12 +282,6 @@ void Spritesheet::setTexture(sf::Texture* newTexture)
 		std::cout << "Cannot set spritesheet texture: Invalid Texture..." << std::endl;
 		return;
 	}
-	
-	//Check for local texture
-	if (isLocalTexture) {
-		delete sheet;
-		isLocalTexture = false;
-	}
 
 	//Assign new texture
 	sheet = newTexture;
@@ -300,17 +296,12 @@ void Spritesheet::setTexture(sf::Texture* newTexture, sf::Vector2i newSize)
 		return;
 	}
 
-	//Check for local texture
-	if (isLocalTexture) {
-		delete sheet;
-		isLocalTexture = false;
-	}
-
 	//Assign new texture
 	sheet = newTexture;
 	textureSize = newSize;
 	this->slice();
 }
+
 
 sf::IntRect Spritesheet::getRect(int idx)
 {
@@ -320,7 +311,7 @@ sf::IntRect Spritesheet::getRect(int idx)
 		return {0,0,1,1};
 	}
 	
-	
+	std::cout << "getting rect at: " << idx << std::endl;;
 	return rects.at(idx);
 }
 
@@ -346,6 +337,10 @@ std::vector<sf::IntRect> Spritesheet::getRects()
 
 sf::Texture* Spritesheet::getTexture()
 {
+	if (!sheet) {
+		return &blankTexture;
+	}
+
 	return sheet;
 }
 
@@ -362,4 +357,13 @@ sf::Vector2i Spritesheet::getTextureSize()
 std::string Spritesheet::getTexturePath()
 {
 	return texturePath;
+}
+
+bool Spritesheet::containsIdx(int idx)
+{
+	if (idx < numTextures && idx >= 0) {
+		return true;
+	}
+
+	return false;
 }

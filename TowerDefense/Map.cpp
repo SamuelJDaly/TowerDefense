@@ -39,8 +39,8 @@ void Tile::setType(int newType)
 void Tile::setSize(float size)
 {
 	//Calculate scale
-	float scaleX = size / sprite.getGlobalBounds().width;
-	float scaleY = size / sprite.getGlobalBounds().height;
+	float scaleX = size / sprite.getLocalBounds().width;
+	float scaleY = size / sprite.getLocalBounds().height;
 
 	//Set scale
 	sprite.setScale({ scaleX, scaleY });
@@ -63,10 +63,12 @@ int Tile::getType()
 
 TileMap::TileMap()
 {
+	
 }
 
 TileMap::~TileMap()
 {
+	
 }
 
 void TileMap::update(float deltaTime)
@@ -161,6 +163,9 @@ void TileMap::loadFromFile(std::string filepath, TextureHandler& textureHandler)
 		//std::cout << "Rect: " << left << ", " << top << std::endl;
 		tilemap.at(posY)->at(posX)->setTextureRect(tileset.getRect(curr));
 		tilemap.at(posY)->at(posX)->setType(curr);
+		if (curr >= 0) {
+			tilemap.at(posY)->at(posX)->setTexture(tileset.getTexture());
+		}
 
 		posX++;
 	}
@@ -199,25 +204,166 @@ void TileMap::writeToFile(std::string filepath)
 	outFile.close();
 }
 
-void TileMap::setTileset(sf::Texture* newTileset)
+void TileMap::setTileset(Spritesheet newSet)
 {
-	tileset.setTexture(newTileset);
+	tileset = newSet;
+	tileSetPath = newSet.getTexturePath();
 	refreshTilemap();
 }
 
 void TileMap::refreshTilemap()
 {
+	//Basically we need to either assign a given rect from the spritesheet if the tile type is valid
+	// (ie. corresponds to a spritesheet rect), or the the blank texture if not
+
+
+	//For each tile in the tilemap, row major
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			tilemap.at(i)->at(j)->setTexture(tileset.getTexture());
-			//Calculate texture rect
-			int idx = tilemap.at(i)->at(j)->getType();
-			tilemap.at(i)->at(j)->setTextureRect(tileset.getRect(idx));
-			//Set Position and scale
-			tilemap.at(i)->at(j)->setPosition({ float(j * tileSize),float(i * tileSize) });
-			tilemap.at(i)->at(j)->setSize((float)tileSize);
+			Tile* curr = tilemap.at(i)->at(j);
+			//Set texture and rect
+			if (!tileset.containsIdx(curr->getType())) {
+				//Then assign blank texture
+				curr->setTexture(tileset.getTexture());
+				curr->setTextureRect({0,0,1,1});
+			}
+			else {
+				curr->setTexture(tileset.getTexture());
+				curr->setTextureRect(tileset.getRect(curr->getType()));
+			}
+
+			//Set size
+			curr->setSize(tileSize);
+			
+			//Set Position
+			curr->setPosition({(float)(tileSize * j), (float)(tileSize * i) });
+
 		}
 	}
+}
+
+void TileMap::modTile(int x, int y, int type)
+{
+	//Out of y bounds
+	if (height <= x) {
+		return;
+	}
+
+	//Out of x bounds
+	if (width <= x) {
+		return;
+	}
+
+	//Blank Texture
+	if (!tileset.containsIdx(type)) {
+		tilemap.at(y)->at(x)->setTexture(tileset.getTexture());
+		tilemap.at(y)->at(x)->setTextureRect({0,0,1,1});
+		tilemap.at(y)->at(x)->setType(type);
+		tilemap.at(y)->at(x)->setSize(tileSize);
+		std::cout << "Set blank texture at: " << x << ", " << y << std::endl;
+		return;
+	}
+
+	//Normal Texture
+	tilemap.at(y)->at(x)->setTexture(tileset.getTexture());
+	tilemap.at(y)->at(x)->setTextureRect(tileset.getRect(type));
+	tilemap.at(y)->at(x)->setType(type);
+	tilemap.at(y)->at(x)->setSize(tileSize);
+	std::cout << "Set spritesheet texture at: " << x << ", " << y << std::endl;
+}
+
+void TileMap::resize(int newWidth, int newHeight)
+{
+	//## Height
+	//Increase
+	if (newHeight > height) {
+		for (int i = height; i < newHeight; i++) {
+			std::vector<Tile*>* dataRow = new std::vector<Tile*>;
+
+			for (int j = 0; j < width; j++) {
+				Tile* curr = new Tile();
+				curr->setTexture(tileset.getTexture());
+				curr->setTextureRect({0,0,1,1});
+				curr->setSize(tileSize);
+				dataRow->push_back(curr);
+			}
+
+			tilemap.push_back(dataRow);
+		}
+	}
+
+	//Decrease
+	if (newHeight < height) {
+		//Check for min size
+		if (newHeight <= 0) {
+			return;
+		}
+
+		//Shrink
+		for (int i = newHeight; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				delete tilemap.at(i)->at(j);
+			}
+			tilemap.at(i)->clear();
+
+			delete tilemap.at(i);
+			tilemap.pop_back();
+		}
+	}
+
+	height = newHeight;
+
+	//## Width
+	//Increase
+	if (newWidth > width) {
+		for (int i = 0; i < height; i++) {
+			for (int j = width; j < newWidth; j++) {
+				Tile* curr = new Tile();
+				curr->setTexture(tileset.getTexture());
+				curr->setTextureRect({0,0,1,1});
+				curr->setSize(tileSize);
+				tilemap.at(i)->push_back(curr);
+			}
+		}
+	}
+
+	//Decrease
+	if (newWidth < width) {
+		//Check for min size
+		if (newWidth <= 0) {
+			return;
+		}
+
+		//Shrink
+		for (int i = 0; i < height; i++) {
+			for (int j = newWidth; j < width; j++) {
+				delete tilemap.at(i)->at(j);
+				tilemap.at(i)->pop_back();
+			}
+		}
+	}
+
+
+	//## Set new size values
+	width = newWidth;
+	
+}
+
+int TileMap::getType(int x, int y)
+{
+	//Check Bounds
+	if (y >= height || x >= width) {
+		return -1;
+	}
+
+	//Get type at index
+	return tilemap.at(y)->at(x)->getType();
+}
+
+void TileMap::setTilesize(float newSize)
+{
+	tileSize = newSize;
+	this->refreshTilemap();
 }
 
 void TileMap::setBackground(sf::Texture* texture, sf::Vector2f size)
