@@ -360,10 +360,20 @@ int TileMap::getType(int x, int y)
 	return tilemap.at(y)->at(x)->getType();
 }
 
+void TileMap::setTilesetName(std::string name)
+{
+	tileSetName = name;
+}
+
 void TileMap::setTilesize(float newSize)
 {
 	tileSize = newSize;
 	this->refreshTilemap();
+}
+
+void TileMap::setTexturesize(float newSize)
+{
+	textureSize = newSize;
 }
 
 void TileMap::setBackground(sf::Texture* texture, sf::Vector2f size)

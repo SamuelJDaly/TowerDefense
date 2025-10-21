@@ -9,7 +9,7 @@
 /*
 Project: Tower Defense, Map System
 Created: 26 MAY 2025
-Updated: 23 JUN 2025
+Updated: 20 OCT 2025
 
 Description:
 	This file contains the map system. The original idea was to use a simple map with a single background image, which was called the "Map".
@@ -87,7 +87,10 @@ public:
 	void resize(int newWidth, int newHeight);
 	int getType(int x, int y);
 
+	void setTilesetName(std::string name);
+		
 	void setTilesize(float newSize);
+	void setTexturesize(float newSize);
 
 	void setBackground(sf::Texture* texture, sf::Vector2f size);
 
