@@ -33,6 +33,12 @@ void printRectF(sf::FloatRect targ)
 	std::cout << "{" << targ.left << ", " << targ.top << ", " << targ.width << ", " << targ.height << "}" << std::endl;
 }
 
+std::string strFilter(std::string target, std::string phrase)
+{
+	size_t pos = target.find(phrase);
+	return target.erase(pos, phrase.length());
+}
+
 std::istream& operator>>(std::istream& is, Node& obj)
 {
 	//Get pos
@@ -311,7 +317,7 @@ sf::IntRect Spritesheet::getRect(int idx)
 		return {0,0,1,1};
 	}
 	
-	std::cout << "getting rect at: " << idx << std::endl;;
+	//std::cout << "getting rect at: " << idx << std::endl;;
 	return rects.at(idx);
 }
 
