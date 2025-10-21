@@ -40,6 +40,8 @@ void printRectF(sf::FloatRect targ);
 
 std::string strFilter(std::string target, std::string phrase); //Removes phrase from string
 
+std::string trimFileExt(std::string target);
+
 //##################	NODE	###################
 struct Node {
 	sf::Vector2f pos;

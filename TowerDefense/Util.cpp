@@ -39,6 +39,14 @@ std::string strFilter(std::string target, std::string phrase)
 	return target.erase(pos, phrase.length());
 }
 
+std::string trimFileExt(std::string target)
+{
+	size_t pos = target.find(".");
+	size_t len = target.length() - pos;
+
+	return target.erase(pos, len);
+}
+
 std::istream& operator>>(std::istream& is, Node& obj)
 {
 	//Get pos
