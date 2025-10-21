@@ -886,6 +886,7 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 
 	spritesheet.fload(filepath);
 	
+	
 
 	//Assign each spritesheet texture to a representative sprite in the pallete (ie what user clicks on to select given texture)
 	int row = 0;
@@ -925,6 +926,8 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 
 	//Update the tilemap spritesheet data
 	tilemap->setTileset(spritesheet);
+	tilemap->setTexturesize(txSize);
+	tilemap->setTilesetName(strFilter(trimFileExt(filepath), "resource/tex/"));
 }
 
 void State_Editor::saveMap(std::string filepath)

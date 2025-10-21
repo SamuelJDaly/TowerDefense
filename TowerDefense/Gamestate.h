@@ -10,7 +10,7 @@
 /*
 Project: Tower Defense, Gamestate System
 Created: 26 MAY 2025
-Updated: 23 JUN 2025
+Updated: 20 OCT 2025
 
 Description:
 	This file contains the Gamestate System. This is what actually ties the various systems (tower, hostile, map, etc...) together and manages their interactions.
@@ -34,6 +34,10 @@ Description:
 		Editor:
 			The Editor state allows for the creation of levels without hard coding or manually editing a text file. This includes setting textures for the level,
 			creating paths for the enemies, and setting up the spawn schedule for the rounds.
+	
+	BUGS:
+	> Editor map size change is broken. Size changes, but is not reflected in editor. Can lead to out of bounds tile access after shrink.
+	> Activating Editor path tool does not de activate paint tool.
 */
 
 
