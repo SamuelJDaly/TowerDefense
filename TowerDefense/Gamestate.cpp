@@ -1001,32 +1001,49 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			if (!nodePlace && nodeButton.getGlobalBounds().contains(guiPos)) {
 				nodePlace = true;
 				isPainting = false;
+				palleteSelect = -1;
 			}
 
 			
 			//Resize buttons
-			if (btn_SizeDnX->getState() == ButtonState::PRESS) {
+			if (mapSize.x > 1 && btn_SizeDnX->getState() == ButtonState::PRESS) {
 				//Then reduce X size
-				tilemap->resize(mapSize.x-1, mapSize.y);
+				mapSize.x--;
+				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
+				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				refreshGrid();
 			}
 
 			if (btn_SizeUpX->getState() == ButtonState::PRESS) {
 				//Then increase X size
-				tilemap->resize(mapSize.x+1, mapSize.y);
+				mapSize.x++;
+				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
+				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				refreshGrid();
 			}
 
-			if (btn_SizeDnY->getState() == ButtonState::PRESS) {
+			if (mapSize.y > 1 && btn_SizeDnY->getState() == ButtonState::PRESS) {
 				//Then reduce Y size
-				tilemap->resize(mapSize.x,mapSize.y-1);
+				mapSize.y--;
+				tilemap->resize(mapSize.x,mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
+				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				refreshGrid();
 			}
 
 			if (btn_SizeUpY->getState() == ButtonState::PRESS) {
 				//Then increase Y size
-				tilemap->resize(mapSize.x, mapSize.y + 1);
+				mapSize.y++;
+				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
+				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
+				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				refreshGrid();
 			}
 
 			if (btn_loadTilset->getState() == ButtonState::PRESS) {

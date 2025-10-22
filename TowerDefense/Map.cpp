@@ -346,7 +346,8 @@ void TileMap::resize(int newWidth, int newHeight)
 
 	//## Set new size values
 	width = newWidth;
-	
+
+	refreshTilemap();
 }
 
 int TileMap::getType(int x, int y)
