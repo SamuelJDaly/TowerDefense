@@ -245,7 +245,7 @@ void TileMap::refreshTilemap()
 void TileMap::modTile(int x, int y, int type)
 {
 	//Out of y bounds
-	if (height <= x) {
+	if (height <= y) {
 		return;
 	}
 
@@ -270,6 +270,7 @@ void TileMap::modTile(int x, int y, int type)
 	tilemap.at(y)->at(x)->setType(type);
 	tilemap.at(y)->at(x)->setSize(tileSize);
 	//std::cout << "Set spritesheet texture at: " << x << ", " << y << std::endl;
+
 }
 
 void TileMap::resize(int newWidth, int newHeight)

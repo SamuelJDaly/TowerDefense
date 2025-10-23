@@ -971,12 +971,20 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
 		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
 		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
+
+		if (mapBoundry.contains(mapPos)) {
+			std::cout << "In bounds" << std::endl;
+		}
+		else
+		{
+			std::cout << "Not in bounds" << std::endl;
+		}
 		
 		//## LEFT
 		if (event.key.code == sf::Mouse::Left) {
 			//Painting
 			if (isPainting) {
-				isPainting = false;
+				isPainting = false; //???? debounce ?
 			}
 
 			
@@ -1011,8 +1019,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.x--;
 				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
-				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				mapBoundry.width -= tileSize;
+				cameraBounds.width -= tileSize;
 				refreshGrid();
 			}
 
@@ -1021,8 +1029,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.x++;
 				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
-				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				mapBoundry.width += tileSize;
+				cameraBounds.width += tileSize;
 				refreshGrid();
 			}
 
@@ -1031,8 +1039,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.y--;
 				tilemap->resize(mapSize.x,mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
-				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				mapBoundry.height -= tileSize;
+				cameraBounds.height -= tileSize;
 				refreshGrid();
 			}
 
@@ -1041,8 +1049,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.y++;
 				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
-				cameraBounds = { mapBoundry.left - (tileSize * 3), mapBoundry.top - (tileSize * 3), mapBoundry.width + (tileSize * 3), mapBoundry.height + (tileSize * 3) };
+				mapBoundry.height += tileSize;
+				cameraBounds.height += tileSize;
 				refreshGrid();
 			}
 
