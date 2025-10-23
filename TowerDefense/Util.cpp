@@ -293,7 +293,7 @@ void Spritesheet::setTexture(sf::Texture* newTexture)
 {
 	//Check for valid texture
 	if (!newTexture) {
-		std::cout << "Cannot set spritesheet texture: Invalid Texture..." << std::endl;
+		//std::cout << "Cannot set spritesheet texture: Invalid Texture..." << std::endl;
 		return;
 	}
 
