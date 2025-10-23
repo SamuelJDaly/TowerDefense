@@ -260,7 +260,7 @@ void TileMap::modTile(int x, int y, int type)
 		tilemap.at(y)->at(x)->setTextureRect({0,0,1,1});
 		tilemap.at(y)->at(x)->setType(type);
 		tilemap.at(y)->at(x)->setSize(tileSize);
-		std::cout << "Set blank texture at: " << x << ", " << y << std::endl;
+		//std::cout << "Set blank texture at: " << x << ", " << y << std::endl;
 		return;
 	}
 
@@ -269,7 +269,7 @@ void TileMap::modTile(int x, int y, int type)
 	tilemap.at(y)->at(x)->setTextureRect(tileset.getRect(type));
 	tilemap.at(y)->at(x)->setType(type);
 	tilemap.at(y)->at(x)->setSize(tileSize);
-	std::cout << "Set spritesheet texture at: " << x << ", " << y << std::endl;
+	//std::cout << "Set spritesheet texture at: " << x << ", " << y << std::endl;
 }
 
 void TileMap::resize(int newWidth, int newHeight)
