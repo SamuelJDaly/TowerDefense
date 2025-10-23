@@ -254,6 +254,7 @@ private:
 	void initPathTool();
 
 	void addNode(sf::Vector2f pos);
+	void remNode();
 	void refreshGrid();
 
 public:

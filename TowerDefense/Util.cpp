@@ -211,6 +211,47 @@ void drawPath(Node* pathHead, sf::RenderWindow& win)
 	}
 }
 
+void AddNode(Node* pathHead, sf::Vector2f pos)
+{
+	//NOT IMPLEMENTED
+	std::cout << "NOT IMPLEMENTED" << std::endl;
+	return;
+}
+
+void RemNode(Node* pathHead, int idx)
+{
+	//NOT 
+	std::cout << "NOT IMPLEMENTED" << std::endl;
+	return;
+}
+
+void InsertNode(Node* pathHead, int idx)
+{
+	//NOT IMPLEMENTED
+	std::cout << "NOT IMPLEMENTED" << std::endl;
+	return;
+}
+
+void freePath(Node* pathHead)
+{
+	if (!pathHead) {
+		return;
+	}
+
+	
+	Node* curr = pathHead;
+	Node* next;
+
+	while (curr) {
+		next = curr->next;
+		delete curr;
+		curr = next;
+	}
+
+
+	return;
+}
+
 
 //#####################################################################################################
 //			SPRITESHEET

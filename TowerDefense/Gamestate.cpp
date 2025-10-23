@@ -743,7 +743,7 @@ void State_Editor::initPathTool()
 
 void State_Editor::initTest()
 {
-	this->loadPallete(16, "resource/tex/tileset_dither.png");
+	this->loadPallete(16, "resource/tex/tileset_0.png");
 }
 
 void State_Editor::addNode(sf::Vector2f pos)
@@ -776,6 +776,37 @@ void State_Editor::addNode(sf::Vector2f pos)
 	
 	return;
 
+}
+
+void State_Editor::remNode()
+{
+	//Delete the last node in the path
+	if (!pathHead) {
+		return;
+	}
+
+	if (!pathEnd) {
+		//One node case
+		delete pathHead;
+		pathHead = nullptr;
+	}
+	else if (pathEnd->last->type == NodeType::BEGIN) {
+		//Two node case
+		pathHead->next = nullptr;
+		delete pathEnd;
+		pathEnd = nullptr;
+	}
+	else {
+		//Three or more node case
+		Node* temp = pathEnd->last;
+		temp->next = nullptr;
+		temp->type = NodeType::END;
+		delete pathEnd;
+		pathEnd = temp;
+	}
+	
+	
+	return;
 }
 
 void State_Editor::refreshGrid()
@@ -844,19 +875,7 @@ State_Editor::~State_Editor()
 	delete blankTexture;
 
 	//Delete path
-	Node* curr = pathHead;
-	Node* next = nullptr;
-
-	while (curr) {
-		//Store next
-		next = curr->next;
-
-		//Delete curr
-		delete curr;
-
-		//Iterate
-		curr = next;
-	}
+	freePath(pathHead);
 
 	delete tilemap;
 
@@ -1132,6 +1151,12 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 		if (event.key.code == sf::Keyboard::S) {
 			isPress_s = false;
+		}
+
+		if (event.key.code == sf::Keyboard::Backspace) {
+			if (nodePlace) {
+				remNode();
+			}
 		}
 	}
 

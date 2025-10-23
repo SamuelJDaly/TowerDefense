@@ -59,6 +59,10 @@ Node* fReadPath(std::string filepath);
 void fWritePath(std::string filepath, Node* pathHead);
 void pathOffset(Node* head, sf::Vector2f offSet);
 void drawPath(Node* pathHead, sf::RenderWindow &win);
+void AddNode(Node* pathHead, sf::Vector2f pos);
+void RemNode(Node* pathHead, int idx);
+void InsertNode(Node* pathHead, int idx);
+void freePath(Node* pathHead);
 
 
 //##################	SPRITESHEET		###################
