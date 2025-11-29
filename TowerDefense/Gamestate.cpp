@@ -563,13 +563,20 @@ void State_Editor::initGui() {
 	pnl_left->setSize({ viewSize_gui.x * leftPanelRatio, 1*viewSize_gui.y});
 
 	//## Bottom Panel
-	pnl_bottom = new Widget_Panel();
-	pnl_bottom->setTexture(textureHandler->lookup("panel_bevel"));
+	pnl_bottom = new Widget_TabbedPanel();
+	pnl_bottom->setPanelTexture(textureHandler->lookup("panel_bevel"));
+	pnl_bottom->setTabTexture(textureHandler->lookup("tab_simple"));
+	pnl_bottom->setTabFont(font);
+	pnl_bottom->setTabTitleColor(sf::Color::Black);
+	pnl_bottom->addTab(2);
+	
+	pnl_bottom->setTabTitle(0, "Path Tool");
+	pnl_bottom->setTabTitle(1, "Round Tool");
 	
 	sf::Vector2f pnl_bottomSize = {viewSize_gui.x-pnl_left->getSize().x, viewSize_gui.y * bottomPanelRatio};
 	pnl_bottom->setSize(pnl_bottomSize);
 	bottomPanelPos = { pnl_left->getSize().x,   viewSize_gui.y - pnl_bottomSize.y };
-	pnl_bottom->setPosition(bottomPanelPos);
+	pnl_bottom->setPos(bottomPanelPos);
 
 
 	//## Save button
@@ -642,6 +649,8 @@ void State_Editor::initGui() {
 	gui->addWidget(label_mapSize);
 	gui->addWidget(txtBx_palletePath);
 	gui->addWidget(txtBx_mapPath);
+
+	gui->setView(&view_gui);
 }
 
 void State_Editor::initCamera()
@@ -731,7 +740,7 @@ void State_Editor::initPathTool()
 	nodeButton.setRadius(10);
 	nodeButton.setFillColor(sf::Color::Blue);
 	nodeButton.setPosition(bottomPanelPos);
-	nodeButton.move(20,20);
+	nodeButton.move(20,50);
 
 
 	float radius = 10;
@@ -991,13 +1000,6 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
 		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
 
-		if (mapBoundry.contains(mapPos)) {
-			std::cout << "In bounds" << std::endl;
-		}
-		else
-		{
-			std::cout << "Not in bounds" << std::endl;
-		}
 		
 		//## LEFT
 		if (event.key.code == sf::Mouse::Left) {
@@ -1021,14 +1023,16 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			}
 
 			//Path Tool select
-			if (nodePlace && !nodeButton.getGlobalBounds().contains(guiPos)) {
-				nodePlace = false;
-			}
+			if (pnl_bottom->getTabSel() == 0) {
+				if (nodePlace && !nodeButton.getGlobalBounds().contains(guiPos)) {
+					nodePlace = false;
+				}
 
-			if (!nodePlace && nodeButton.getGlobalBounds().contains(guiPos)) {
-				nodePlace = true;
-				isPainting = false;
-				palleteSelect = -1;
+				if (!nodePlace && nodeButton.getGlobalBounds().contains(guiPos)) {
+					nodePlace = true;
+					isPainting = false;
+					palleteSelect = -1;
+				}
 			}
 
 			
@@ -1180,6 +1184,10 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 //########################################	UPDATING
 void State_Editor::updatePathTool()
 {
+	if (pnl_bottom->getTabSel() != 0) {
+		return;
+	}
+
 	//Get Mouse Pos
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
 	sf::Vector2f mousePos_map = window->mapPixelToCoords(pixelPos, view_map);
@@ -1306,6 +1314,17 @@ void State_Editor::drawPallete(sf::RenderWindow& win) {
 	win.draw(palleteBorder);
 }
 
+void State_Editor::drawRoundTool(sf::RenderWindow& win)
+{
+	sf::RectangleShape test;
+	test.setSize({100, 100});
+	test.setFillColor(sf::Color::Red);
+	test.setPosition(pnl_bottom->getPos());
+	test.move({20,20});
+
+	win.draw(test);
+}
+
 void State_Editor::drawPathTool(sf::RenderWindow& win) {
 	win.draw(nodeButton);
 }
@@ -1383,6 +1402,18 @@ void State_Editor::draw(sf::RenderWindow& win) {
 	win.setView(view_gui);
 	gui->draw(win);
 	this->drawPallete(win);
-	this->drawPathTool(win);
+	switch (pnl_bottom->getTabSel()) {
+	case 0:
+		//Draw Path Tool
+		this->drawPathTool(win);
+		break;
+	case 1:
+		//Draw Round Tool
+		this->drawRoundTool(win);
+		break;
+	default:
+		//Do nothing
+		break;
+	}
 
 }

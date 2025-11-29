@@ -10,7 +10,7 @@
 /*
 Project: Tower Defense, Gamestate System
 Created: 26 MAY 2025
-Updated: 20 OCT 2025
+Updated: 28 NOV 2025
 
 Description:
 	This file contains the Gamestate System. This is what actually ties the various systems (tower, hostile, map, etc...) together and manages their interactions.
@@ -28,16 +28,12 @@ Description:
 
 	Currently there are three states:
 		Menu:
-			The menu state is not yet implemented. It will contain a gui based system to allow for starting the game, and changing game options.
+			The menu state is not yet implemented. It will contain the main menu from which users can navigate to certain other states (Game, Editor, Options...)
 		Game:
 			The Game state is where the actual play happens. It contains the map, the towers, the hostiles, and all the other gameplay related components.
 		Editor:
 			The Editor state allows for the creation of levels without hard coding or manually editing a text file. This includes setting textures for the level,
 			creating paths for the enemies, and setting up the spawn schedule for the rounds.
-	
-	BUGS:
-	> Editor map size change is broken. Size changes, but is not reflected in editor. Can lead to out of bounds tile access after shrink.
-	> Activating Editor path tool does not de activate paint tool.
 */
 
 
@@ -186,8 +182,8 @@ private:
 	sf::Vector2f zoomBounds = { 1.7f,.50f };
 
 	//Gui
-	float leftPanelRatio = .25f; //What fraction of view does left panel cover (x axis)
-	float bottomPanelRatio = .2f; //(y axis)
+	float leftPanelRatio = .25f; //Fraction of view left panel covers (x axis)
+	float bottomPanelRatio = .3f; //Fraction of view bottom panel covers (y axis)
 	Widget_Button* btn_save;
 	Widget_Button* btn_SizeUpX;
 	Widget_Button* btn_SizeDnX;
@@ -195,7 +191,7 @@ private:
 	Widget_Button* btn_SizeDnY;
 	Widget_Button* btn_loadTilset;
 	Widget_Panel* pnl_left;
-	Widget_Panel* pnl_bottom;
+	Widget_TabbedPanel* pnl_bottom;
 	Widget_Label* label_mapSize;
 	Widget_Textbox* txtBx_palletePath;
 	Widget_Textbox* txtBx_mapPath;
@@ -280,8 +276,10 @@ public:
 	void updatePainting();
 	void update(float dt);
 
+	
 	void drawMap(sf::RenderWindow& win);
 	void drawPallete(sf::RenderWindow &win);
+	void drawRoundTool(sf::RenderWindow& win);
 	void drawPathTool(sf::RenderWindow& win);
 	void drawPath(sf::RenderWindow& win);
 	void draw(sf::RenderWindow& win);
