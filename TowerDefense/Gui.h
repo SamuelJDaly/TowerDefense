@@ -7,13 +7,14 @@
 /*
 Project: GUI System
 Created: 28 MAY 2025
-Updated: 19 JUN 2025
+Updated: 28 NOV 2025
 
 Description:
 	This file contains the GUI System. The system is made up of a collection of widets, and a Gui class to manage them.
 
 	Widgets:
 		-Panel: A 9 slice border and a background. Helps divide the window up and make widgets more visible.
+		-Tabbed Panel: A panel with tabs at the top. For now it just tracks which tab is selected and the resultant behavior is external.
 		-Label: SFML Text object with a wrapper to make it a widget. Displays text.
 		-Button: Clickable control to fire of certain events. The exact mechanism is not yet implemented.
 		-Textbox: Text object with a background rectangle, optionally editable. For now it handles a single line of text.
@@ -35,6 +36,7 @@ protected:
 	unsigned int layer = 0;
 	int ID = 0;
 	bool isFocus = false;
+	sf::View* view = nullptr;
 
 	sf::Vector2f size = { 1,1 };
 	sf::Vector2f pos = {0,0};
@@ -44,10 +46,12 @@ public:
 	void setLayer(int newLayer);
 	void setID(int newID);
 	void setFocus(bool state = true);
+	void setView(sf::View* newView);
 
 	int getLayer();
 	int getID();
 	bool getFocus();
+	sf::Vector2f getPos();
 
 	//Virtual Functions
 	virtual void poll(sf::RenderWindow &win, sf::Event &event) = 0;
@@ -56,7 +60,8 @@ public:
 };
 
 
-
+//Predeclarations
+class Widget_Label;
 
 //####################################### PANEL
 class Widget_Panel : public Widget {
@@ -96,9 +101,53 @@ public:
 	void setBorderPadding(float padding);
 
 	sf::Vector2f getSize();
-	sf::Vector2f getPos();
 };
 
+//####################################### TABBED PANEL
+class Widget_TabbedPanel : public Widget {
+private:
+	//Data
+	uint8_t tabSel = 0;
+	uint8_t numTabs = 0;
+	uint8_t maxTabs = 10; //Arbitrary, might want to find a better system
+
+	float tabX = .2;
+	float tabY = .1;
+
+	Widget_Panel panel;
+	std::vector<sf::Sprite> tabs;
+	std::vector<Widget_Label> tabTitles;
+
+	sf::Font* font;
+	sf::Texture* panelTexture = nullptr;
+	sf::Texture* tabTexture = nullptr;
+
+	//Util
+	void arrange();
+
+public:
+	//Constructor and Destructor
+	Widget_TabbedPanel();
+	~Widget_TabbedPanel();
+
+	//Primary Functions
+	void setTabTexture(sf::Texture* texture);
+	void setPanelTexture(sf::Texture* texture);
+	void setPos(sf::Vector2f newPos);
+	void setSize(sf::Vector2f newSize);
+
+	void addTab(uint8_t count = 1);
+	void remTab(uint8_t count = 1);
+	void setTabFont(sf::Font* newFont);
+	void setTabTitle(int idx, std::string title);
+	void setTabTitleColor(sf::Color color);
+
+	void poll(sf::RenderWindow& win, sf::Event& event);
+	void update(const float dt);
+	void draw(sf::RenderWindow& win);
+
+	uint8_t getTabSel();
+};
 
 //####################################### LABEL
 class Widget_Label : public Widget {
@@ -119,11 +168,16 @@ public:
 	void draw(sf::RenderWindow &win);
 	void setPosition(sf::Vector2f newPos);
 	void move(sf::Vector2f offset);
+	void setOrigin(sf::Vector2f newOrigin);
+
+	sf::FloatRect getGlobalBounds();
+	sf::FloatRect getLocalBounds();
 	
 	void setText(std::string newText);
 	void setFont(sf::Font* newFont);
 	void setSize(sf::Vector2i size);
 	void setCharacterSize(unsigned int size);
+	void setTextColor(sf::Color color);
 };
 
 
@@ -236,6 +290,7 @@ private:
 	int IDCounter = 0;
 	std::queue<int> removedIDs;
 	bool hasFocus = false;
+	sf::View* view = nullptr;
 
 	//Util
 
@@ -254,6 +309,7 @@ public:
 	void moveWidget(int ID, unsigned int newLayer);
 	void remWidget(int ID);
 
+	void setView(sf::View* newView);
 	void setMaxLayers(unsigned int max);
 	
 	bool getFocus();

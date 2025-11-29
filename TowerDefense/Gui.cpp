@@ -20,6 +20,11 @@ void Widget::setFocus(bool state)
 	isFocus = state;
 }
 
+void Widget::setView(sf::View* newView)
+{
+	view = newView;
+}
+
 int Widget::getLayer()
 {
 	return layer;
@@ -33,6 +38,10 @@ int Widget::getID()
 bool Widget::getFocus()
 {
 	return isFocus;
+}
+
+sf::Vector2f Widget::getPos() {
+	return pos;
 }
 
 //#################################### PANEL
@@ -75,23 +84,27 @@ void Widget_Panel::applyPos()
 void Widget_Panel::applyScale()
 {
 	//## Background
-	sf::Vector2f bgScale;
-	bgScale.x = (size.x - (2 * borderPadding)) / (spriteSheet->getSize().x / 3);
-	bgScale.y = (size.y - (2 * borderPadding)) / (spriteSheet->getSize().y / 3);
+	sf::Vector2f bgScale = {1,1};
+	if (spriteSheet) {
+		bgScale.x = (size.x - (2 * borderPadding)) / (spriteSheet->getSize().x / 3);
+		bgScale.y = (size.y - (2 * borderPadding)) / (spriteSheet->getSize().y / 3);
+	}
 
 	background.setScale(bgScale);
 
 
 
 	//## Border
-	sf::Vector2f middleScale;
+	sf::Vector2f middleScale = {1,1};
 	sf::Vector2f middleSize;
 
 	middleSize.x = size.x - (2 * cornerSize.y);
 	middleSize.y = size.y - (2 * cornerSize.y);
 
-	middleScale.x = (middleSize.x / (spriteSheet->getSize().x / 3));
-	middleScale.y = (middleSize.y / (spriteSheet->getSize().y / 3));
+	if (spriteSheet) {
+		middleScale.x = (middleSize.x / (spriteSheet->getSize().x / 3));
+		middleScale.y = (middleSize.y / (spriteSheet->getSize().y / 3));
+	}
 	
 	border[1].setScale(middleScale.x, 1);
 
@@ -185,12 +198,208 @@ sf::Vector2f Widget_Panel::getSize() {
 	return size;
 }
 
-sf::Vector2f Widget_Panel::getPos()
-{
-	return pos;
+#pragma endregion
+
+
+
+//####################################### TABBED PANEL
+void Widget_TabbedPanel::arrange() {
+	float tabSizeX = tabX * size.x;
+	float tabSizeY = tabY * size.y;
+	float scaleX = 1;
+	float scaleY = 1;
+
+	if (tabTexture) {
+		scaleX = tabSizeX / tabTexture->getSize().x;
+		scaleY = tabSizeY / tabTexture->getSize().y;
+	}
+
+	//Set Tab position and scale
+	for (int i = 0; i < (int)tabs.size(); i++) {
+		tabs.at(i).setScale(scaleX,scaleY);
+		tabs.at(i).setPosition({pos.x + (i * tabSizeX), pos.y});
+
+		//Determine label char size
+		unsigned int charSize = std::round(.8 * tabSizeY);
+		tabTitles.at(i).setCharacterSize(charSize);
+
+		//Center label
+		sf::Vector2f textOrigin;
+		sf::Vector2f textPos;
+
+		textOrigin.x = (tabTitles.at(i).getGlobalBounds().getSize().x / 2) + tabTitles.at(i).getLocalBounds().getPosition().x;
+		textOrigin.y = (tabTitles.at(i).getGlobalBounds().getSize().y / 2) + tabTitles.at(i).getLocalBounds().getPosition().y;
+
+		textPos.x = tabs.at(i).getPosition().x + (tabSizeX / 2);
+		textPos.y = tabs.at(i).getPosition().y + (tabSizeY / 2);
+
+		textOrigin = {std::round(textOrigin.x), std::round(textOrigin.y)}; //Round to avoid blur
+		textPos = { std::round(textPos.x), std::round(textPos.y) }; //Round to avoid blur
+		tabTitles.at(i).setOrigin(textOrigin);
+		tabTitles.at(i).setPosition(textPos);
+	}
+
+	//Set panel scale and pos
+	panel.setSize({size.x, size.y - tabSizeY});
+	panel.setPosition({pos.x, pos.y + tabSizeY});
 }
 
-#pragma endregion
+Widget_TabbedPanel::Widget_TabbedPanel()
+{
+}
+
+Widget_TabbedPanel::~Widget_TabbedPanel()
+{
+}
+
+void Widget_TabbedPanel::setTabTexture(sf::Texture* texture)
+{
+	tabTexture = texture;
+
+	//Set Tab textures and scales
+	for (auto t : tabs) {
+		std::cout << "Texture set" << std::endl;
+		t.setTexture(*texture);
+	}
+
+	this->arrange();
+}
+
+void Widget_TabbedPanel::setPanelTexture(sf::Texture* texture)
+{
+	panelTexture = texture;
+
+	//Set panel texture
+	panel.setTexture(texture);
+
+	this->arrange();
+}
+
+void Widget_TabbedPanel::setPos(sf::Vector2f newPos) {
+	pos = newPos;
+	this->arrange();
+}
+
+void Widget_TabbedPanel::setSize(sf::Vector2f newSize) {
+	size = newSize;
+	this->arrange();
+}
+
+void Widget_TabbedPanel::addTab(uint8_t count)
+{
+	if (count + numTabs > maxTabs) {
+		std::cerr << "Cannot add " << count << " tabs: over maximum..." << std::endl;
+		return;
+	}
+
+	numTabs += count;
+	for (int i = 0; i < count; i++) {
+		sf::Sprite s;
+		tabs.push_back(s);
+		Widget_Label label;
+		tabTitles.push_back(label);
+		tabTitles.back().setText("");
+		if (font) {
+			tabTitles.back().setFont(font);
+		}
+		if (tabTexture) {
+			tabs.back().setTexture(*tabTexture);
+		}
+	}
+
+	this->arrange();
+}
+
+void Widget_TabbedPanel::remTab(uint8_t count)
+{
+	if (count > numTabs) {
+		std::cerr << "Cannot remove " << count << " tabs: only " << numTabs << " tabs present..." << std::endl;
+		return;
+	}
+
+	numTabs -= count;
+	for (int i = 0; i < count; i++) {
+		tabs.pop_back();
+		tabTitles.pop_back();
+	}
+	
+	this->arrange();
+}
+
+void Widget_TabbedPanel::setTabFont(sf::Font* newFont)
+{
+	font = newFont;
+	for (auto l : tabTitles) {
+		l.setFont(font);
+	}
+
+	this->arrange();
+}
+
+void Widget_TabbedPanel::setTabTitle(int idx, std::string title)
+{
+	if (idx >= numTabs) {
+		std::cerr << "Cannot set tab title at index " << idx << ": out of bounds..." << std::endl;
+		return;
+	}
+
+	tabTitles.at(idx).setText(title);
+
+	this->arrange();
+}
+
+void Widget_TabbedPanel::setTabTitleColor(sf::Color color)
+{
+	for (auto l : tabTitles) {
+		l.setTextColor(color);
+	}
+}
+
+void Widget_TabbedPanel::poll(sf::RenderWindow& win, sf::Event& event) {
+	//Mouse click
+	if (event.type == sf::Event::MouseButtonPressed && event.key.code == sf::Mouse::Left) {
+		sf::Vector2f mousePos;
+		if (view) {
+			//Then use mouse coords transformed to view
+			mousePos = win.mapPixelToCoords(sf::Mouse::getPosition(win), *view);
+		}
+		else {
+			//Use raw mouse coords in window
+			mousePos = { (float)sf::Mouse::getPosition(win).x, (float)sf::Mouse::getPosition(win).y };
+		}
+
+		for (int i = 0; i < (int)tabs.size(); i++) {
+			if (tabs.at(i).getGlobalBounds().contains(mousePos)) {
+				//TODO: Set previous selected tab appearance to inactive
+				tabSel = i; //Set tab select
+				//TODO: Set new selected tab apperance to active
+				break;
+			}
+		}
+	}
+}
+
+
+void Widget_TabbedPanel::update(const float dt) {
+	//
+}
+
+void Widget_TabbedPanel::draw(sf::RenderWindow& win) {
+	//Draw Panel
+	panel.draw(win);
+
+	//Draw Tabs
+	for (int i = 0; i < numTabs; i++) {
+		win.draw(tabs.at(i));
+		tabTitles.at(i).draw(win);
+	}
+}
+
+uint8_t Widget_TabbedPanel::getTabSel()
+{
+	return tabSel;
+}
+
 
 //####################################### LABEL
 #pragma region Label
@@ -227,6 +436,20 @@ void Widget_Label::move(sf::Vector2f offset)
 	label.move(offset);
 }
 
+void Widget_Label::setOrigin(sf::Vector2f newOrigin)
+{
+	label.setOrigin(newOrigin);
+}
+
+sf::FloatRect Widget_Label::getGlobalBounds() {
+	return label.getGlobalBounds();
+}
+
+sf::FloatRect Widget_Label::getLocalBounds()
+{
+	return label.getLocalBounds();
+}
+
 void Widget_Label::setText(std::string newText)
 {
 	text = newText;
@@ -246,6 +469,11 @@ void Widget_Label::setSize(sf::Vector2i size)
 void Widget_Label::setCharacterSize(unsigned int size)
 {
 	label.setCharacterSize(size);
+}
+
+void Widget_Label::setTextColor(sf::Color color)
+{
+	label.setFillColor(color);
 }
 
 #pragma endregion
@@ -630,6 +858,10 @@ void Gui::update(const float dt)
 
 void Gui::draw(sf::RenderWindow& win)
 {
+	if (view) {
+		win.setView(*view);
+	}
+
 	//Draw widgets
 	for (size_t i = 0; i < widgets.size(); i++) {
 		for (size_t j = 0; j < widgets.at(i)->size(); j++) {
@@ -664,6 +896,11 @@ void Gui::addWidget(Widget* widget)
 
 	//If no unused ids then assign a new one
 	widget->setID(IDCounter++);
+
+	//Set widget view if applicable
+	if (view) {
+		widget->setView(view);
+	}
 }
 
 void Gui::moveWidget(int ID, unsigned int newLayer)
@@ -718,6 +955,16 @@ void Gui::remWidget(int ID)
 
 }
 
+void Gui::setView(sf::View* newView) {
+	view = newView;
+	
+	for (int i = 0; i < numLayers; i++) {
+		for (int j = 0; j < widgets.at(i)->size(); j++) {
+			widgets.at(i)->at(j)->setView(newView);
+		}
+	}
+}
+
 void Gui::setMaxLayers(unsigned int max)
 {
 	maxLayers = max;
@@ -727,4 +974,5 @@ bool Gui::getFocus()
 {
 	return hasFocus;
 }
+
 
