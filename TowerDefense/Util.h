@@ -12,7 +12,7 @@
 /*
 Project: Tower Defense, Utility Functions
 Created: 26 MAY 2025
-Updated: 20 OCT 2025
+Updated: 28 NOV 2025
 
 Description:
 	This file contains various utility functions that are common to multiple systems.
@@ -37,6 +37,8 @@ float degToRad(float degrees);
 
 void printRectI(sf::IntRect targ);
 void printRectF(sf::FloatRect targ);
+
+sf::Vector2f round(sf::Vector2f targ);
 
 std::string strFilter(std::string target, std::string phrase); //Removes phrase from string
 

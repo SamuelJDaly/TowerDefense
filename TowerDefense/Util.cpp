@@ -33,6 +33,11 @@ void printRectF(sf::FloatRect targ)
 	std::cout << "{" << targ.left << ", " << targ.top << ", " << targ.width << ", " << targ.height << "}" << std::endl;
 }
 
+sf::Vector2f round(sf::Vector2f targ)
+{
+	return {std::round(targ.x), std::round(targ.y)};
+}
+
 std::string strFilter(std::string target, std::string phrase)
 {
 	size_t pos = target.find(phrase);
