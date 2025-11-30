@@ -12,14 +12,14 @@ void State_Game::initGui()
 	//GUI
 	gui = new Gui();
 	
-	palleteSize = { viewSize_gui.x * palleteRatio.x, viewSize_gui.y*palleteRatio.y };
-	palletePos = {viewSize_gui.x - palleteSize.x, 0};
+	paletteSize = { viewSize_gui.x * paletteRatio.x, viewSize_gui.y*paletteRatio.y };
+	palettePos = {viewSize_gui.x - paletteSize.x, 0};
 
 	Widget_Panel* panel = new Widget_Panel();
 	panel->setTexture(textureHandler->lookup("panel_simpleWhite"));
-	panel->setSize(palleteSize);
+	panel->setSize(paletteSize);
 
-	panel->setPosition(palletePos);
+	panel->setPosition(palettePos);
 	panel->setLayer(0);
 
 	gui->addWidget(panel);
@@ -48,33 +48,33 @@ void State_Game::initGui()
 
 	towerOne.setProjectile(temp);
 	towerTwo.setProjectile(tempTwo);
-	towerOne.setScale(towerScale_pallete);
-	towerTwo.setScale(towerScale_pallete);
-	towerOne.setPosition(palletePos);
-	towerTwo.setPosition(palletePos);
+	towerOne.setScale(towerScale_palette);
+	towerTwo.setScale(towerScale_palette);
+	towerOne.setPosition(palettePos);
+	towerTwo.setPosition(palettePos);
 
-	pallete.push_back(towerOne);
-	pallete.push_back(towerTwo);
+	palette.push_back(towerOne);
+	palette.push_back(towerTwo);
 
 
 	int row = 0;
 	int col = 0;
 
-	for (size_t i = 0; i < pallete.size(); i++) {
-		if (col >= palleteColumns) {
+	for (size_t i = 0; i < palette.size(); i++) {
+		if (col >= paletteColumns) {
 			row++;
 			col = 0;
 		}
 
-		pallete.at(i).move({50,50});
-		pallete.at(i).move({(palleteEntrySize*col), (palleteEntrySize*row)});
+		palette.at(i).move({50,50});
+		palette.at(i).move({(paletteEntrySize*col), (paletteEntrySize*row)});
 
 		if (col > 0) {
-			pallete.at(i).move({ (float)palletePadding, 0 });
+			palette.at(i).move({ (float)palettePadding, 0 });
 		}
 
 		if (row > 0) {
-			pallete.at(i).move({0, (float)palletePadding});
+			palette.at(i).move({0, (float)palettePadding});
 		}
 
 		col++;
@@ -212,7 +212,7 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 		if (event.key.code == sf::Mouse::Left) {
 			
 			if (isPalletePicked) {
-				palleteDeselect();
+				paletteDeselect();
 			}
 			
 			
@@ -252,7 +252,7 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 	if (event.type == sf::Event::MouseButtonPressed) {
 		if (event.key.code == sf::Mouse::Left) {
 			if (!isPalletePicked) {
-				palleteSelect();
+				paletteSelect();
 			}
 		}
 	}
@@ -284,15 +284,15 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 }
 
-void State_Game::palleteSelect()
+void State_Game::paletteSelect()
 {
 	//Check location and create a copy if
 	auto pixelPos = sf::Mouse::getPosition(*window);
 	sf::Vector2f pos = window->mapPixelToCoords(pixelPos, view_gui);
-	for (size_t i = 0; i < pallete.size(); i++) {
-		if (pallete.at(i).contains(pos)) {
-			palletePick = new Tower(pallete.at(i));
-			palletePick->setScale(towerScale_playfield);
+	for (size_t i = 0; i < palette.size(); i++) {
+		if (palette.at(i).contains(pos)) {
+			palettePick = new Tower(palette.at(i));
+			palettePick->setScale(towerScale_playfield);
 			
 			isPalletePicked = true;
 			break;
@@ -300,12 +300,12 @@ void State_Game::palleteSelect()
 	}
 }
 
-void State_Game::palleteDeselect()
+void State_Game::paletteDeselect()
 {
 	//Check release location
-	towers.push_back(palletePick);
+	towers.push_back(palettePick);
 
-	palletePick = nullptr;
+	palettePick = nullptr;
 	isPalletePicked = false;
 }
 
@@ -364,12 +364,12 @@ void State_Game::update(float dt)
 		i->update(dt);
 	}
 
-	//Update pallete selection (ie follow mouse)
-	if (isPalletePicked && palletePick) {
+	//Update palette selection (ie follow mouse)
+	if (isPalletePicked && palettePick) {
 		auto pixelPos = sf::Mouse::getPosition(*window);
 		sf::Vector2f pos = window->mapPixelToCoords(pixelPos, view_playField);
 
-		palletePick->setPosition(pos);
+		palettePick->setPosition(pos);
 	}
 
 
@@ -382,8 +382,8 @@ void State_Game::update(float dt)
 
 void State_Game::drawPallete(sf::RenderWindow &win)
 {
-	for (size_t i = 0; i < pallete.size(); i++) {
-		pallete.at(i).draw(win);
+	for (size_t i = 0; i < palette.size(); i++) {
+		palette.at(i).draw(win);
 	}
 
 	
@@ -410,8 +410,8 @@ void State_Game::draw(sf::RenderWindow& win)
 	}
 
 	//Pallete pick
-	if (isPalletePicked && palletePick) {
-		palletePick->draw(win);
+	if (isPalletePicked && palettePick) {
+		palettePick->draw(win);
 	}
 
 	//## GUI
@@ -611,7 +611,7 @@ void State_Editor::initGui() {
 
 	//## Load Tilset Button
 	btn_loadTilset = new Widget_Button();
-	btn_loadTilset->setTexture(textureHandler->lookup("btn_pallete"));
+	btn_loadTilset->setTexture(textureHandler->lookup("btn_palette"));
 	btn_loadTilset->setPosition({20,50});
 	btn_loadTilset->setLayer(2);
 	btn_loadTilset->setSize({ 20,20 });
@@ -634,8 +634,8 @@ void State_Editor::initGui() {
 	txtBx_mapPath->setSize({ 200,20 });
 
 	//Pallete Path
-	txtBx_palletePath = new Widget_Textbox(*txtBx_mapPath);
-	txtBx_palletePath->move({0.f,30.f});
+	txtBx_palettePath = new Widget_Textbox(*txtBx_mapPath);
+	txtBx_palettePath->move({0.f,30.f});
 
 	//## Add to gui
 	gui->addWidget(pnl_left);
@@ -647,7 +647,7 @@ void State_Editor::initGui() {
 	gui->addWidget(btn_SizeUpY);
 	gui->addWidget(btn_SizeDnY);
 	gui->addWidget(label_mapSize);
-	gui->addWidget(txtBx_palletePath);
+	gui->addWidget(txtBx_palettePath);
 	gui->addWidget(txtBx_mapPath);
 
 	gui->setView(&view_gui);
@@ -716,18 +716,18 @@ void State_Editor::initPalleteTool()
 	//## Pallete setup
 
 	//Size and positioning
-	palleteSize.x = palleteRatio.x * pnl_left->getSize().x;
-	palleteSize.y = palleteRatio.y * pnl_left->getSize().y;
+	paletteSize.x = paletteRatio.x * pnl_left->getSize().x;
+	paletteSize.y = paletteRatio.y * pnl_left->getSize().y;
 
-	palletePos.x = .5f * (pnl_left->getSize().x - palleteSize.x) + pnl_left->getPos().x;
-	palletePos.y = .5f * (pnl_left->getSize().y - palleteSize.y) + pnl_left->getPos().y;
+	palettePos.x = .5f * (pnl_left->getSize().x - paletteSize.x) + pnl_left->getPos().x;
+	palettePos.y = .5f * (pnl_left->getSize().y - paletteSize.y) + pnl_left->getPos().y;
 	
 	//Border Box
-	palleteBorder.setFillColor(sf::Color::Transparent);
-	palleteBorder.setOutlineColor(sf::Color::Black);
-	palleteBorder.setOutlineThickness(1);
-	palleteBorder.setPosition({ palletePos.x - 1, palletePos.y - 1 });
-	palleteBorder.setSize({ palleteSize.x + 2, palleteSize.y + 2 });
+	paletteBorder.setFillColor(sf::Color::Transparent);
+	paletteBorder.setOutlineColor(sf::Color::Black);
+	paletteBorder.setOutlineThickness(1);
+	paletteBorder.setPosition({ palettePos.x - 1, palettePos.y - 1 });
+	paletteBorder.setSize({ paletteSize.x + 2, paletteSize.y + 2 });
 
 	//Selection box
 	selectBorder.setFillColor(sf::Color::Transparent);
@@ -894,7 +894,7 @@ State_Editor::~State_Editor()
 
 void State_Editor::loadPallete(int txSize, std::string filepath)
 {
-	//This function sets up the pallete vector by texturing, scaling, and positioning the sprites
+	//This function sets up the palette vector by texturing, scaling, and positioning the sprites
 	//## Check for valid filepath
 	std::ifstream inFile;
 	inFile.open(filepath);
@@ -910,15 +910,16 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 	spritesheet.setTextureSize(txSize, txSize);
 	if (!spritesheet.fload(filepath)) {
 		std::cout << "Spritesheet load failed" << std::endl;
+		return;
 	}
-
-	spritesheet.fload(filepath);
 	
-	
+	//Clear palette
+	palette.clear();
 
-	//Assign each spritesheet texture to a representative sprite in the pallete (ie what user clicks on to select given texture)
+	//Assign each spritesheet texture to a representative sprite in the palette (ie what user clicks on to select given texture)
 	int row = 0;
 	int col = 0;
+	
 	for (int i = 0; i < spritesheet.getNumTextures(); i++) {
 		sf::Sprite curr;
 
@@ -927,30 +928,30 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 		curr.setTextureRect(spritesheet.getRect(i));
 
 		//Scaling
-		float colX = palleteSize.x / palleteColumns; //col width = width of pallete / num columns
+		float colX = paletteSize.x / paletteColumns; //col width = width of palette / num columns
 
 		float scale = colX / curr.getTextureRect().width; //scale = width of column / width of texture
 
 		curr.setScale(scale, scale);
 
 		//Positioning
-		float posX = palletePos.x + (colX * col);
-		float posY = palletePos.y + (colX * row); //Bc we are encforcing square tiles we just reuse colX
+		float posX = palettePos.x + (colX * col);
+		float posY = palettePos.y + (colX * row); //Bc we are encforcing square tiles we just reuse colX
 		curr.setPosition(posX,posY);
 
 		//Iterate row and column
 		col++;
-		if (col >= palleteColumns) {
+		if (col >= paletteColumns) {
 			col = 0;
 			row++;
 		}
 
-		//Add to pallete
-		pallete.push_back(curr);
+		//Add to palette
+		palette.push_back(curr);
 	}
 
 	//Set up selection border
-	selectBorder.setSize({ (float)pallete.at(0).getGlobalBounds().width, (float)pallete.at(0).getGlobalBounds().height });
+	selectBorder.setSize({ (float)palette.at(0).getGlobalBounds().width, (float)palette.at(0).getGlobalBounds().height });
 
 	//Update the tilemap spritesheet data
 	tilemap->setTileset(spritesheet);
@@ -1010,13 +1011,13 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 			
 			//Pallete select
-			if (palleteBorder.getGlobalBounds().contains(guiPos)) {
+			if (paletteBorder.getGlobalBounds().contains(guiPos)) {
 				nodePlace = false;
-				palleteSelect = -1;
-				for (size_t i = 0; i < pallete.size(); i++) {
-					if (pallete.at(i).getGlobalBounds().contains(guiPos)) {
-						palleteSelect = (int)i;
-						selectBorder.setPosition(pallete.at(i).getPosition());
+				paletteSelect = -1;
+				for (size_t i = 0; i < palette.size(); i++) {
+					if (palette.at(i).getGlobalBounds().contains(guiPos)) {
+						paletteSelect = (int)i;
+						selectBorder.setPosition(palette.at(i).getPosition());
 						break;
 					}
 				}
@@ -1031,7 +1032,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				if (!nodePlace && nodeButton.getGlobalBounds().contains(guiPos)) {
 					nodePlace = true;
 					isPainting = false;
-					palleteSelect = -1;
+					paletteSelect = -1;
 				}
 			}
 
@@ -1078,8 +1079,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 			}
 
 			if (btn_loadTilset->getState() == ButtonState::PRESS) {
-				//Then load the pallete
-				this->loadPallete(16, txtBx_palletePath->getText());
+				//Then load the palette
+				this->loadPallete(16, txtBx_palettePath->getText());
 			}
 
 			
@@ -1104,8 +1105,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				int sample = tilemap->getType(idxX, idxY);
 
 				if (sample >= 0) {
-					palleteSelect = sample;
-					selectBorder.setPosition(pallete.at(sample).getPosition());
+					paletteSelect = sample;
+					selectBorder.setPosition(palette.at(sample).getPosition());
 				}
 
 			}
@@ -1244,7 +1245,7 @@ void State_Editor::updateCamera(float dt)
 
 void State_Editor::updatePainting()
 {
-	if (!isPainting || palleteSelect == -1) {
+	if (!isPainting || paletteSelect == -1) {
 		return;
 	}
 
@@ -1261,7 +1262,7 @@ void State_Editor::updatePainting()
 	int idxX = (int)(mousePos_map.x / tileSize);
 	int idxY = (int)(mousePos_map.y / tileSize);
 
-	tilemap->modTile(idxX, idxY, palleteSelect);
+	tilemap->modTile(idxX, idxY, paletteSelect);
 
 	isChanged = true;
 
@@ -1303,15 +1304,15 @@ void State_Editor::drawMap(sf::RenderWindow& win)
 }
 
 void State_Editor::drawPallete(sf::RenderWindow& win) {
-	for (size_t i = 0; i < pallete.size(); i++) {
-		win.draw(pallete.at(i));
+	for (size_t i = 0; i < palette.size(); i++) {
+		win.draw(palette.at(i));
 	}
 
-	if (palleteSelect >= 0) {
+	if (paletteSelect >= 0) {
 		win.draw(selectBorder);
 	}
 
-	win.draw(palleteBorder);
+	win.draw(paletteBorder);
 }
 
 void State_Editor::drawRoundTool(sf::RenderWindow& win)

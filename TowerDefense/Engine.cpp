@@ -24,6 +24,7 @@ void Engine::initTextures()
 	textureHandler->addTexture("panel_bevel", "resource/tex/panel_bevelGrey.png");
 	textureHandler->addTexture("panel_simpleWhite", "resource/tex/panel_simpleWhite.png");
 	textureHandler->addTexture("tileset_dither", "resource/tex/tileset_dither.png");
+	textureHandler->addTexture("tileset_1bit", "resource/tex/tileset_1bit.png");
 	textureHandler->addTexture("tab_simple", "resource/tex/tab_simple.png");
 
 	textureHandler->addTexture("tower_1", "resource/tex/tower_1.png");
@@ -35,7 +36,7 @@ void Engine::initTextures()
 	textureHandler->addTexture("btn_save", "resource/tex/btn_save.png");
 	textureHandler->addTexture("btn_plus", "resource/tex/btn_plus.png");
 	textureHandler->addTexture("btn_minus", "resource/tex/btn_minus.png");
-	textureHandler->addTexture("btn_pallete", "resource/tex/btn_pallete.png");
+	textureHandler->addTexture("btn_palette", "resource/tex/btn_palette.png");
 }
 
 void Engine::initState()

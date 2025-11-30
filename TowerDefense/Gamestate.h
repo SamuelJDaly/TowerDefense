@@ -73,20 +73,20 @@ private:
 	float currZoom = 1.f;
 	sf::Vector2f zoomBounds = {1.5f,.70f};
 
-	float towerScale_pallete = 1.5f;
+	float towerScale_palette = 1.5f;
 	float towerScale_playfield = 1.25f;
 
 	//Gui
 	Gui* gui;
-	std::vector<Tower> pallete; //Tower Selection
-	int palleteColumns = 2;
-	int palletePadding = 20; //Px between pallete entries
-	sf::Vector2f palletePos;
-	sf::Vector2f palleteSize = {1,1};
-	sf::Vector2f palleteRatio = {.15f,1.f}; //What proportion of the screen pallete takes up
-	float palleteEntrySize = 50.f; //How big the pallete options are
+	std::vector<Tower> palette; //Tower Selection
+	int paletteColumns = 2;
+	int palettePadding = 20; //Px between palette entries
+	sf::Vector2f palettePos;
+	sf::Vector2f paletteSize = {1,1};
+	sf::Vector2f paletteRatio = {.15f,1.f}; //What proportion of the screen palette takes up
+	float paletteEntrySize = 50.f; //How big the palette options are
 	bool isPalletePicked = false;
-	Tower* palletePick = nullptr;
+	Tower* palettePick = nullptr;
 
 	//Gameplay
 	TileMap* tileMap;
@@ -118,8 +118,8 @@ public:
 
 	//Primary Functions
 	void poll(sf::RenderWindow& win, sf::Event& event);
-	void palleteSelect();
-	void palleteDeselect();
+	void paletteSelect();
+	void paletteDeselect();
 	
 	void updateCollision();
 	void updateTargeting();
@@ -193,20 +193,20 @@ private:
 	Widget_Panel* pnl_left;
 	Widget_TabbedPanel* pnl_bottom;
 	Widget_Label* label_mapSize;
-	Widget_Textbox* txtBx_palletePath;
+	Widget_Textbox* txtBx_palettePath;
 	Widget_Textbox* txtBx_mapPath;
 	sf::Vector2f bottomPanelPos = { 0.f,0.f };
 
 	//Texture Select
 	Spritesheet spritesheet;
-	std::vector<sf::Sprite> pallete;
-	int palleteColumns = 3;
+	std::vector<sf::Sprite> palette;
+	int paletteColumns = 3;
 	int numTextures = 0;
-	sf::Vector2f palletePos = {0.f,0.f};
-	sf::Vector2f palleteSize = { 1.f,1.f };
-	sf::Vector2f palleteRatio = {.75,.75};
-	sf::RectangleShape palleteBorder;
-	int palleteSelect = -1;
+	sf::Vector2f palettePos = {0.f,0.f};
+	sf::Vector2f paletteSize = { 1.f,1.f };
+	sf::Vector2f paletteRatio = {.75,.75};
+	sf::RectangleShape paletteBorder;
+	int paletteSelect = -1;
 	sf::RectangleShape selectBorder;
 	
 	
