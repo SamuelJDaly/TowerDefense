@@ -15,8 +15,7 @@ Updated: 24 JUN 2025
 Description:
 	This file contains the Hostile system. This system implements the enemies that the player must defeat in order to stay alive.
 	The main parts of this sytem are the "Hostile" and the "Round". The Hostile is exactly what it sounds like, a sprite and a
-	group of stats. The round is a list of times and a list of hostiles. When the current time value passes the current hostile
-	is spawned, and the list is advanced.
+	group of stats. The round is a list of Hostiles and a corresponding list of intervals between their spawns.
 */
 
 //######################	HOSTILE		############################
@@ -61,6 +60,7 @@ public:
 	void Die();
 	void setSize(sf::Vector2f newSize);
 	void setScale(sf::Vector2f newScale);
+	void setSpeed(float newSpeed);
 
 	bool getDead();
 	sf::FloatRect getBounds();
