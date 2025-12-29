@@ -10,6 +10,8 @@ void Engine::initTextures()
 {
 	textureHandler = new TextureHandler();
 
+	textureHandler->addTexture("transparent", "resource/tex/transparent.png");
+
 	textureHandler->addTexture("panel_test", "resource/tex/panel_test.png");
 	textureHandler->addTexture("bg_test", "resource/tex/bg_0.png");
 	textureHandler->addTexture("hostile_0", "resource/tex/hostile_0.png");
@@ -37,13 +39,19 @@ void Engine::initTextures()
 	textureHandler->addTexture("btn_plus", "resource/tex/btn_plus.png");
 	textureHandler->addTexture("btn_minus", "resource/tex/btn_minus.png");
 	textureHandler->addTexture("btn_palette", "resource/tex/btn_palette.png");
+	textureHandler->addTexture("btn_blank", "resource/tex/btn_blank.png");
+	textureHandler->addTexture("btn_blank_sq", "resource/tex/btn_blank_sq.png");
+	textureHandler->addTexture("btn_blank_sq_ol", "resource/tex/btn_blank_sq_ol.png");
+
+
+	textureHandler->addTexture("bg_menu", "resource/tex/bg_menu.png");
 }
 
 void Engine::initState()
 {
 	//currState = new State_Game(textureHandler, this->win);
-	currState = new State_Editor(textureHandler, this->win);
-	//currState = new State_Menu(textureHandler);
+	//currState = new State_Editor(textureHandler, this->win);
+	currState = new State_Menu(textureHandler, this->win);
 }
 
 Engine::Engine()
@@ -62,11 +70,11 @@ Engine::~Engine()
 
 void Engine::update()
 {
-	//Update delta time
+	//## Update delta time
 	deltaTime = mainClock.getElapsedTime().asSeconds();
 	mainClock.restart();
 
-	//Handle Polled Events
+	//# Handle Polled Events
 	while (win->pollEvent(event)) {
 		//Window closure
 		if (event.type == sf::Event::Closed) {
@@ -85,9 +93,47 @@ void Engine::update()
 		currState->poll(*win, event);
 	}
 
-	//Handle per frame events
+	//## Handle per frame events
+
+	//Update Current State
 	currState->update(deltaTime);
 
+	//State Transition Logic
+	if (currState->getFinished()) {
+		//Transition to next state
+		switch (currState->getNextState()) {
+		case En_Gamestate::MENU:
+			//De allocate last state
+			delete currState;
+			//Allocate new state
+			currState = new State_Menu(textureHandler, this->win);
+			
+			break;
+		case En_Gamestate::GAME:
+			//De allocate last state
+			delete currState;
+			//Allocate new state
+			currState = new State_Game(textureHandler, this->win);
+
+			break;
+		case En_Gamestate::EDITOR:
+			//De allocate last state
+			delete currState;
+			//Allocate new state
+			currState = new State_Editor(textureHandler, this->win);
+
+			break;
+		case En_Gamestate::END:
+			win->close();
+			isRunning = false;
+			break;
+		default:
+			std::cerr << "Invalid State Transition" << std::endl;
+			win->close();
+			isRunning = false;
+			break;
+		}
+	}
 }
 
 void Engine::draw()

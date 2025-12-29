@@ -36,6 +36,10 @@ Description:
 			creating paths for the enemies, and setting up the spawn schedule for the rounds.
 */
 
+//##########################	STATE ENUMS	#########################################
+enum class En_Gamestate {
+	MENU, GAME, EDITOR, END
+};
 
 //##########################	BASE CLASS	#########################################
 class Gamestate
@@ -43,9 +47,14 @@ class Gamestate
 protected:
 	//Common Data
 	TextureHandler* textureHandler =  nullptr;
+	sf::RenderWindow* window;
+	bool isFinished = false;
+	En_Gamestate nextState = En_Gamestate::END;
 
 public:
 	//Common Functions
+	bool getFinished();
+	En_Gamestate getNextState();
 
 	//Virtual Functions
 	virtual void update(float dt) = 0;
@@ -59,7 +68,6 @@ class State_Game : public Gamestate {
 private:
 	//# Data
 	//Camera
-	sf::RenderWindow* window;
 	sf::View view_playField;
 	sf::View view_gui;
 	sf::Vector2f viewSize_playField = { 1280,720 };
@@ -99,11 +107,6 @@ private:
 	float hp = 10.f;
 	
 
-	//textureHandler (base class)
-
-	
-	
-
 	//Util
 	void initGui();
 	void initView();
@@ -137,16 +140,26 @@ public:
 
 class State_Menu : public Gamestate {
 private:
-	//Data
+	//## Data
 	Gui* gui;
-	sf::Font font;
+	sf::Font font_generic;
 
-	//Util
+	sf::Sprite background;
+
+	//Text
+	Widget_Label* label_title;
+
+	//Buttons
+	Widget_Button* btn_game;
+	Widget_Button* btn_editor;
+	Widget_Button* btn_quit;
+
+	//## Util
 	void initGui();
 
 public:
 	//Constructor and Destructor
-	State_Menu(TextureHandler* textureHandler);
+	State_Menu(TextureHandler* textureHandler, sf::RenderWindow* window);
 	~State_Menu();
 
 	//Primary Functions
@@ -162,7 +175,6 @@ public:
 class State_Editor : public Gamestate {
 private:
 	//## Data
-	sf::RenderWindow* window;
 	Gui* gui;
 	sf::Texture* activeTileset = nullptr;
 	sf::Font* font;

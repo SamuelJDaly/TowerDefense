@@ -401,11 +401,44 @@ uint8_t Widget_TabbedPanel::getTabSel()
 }
 
 
+//#################################### SCROLLABLE PANEL
+Widget_ScrollPanel::Widget_ScrollPanel() {
+
+}
+
+Widget_ScrollPanel::~Widget_ScrollPanel() {
+
+}
+
+void Widget_ScrollPanel::poll(sf::RenderWindow& win, sf::Event& event) {
+
+}
+
+void Widget_ScrollPanel::update(float dt) {
+	
+}
+
+void Widget_ScrollPanel::draw(sf::RenderWindow& win) {
+	
+}
+
+
 //####################################### LABEL
 #pragma region Label
 
+void Widget_Label::centerOrigin()
+{
+	float cX = std::round(label.getLocalBounds().width / 2.f);
+	float cY = std::round(label.getLocalBounds().height / 2.f);
+
+	label.setOrigin(cX, cY);
+}
+
 Widget_Label::Widget_Label()
 {
+	float temp = 255 * (1 - highlightModifier);
+	col_actual = col_base * sf::Color(temp, temp, temp, 255);
+	label.setFillColor(col_actual);
 }
 
 Widget_Label::~Widget_Label()
@@ -454,11 +487,13 @@ void Widget_Label::setText(std::string newText)
 {
 	text = newText;
 	label.setString(text);
+	this->centerOrigin();
 }
 
 void Widget_Label::setFont(sf::Font* newFont)
 {
 	label.setFont(*newFont);
+	this->centerOrigin();
 }
 
 void Widget_Label::setSize(sf::Vector2i size)
@@ -469,11 +504,51 @@ void Widget_Label::setSize(sf::Vector2i size)
 void Widget_Label::setCharacterSize(unsigned int size)
 {
 	label.setCharacterSize(size);
+	this->centerOrigin();
 }
 
 void Widget_Label::setTextColor(sf::Color color)
 {
-	label.setFillColor(color);
+	col_base = color;
+
+	float temp = 1 - highlightModifier;
+	col_actual = col_base * sf::Color(temp, temp, temp, 1);
+
+	label.setFillColor(col_actual);
+}
+
+void Widget_Label::setHighlightModifier(float value)
+{
+	highlightModifier = value;
+	float temp = 1 - value;
+	col_actual = col_base * sf::Color(temp, temp, temp, 1);
+	label.setFillColor(col_actual);
+}
+
+void Widget_Label::toggleHighlight()
+{
+	isHighlight = !isHighlight;
+
+	if (isHighlight) {
+		//Add highlight modifier to color (ie set to base color)
+		label.setFillColor(col_base);
+	}
+	else {
+		label.setFillColor(col_actual);
+	}
+}
+
+void Widget_Label::setHighlightState(bool state)
+{
+	isHighlight = state;
+
+	if (isHighlight) {
+		//Add highlight modifier to color (ie set to base color)
+		label.setFillColor(col_base);
+	}
+	else {
+		label.setFillColor(col_actual);
+	}
 }
 
 #pragma endregion
@@ -728,7 +803,11 @@ void Widget_Button::setTexture(sf::Texture* texture)
 		return;
 	}
 
+	textureSize.x = texture->getSize().x / 3;
+	textureSize.y = texture->getSize().y;
+
 	graph.setTexture(*texture);
+	graph.setTextureRect({0,0,textureSize.x,textureSize.y});
 }
 
 void Widget_Button::setTextureRect(sf::IntRect rect)
@@ -744,20 +823,12 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 		if (graph.getGlobalBounds().contains({(float)mousePos.x, (float)mousePos.y})) {
 			lastState = state;
 			state = ButtonState::HOVER;
+			graph.setTextureRect({ textureSize.x,0,textureSize.x,textureSize.y });
 		}
 		else {
 			lastState = state;
 			state = ButtonState::UNPRESS;
-		}
-
-		if (lastState != state) {
-			if (state == ButtonState::HOVER) {
-				graph.setColor(sf::Color(200, 200, 200, 255));
-			}
-			else {
-				graph.setColor(sf::Color::White);
-			}
-
+			graph.setTextureRect({ 0,0,textureSize.x,textureSize.y });
 		}
 
 	}
@@ -766,6 +837,7 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 		if (state == ButtonState::HOVER) {
 			lastState = state;
 			state = ButtonState::PRESS;
+			graph.setTextureRect({ textureSize.x*2,0,textureSize.x,textureSize.y });
 		}
 	}
 
@@ -776,13 +848,17 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 			if (graph.getGlobalBounds().contains({ (float)mousePos.x, (float)mousePos.y })) {
 				lastState = state;
 				state = ButtonState::HOVER;
+				graph.setTextureRect({ textureSize.x,0,textureSize.x,textureSize.y });
 			}
 			else {
 				lastState = state;
 				state = ButtonState::UNPRESS;
+				graph.setTextureRect({ 0,0,textureSize.x,textureSize.y });
 			}
 		}
 	}
+
+	
 
 }
 

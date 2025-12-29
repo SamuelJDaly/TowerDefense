@@ -27,7 +27,7 @@ private:
 	TextureHandler* textureHandler;
 
 	float deltaTime = 0;
-
+	
 	Gamestate* currState;
 
 	//Util

@@ -149,6 +149,31 @@ public:
 	uint8_t getTabSel();
 };
 
+//####################################### SCROLLABLE PANEL
+class Widget_ScrollPanel : public Widget {
+private:
+	//Data
+	sf::View scrollview;
+	float scrollOffset = 0;
+	float maxOffset = 1;
+	float minOffset = 0;
+	Widget_Panel panel;
+	sf::Sprite scrollBar;
+
+
+
+	//Util
+public:
+	//Constructor and Destructor
+	Widget_ScrollPanel();
+	~Widget_ScrollPanel();
+
+	//Primary Functions
+	void poll(sf::RenderWindow& win, sf::Event& event);
+	void update(const float dt);
+	void draw(sf::RenderWindow& win);
+};
+
 //####################################### LABEL
 class Widget_Label : public Widget {
 private:
@@ -156,6 +181,14 @@ private:
 	sf::Text label;
 	std::string text = "";
 	sf::Font* font;
+
+	sf::Color col_base = sf::Color(255, 255, 255, 255); //Base color
+	float highlightModifier = 0.2; // default 30% highlight
+	sf::Color col_actual = sf::Color(204, 204, 204, 255); //UnHighlit color
+	bool isHighlight = false;
+
+	//Util
+	void centerOrigin();
 
 public:
 	//Constructor and Destructor
@@ -178,6 +211,10 @@ public:
 	void setSize(sf::Vector2i size);
 	void setCharacterSize(unsigned int size);
 	void setTextColor(sf::Color color);
+
+	void setHighlightModifier(float value);
+	void toggleHighlight();
+	void setHighlightState(bool state);
 };
 
 
@@ -241,7 +278,7 @@ public:
 
 //###########################################	BUTTON
 enum class ButtonState {
-	PRESS, UNPRESS, HOVER
+	UNPRESS, HOVER, PRESS
 };
 
 class Widget_Button : public Widget {
@@ -250,6 +287,7 @@ private:
 	sf::Sprite graph;
 	ButtonState state = ButtonState::UNPRESS;
 	ButtonState lastState = ButtonState::UNPRESS;
+	sf::Vector2i textureSize = { 1,1 };
 
 	//Util
 	
@@ -267,7 +305,6 @@ public:
 	void setSize(sf::Vector2f size);
 	void setTexture(sf::Texture* texture);
 	void setTextureRect(sf::IntRect rect);
-
 
 	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(const float dt);
