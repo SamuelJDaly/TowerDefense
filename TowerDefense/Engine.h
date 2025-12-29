@@ -3,7 +3,10 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "TextureHandler.h"
-#include "Gamestate.h"
+#include "State_Game.h"
+#include "State_Menu.h"
+#include "State_Editor.h"
+#include "State_Test.h"
 
 /*
 Project: Tower Defense, Engine

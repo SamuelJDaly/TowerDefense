@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include <vector>
 #include <stack>
 #include <SFML/Graphics.hpp>
@@ -10,7 +11,7 @@
 /*
 Project: Tower Defense, Gamestate System
 Created: 26 MAY 2025
-Updated: 28 NOV 2025
+Updated: 29 DEC 2025
 
 Description:
 	This file contains the Gamestate System. This is what actually ties the various systems (tower, hostile, map, etc...) together and manages their interactions.
@@ -21,7 +22,7 @@ Description:
 		Update:
 			This is where per-frame logic happens. Events that need to happen once per frame for smooth movement, etc are called here. This includes things
 			like collision, movement, etc...
-			
+
 		Draw:
 			This is where any draw calls happen.
 
@@ -38,7 +39,7 @@ Description:
 
 //##########################	STATE ENUMS	#########################################
 enum class En_Gamestate {
-	MENU, GAME, EDITOR, END
+	MENU, GAME, EDITOR, TEST, END
 };
 
 //##########################	BASE CLASS	#########################################
@@ -46,7 +47,7 @@ class Gamestate
 {
 protected:
 	//Common Data
-	TextureHandler* textureHandler =  nullptr;
+	TextureHandler* textureHandler = nullptr;
 	sf::RenderWindow* window;
 	bool isFinished = false;
 	En_Gamestate nextState = En_Gamestate::END;
@@ -59,240 +60,5 @@ public:
 	//Virtual Functions
 	virtual void update(float dt) = 0;
 	virtual void poll(sf::RenderWindow& win, sf::Event& event) = 0;
-	virtual void draw(sf::RenderWindow &win) = 0;
-};
-
-
-//##########################	GAME	#############################################
-class State_Game : public Gamestate {
-private:
-	//# Data
-	//Camera
-	sf::View view_playField;
-	sf::View view_gui;
-	sf::Vector2f viewSize_playField = { 1280,720 };
-	sf::Vector2f viewSize_gui = { 1280,720 };
-	sf::FloatRect viewport_playField = {0,0,1,1};
-	sf::FloatRect viewport_gui = {0,0,1,1};
-
-	sf::FloatRect cameraBounds = {-100,-100,600,600}; //How much can the camera offset
-	float panSpeed = 300.f;
-	float zoomSpeed = .03f;
-	float currZoom = 1.f;
-	sf::Vector2f zoomBounds = {1.5f,.70f};
-
-	float towerScale_palette = 1.5f;
-	float towerScale_playfield = 1.25f;
-
-	//Gui
-	Gui* gui;
-	std::vector<Tower> palette; //Tower Selection
-	int paletteColumns = 2;
-	int palettePadding = 20; //Px between palette entries
-	sf::Vector2f palettePos;
-	sf::Vector2f paletteSize = {1,1};
-	sf::Vector2f paletteRatio = {.15f,1.f}; //What proportion of the screen palette takes up
-	float paletteEntrySize = 50.f; //How big the palette options are
-	bool isPalletePicked = false;
-	Tower* palettePick = nullptr;
-
-	//Gameplay
-	TileMap* tileMap;
-	std::vector<Hostile*> hostiles;
-	std::vector<Tower*> towers;
-	std::vector<Projectile*> projectiles;
-	std::stack<Round*> rounds;
-	Tower* ctrlTower = nullptr;
-
-	float hp = 10.f;
-	
-
-	//Util
-	void initGui();
-	void initView();
-	void initMap();
-	void initHostiles();
-	void initTest();
-
-public:
-	//Constructor and Destructor
-	State_Game(TextureHandler* textureHandler, sf::RenderWindow* window);
-	~State_Game();
-
-	//Primary Functions
-	void poll(sf::RenderWindow& win, sf::Event& event);
-	void paletteSelect();
-	void paletteDeselect();
-	
-	void updateCollision();
-	void updateTargeting();
-	void updateCamera(float dt); //zoom is handled in polling function :(
-	void update(float dt);
-
-	void drawPallete(sf::RenderWindow &win);
-	void draw(sf::RenderWindow &win);
-
-	
-};
-
-
-//##########################	MENU 	#############################################
-
-class State_Menu : public Gamestate {
-private:
-	//## Data
-	Gui* gui;
-	sf::Font font_generic;
-
-	sf::Sprite background;
-
-	//Text
-	Widget_Label* label_title;
-
-	//Buttons
-	Widget_Button* btn_game;
-	Widget_Button* btn_editor;
-	Widget_Button* btn_quit;
-
-	//## Util
-	void initGui();
-
-public:
-	//Constructor and Destructor
-	State_Menu(TextureHandler* textureHandler, sf::RenderWindow* window);
-	~State_Menu();
-
-	//Primary Functions
-	void update(float dt);
-	void poll(sf::RenderWindow& win, sf::Event& event);
-	void draw(sf::RenderWindow &win);
-
-};
-
-
-
-//##########################	MAP EDITOR 	#############################################
-class State_Editor : public Gamestate {
-private:
-	//## Data
-	Gui* gui;
-	sf::Texture* activeTileset = nullptr;
-	sf::Font* font;
-
-	//Camera
-	sf::View view_map;
-	sf::View view_gui;
-	sf::Vector2f viewSize_map = { 1280.f,720.f };
-	sf::Vector2f viewSize_gui = { 1280.f,720.f };
-	sf::FloatRect viewport_map = { .25f,0.f,1.f,.2f};
-	sf::FloatRect viewport_gui = { 0.f,0.f,1.f,1.f };
-
-	sf::FloatRect cameraBounds = { -100.f,-100.f,600.f,600.f }; //How much can the camera offset
-	float panSpeed = 300.f;
-	float zoomSpeed = .03f;
-	float currZoom = 1.f;
-	sf::Vector2f zoomBounds = { 1.7f,.50f };
-
-	//Gui
-	float leftPanelRatio = .25f; //Fraction of view left panel covers (x axis)
-	float bottomPanelRatio = .3f; //Fraction of view bottom panel covers (y axis)
-	Widget_Button* btn_save;
-	Widget_Button* btn_SizeUpX;
-	Widget_Button* btn_SizeDnX;
-	Widget_Button* btn_SizeUpY;
-	Widget_Button* btn_SizeDnY;
-	Widget_Button* btn_loadTilset;
-	Widget_Panel* pnl_left;
-	Widget_TabbedPanel* pnl_bottom;
-	Widget_Label* label_mapSize;
-	Widget_Textbox* txtBx_palettePath;
-	Widget_Textbox* txtBx_mapPath;
-	sf::Vector2f bottomPanelPos = { 0.f,0.f };
-
-	//Texture Select
-	Spritesheet spritesheet;
-	std::vector<sf::Sprite> palette;
-	int paletteColumns = 3;
-	int numTextures = 0;
-	sf::Vector2f palettePos = {0.f,0.f};
-	sf::Vector2f paletteSize = { 1.f,1.f };
-	sf::Vector2f paletteRatio = {.75,.75};
-	sf::RectangleShape paletteBorder;
-	int paletteSelect = -1;
-	sf::RectangleShape selectBorder;
-	
-	
-
-	//Map
-	sf::FloatRect mapBoundry;
-	sf::Vector2i mapSize = { 10,10 };
-	float tileSize = 50.f;
-	sf::Image blankImage;
-	sf::Texture* blankTexture;
-	TileMap* tilemap;
-	sf::Color gridColor = sf::Color::Red;
-	std::vector<sf::Vertex> grid_horizontal;
-	std::vector<sf::Vertex> grid_vertical;
-	
-
-	//Path
-	sf::CircleShape nodeDisplay;
-	sf::CircleShape nodeButton;
-	Node* pathHead = nullptr;
-	Node* pathEnd = nullptr;
-	std::vector<sf::Vertex> pathLines;
-
-	//General
-	std::string filename = "resource/map/editor";
-
-	bool isPainting = false;
-	bool nodePlace = false;
-	bool isChanged = false;
-
-	bool isPress_ctrl = false;
-	bool isPress_z = false;
-	bool isPress_s = false;
-
-	//## Util
-	void initGui();
-	void initCamera();
-	void initTest();
-	void initMap();
-	void initPalleteTool();
-	void initPathTool();
-
-	void addNode(sf::Vector2f pos);
-	void remNode();
-	void refreshGrid();
-
-public:
-	//Constructor and Destructor
-	State_Editor(TextureHandler* textureHandler, sf::RenderWindow* window);
-	~State_Editor();
-
-	//Primary Functions
-	void loadPallete(int txSize, std::string filepath);
-
-	void saveMap(std::string filepath);
-	void savePath(std::string filepath);
-	void save();
-
-	void loadMap(std::string filepath);
-	void loadPath(std::string filepath);
-	void load(std::string mapname);
-
-	void poll(sf::RenderWindow& win, sf::Event& event);
-
-	void updatePathTool();
-	void updateCamera(float dt);
-	void updatePainting();
-	void update(float dt);
-
-	
-	void drawMap(sf::RenderWindow& win);
-	void drawPallete(sf::RenderWindow &win);
-	void drawRoundTool(sf::RenderWindow& win);
-	void drawPathTool(sf::RenderWindow& win);
-	void drawPath(sf::RenderWindow& win);
-	void draw(sf::RenderWindow& win);
+	virtual void draw(sf::RenderWindow& win) = 0;
 };

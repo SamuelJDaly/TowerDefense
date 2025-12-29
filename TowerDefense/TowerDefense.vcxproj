@@ -138,6 +138,10 @@
     <ClCompile Include="Hostile.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="State_Editor.cpp" />
+    <ClCompile Include="State_Game.cpp" />
+    <ClCompile Include="State_Menu.cpp" />
+    <ClCompile Include="State_Test.cpp" />
     <ClCompile Include="TextureHandler.cpp" />
     <ClCompile Include="Tower.cpp" />
     <ClCompile Include="Util.cpp" />
@@ -149,6 +153,10 @@
     <ClInclude Include="Gui.h" />
     <ClInclude Include="Hostile.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="State_Editor.h" />
+    <ClInclude Include="State_Game.h" />
+    <ClInclude Include="State_Menu.h" />
+    <ClInclude Include="State_Test.h" />
     <ClInclude Include="TextureHandler.h" />
     <ClInclude Include="Tower.h" />
     <ClInclude Include="Util.h" />
