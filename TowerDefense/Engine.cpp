@@ -42,7 +42,8 @@ void Engine::initTextures()
 	textureHandler->addTexture("btn_blank", "resource/tex/btn_blank.png");
 	textureHandler->addTexture("btn_blank_sq", "resource/tex/btn_blank_sq.png");
 	textureHandler->addTexture("btn_blank_sq_ol", "resource/tex/btn_blank_sq_ol.png");
-
+	textureHandler->addTexture("btn_blank_sq_tst", "resource/tex/btn_blank_sq_tst.png");
+	textureHandler->addTexture("btn_tst_odd", "resource/tex/btn_test_odd.png");
 
 	textureHandler->addTexture("bg_menu", "resource/tex/bg_menu.png");
 }

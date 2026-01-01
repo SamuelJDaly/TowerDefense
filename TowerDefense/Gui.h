@@ -183,10 +183,9 @@ private:
 	sf::Text label;
 	std::string text = "";
 	sf::Font* font;
-
-	sf::Color col_base = sf::Color(255, 255, 255, 255); //Base color
-	float highlightModifier = 0.2; // default 30% highlight
-	sf::Color col_actual = sf::Color(204, 204, 204, 255); //UnHighlit color
+	
+	sf::Color baseColor = sf::Color::White;
+	sf::Color highlightColor = sf::Color::White;
 	bool isHighlight = false;
 
 	//Util
@@ -207,16 +206,15 @@ public:
 
 	sf::FloatRect getGlobalBounds();
 	sf::FloatRect getLocalBounds();
+
+	void setHighlightColor(sf::Color col);
+	void toggleHighlight();
 	
 	void setText(std::string newText);
 	void setFont(sf::Font* newFont);
 	void setSize(sf::Vector2i size);
 	void setCharacterSize(unsigned int size);
 	void setTextColor(sf::Color color);
-
-	void setHighlightModifier(float value);
-	void toggleHighlight();
-	void setHighlightState(bool state);
 };
 
 

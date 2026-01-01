@@ -203,8 +203,6 @@ sf::Vector2f Widget_Panel::getSize() {
 
 #pragma endregion
 
-
-
 //####################################### TABBED PANEL
 #pragma region tabbedpanel
 void Widget_TabbedPanel::arrange() {
@@ -442,11 +440,10 @@ void Widget_Label::centerOrigin()
 	label.setOrigin(cX, cY);
 }
 
+
 Widget_Label::Widget_Label()
 {
-	float temp = 255 * (1 - highlightModifier);
-	col_actual = col_base * sf::Color(temp, temp, temp, 255);
-	label.setFillColor(col_actual);
+	
 }
 
 Widget_Label::~Widget_Label()
@@ -491,6 +488,27 @@ sf::FloatRect Widget_Label::getLocalBounds()
 	return label.getLocalBounds();
 }
 
+void Widget_Label::setHighlightColor(sf::Color col)
+{
+	highlightColor = col;
+
+	if (isHighlight) {
+		label.setFillColor(highlightColor);
+	}
+}
+
+void Widget_Label::toggleHighlight()
+{
+	isHighlight = !isHighlight;
+
+	if (isHighlight) {
+		label.setFillColor(highlightColor);
+	}
+	else {
+		label.setFillColor(baseColor);
+	}
+}
+
 void Widget_Label::setText(std::string newText)
 {
 	text = newText;
@@ -517,45 +535,10 @@ void Widget_Label::setCharacterSize(unsigned int size)
 
 void Widget_Label::setTextColor(sf::Color color)
 {
-	col_base = color;
+	baseColor = color;
 
-	float temp = 1 - highlightModifier;
-	col_actual = col_base * sf::Color(temp, temp, temp, 1);
-
-	label.setFillColor(col_actual);
-}
-
-void Widget_Label::setHighlightModifier(float value)
-{
-	highlightModifier = value;
-	float temp = 1 - value;
-	col_actual = col_base * sf::Color(temp, temp, temp, 1);
-	label.setFillColor(col_actual);
-}
-
-void Widget_Label::toggleHighlight()
-{
-	isHighlight = !isHighlight;
-
-	if (isHighlight) {
-		//Add highlight modifier to color (ie set to base color)
-		label.setFillColor(col_base);
-	}
-	else {
-		label.setFillColor(col_actual);
-	}
-}
-
-void Widget_Label::setHighlightState(bool state)
-{
-	isHighlight = state;
-
-	if (isHighlight) {
-		//Add highlight modifier to color (ie set to base color)
-		label.setFillColor(col_base);
-	}
-	else {
-		label.setFillColor(col_actual);
+	if (!isHighlight) {
+		label.setFillColor(baseColor);
 	}
 }
 
@@ -1106,6 +1089,7 @@ bool Widget_Button::contains(sf::Vector2f pos)
 	return false;
 }
 
+#pragma endregion
 
 
 //############################################################################################

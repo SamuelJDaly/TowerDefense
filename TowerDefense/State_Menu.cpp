@@ -14,6 +14,8 @@ void State_Menu::initGui()
 	//Title
 	label_title = new Widget_Label();
 	label_title->setFont(&font_generic);
+	//label_title->setTextColor(sf::Color(255, 100, 100, 255));
+	label_title->setHighlightColor(sf::Color::Yellow);
 	label_title->setText("Generic Tower Defense");
 	label_title->setCharacterSize(54);
 	label_title->setPosition({ std::floor(centerX), 100 });
@@ -22,18 +24,21 @@ void State_Menu::initGui()
 	//Game button
 	btn_game = new Widget_Button();
 	btn_game->setTexture(textureHandler->lookup("btn_blank_sq_ol"));
+	btn_game->setType(en_SliceType::NINE);
 	btn_game->setSize({ 300,50 });
 	btn_game->setPosition({ centerX - 150,centerY - 100 });
 
 	//Editor button
 	btn_editor = new Widget_Button();
 	btn_editor->setTexture(textureHandler->lookup("btn_blank_sq_ol"));
+	btn_editor->setType(en_SliceType::NINE);
 	btn_editor->setSize({ 300,50 });
 	btn_editor->setPosition({ centerX - 150,centerY });
 
 	//Quit button
 	btn_quit = new Widget_Button();
 	btn_quit->setTexture(textureHandler->lookup("btn_blank_sq_ol"));
+	btn_quit->setType(en_SliceType::NINE);
 	btn_quit->setSize({ 300,50 });
 	btn_quit->setPosition({ centerX - 150,centerY + 100 });
 
@@ -94,6 +99,25 @@ void State_Menu::update(float dt)
 
 void State_Menu::draw(sf::RenderWindow& win)
 {
+	
+	sf::Vertex line1[2];
+	sf::Vertex line2[2];
+	
+	float centerX = win.getSize().x / 2;
+
+	line1[0].position = { centerX - 150, 0};
+	line1[1].position = { centerX - 150, (float)win.getSize().y};
+	line1[0].color = {255,0,0,255};
+	line1[1].color = { 255,0,0,255 };
+
+	line2[0].position = { centerX + 150, 0 };
+	line2[1].position = { centerX + 150, (float)win.getSize().y };
+	line2[0].color = { 255,0,0,255 };
+	line2[1].color = { 255,0,0,255 };
+	
+
 	win.draw(background);
 	gui->draw(win);
+	//win.draw(line1, 2, sf::Lines);
+	//win.draw(line2, 2, sf::Lines);
 }
