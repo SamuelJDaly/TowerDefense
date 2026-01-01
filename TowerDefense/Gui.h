@@ -25,6 +25,8 @@ Description:
 		-Widget ID System
 */
 
+
+
 //############################################################################################
 //				WIDGETS
 //############################################################################################
@@ -38,7 +40,7 @@ protected:
 	bool isFocus = false;
 	sf::View* view = nullptr;
 
-	sf::Vector2f size = { 1,1 };
+	sf::Vector2f size = { 32,32};
 	sf::Vector2f pos = {0,0};
 
 public:
@@ -281,16 +283,27 @@ enum class ButtonState {
 	UNPRESS, HOVER, PRESS
 };
 
+enum class en_SliceType {
+	NONE,THREE,FOUR,NINE
+};
+
 class Widget_Button : public Widget {
 private:
 	//Data
-	sf::Sprite graph;
 	ButtonState state = ButtonState::UNPRESS;
 	ButtonState lastState = ButtonState::UNPRESS;
 	sf::Vector2i textureSize = { 1,1 };
+	sf::Texture* texture;
+
+	sf::FloatRect bounds = {0,0,1,1};
+
+	en_SliceType sliceType = en_SliceType::THREE;
+
+	std::vector<sf::Sprite*> slices;
 
 	//Util
-	
+	void align();
+	void updateTexture();
 
 public:
 	//Constructor and Destructor
@@ -300,11 +313,12 @@ public:
 
 	//Primary Functions
 	void setState(ButtonState newState);
-	void setPosition(sf::Vector2f pos);
+	void setPosition(sf::Vector2f newPos);
 	void move(sf::Vector2f offset);
-	void setSize(sf::Vector2f size);
-	void setTexture(sf::Texture* texture);
-	void setTextureRect(sf::IntRect rect);
+	void setSize(sf::Vector2f newSize);
+	void setTexture(sf::Texture* newTexture);
+
+	void setType(en_SliceType newType);
 
 	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(const float dt);

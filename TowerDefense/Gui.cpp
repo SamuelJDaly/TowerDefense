@@ -5,6 +5,7 @@
 //############################################################################################
 
 //#################################### BASE CLASS
+#pragma region base
 void Widget::setLayer(int newLayer)
 {
 	layer = newLayer;
@@ -43,6 +44,8 @@ bool Widget::getFocus()
 sf::Vector2f Widget::getPos() {
 	return pos;
 }
+#pragma endregion
+
 
 //#################################### PANEL
 #pragma region Panel
@@ -203,6 +206,7 @@ sf::Vector2f Widget_Panel::getSize() {
 
 
 //####################################### TABBED PANEL
+#pragma region tabbedpanel
 void Widget_TabbedPanel::arrange() {
 	float tabSizeX = tabX * size.x;
 	float tabSizeY = tabY * size.y;
@@ -400,8 +404,11 @@ uint8_t Widget_TabbedPanel::getTabSel()
 	return tabSel;
 }
 
+#pragma endregion
 
 //#################################### SCROLLABLE PANEL
+#pragma region scrollpanel
+
 Widget_ScrollPanel::Widget_ScrollPanel() {
 
 }
@@ -422,6 +429,7 @@ void Widget_ScrollPanel::draw(sf::RenderWindow& win) {
 	
 }
 
+#pragma endregion
 
 //####################################### LABEL
 #pragma region Label
@@ -764,12 +772,172 @@ std::string Widget_Textbox::getText()
 //####################################	BUTTON
 #pragma region Button
 
+void Widget_Button::align()
+{
+	float scaleX = 1;
+	float scaleY = 1;
+
+	//Calculate floor and ceiling fractions to make non equally
+	//divisible textures work
+	int thirdF = std::floor(textureSize.x / 3.f);
+	int thirdC = std::ceil(textureSize.x / 3.f);
+	int thirdFY = std::floor(textureSize.y / 3.f);
+	int thirdCY = std::ceil(textureSize.y / 3.f);
+	int halfF = std::floor(textureSize.x / 2.f);
+	int halfC = std::ceil(textureSize.x / 2.f);
+	int halfFY = std::floor(textureSize.y / 2.f);
+	int halfCY = std::ceil(textureSize.y / 2.f);
+
+	float thirdX = size.x / 3;
+	float thirdY = size.y / 3;
+
+	switch (sliceType) {
+	case en_SliceType::NONE:
+		//Pos
+		slices.at(0)->setPosition(pos);
+
+		//Scale
+		scaleX = size.x / textureSize.x;
+		scaleY = size.y / textureSize.y;
+		slices.at(0)->setScale(scaleX, scaleY);
+
+		break;
+	case en_SliceType::THREE:
+		//Pos
+		slices.at(0)->setPosition(pos);
+		slices.at(1)->setPosition({pos.x + thirdF, pos.y});
+		slices.at(2)->setPosition({ pos.x + (size.x - thirdF), pos.y});
+
+		//Scale
+		slices.at(0)->setScale({ 1, size.y / textureSize.y });
+		scaleX = (size.x - (2 * thirdF)) / (thirdC);
+		slices.at(1)->setScale({scaleX , size.y / textureSize.y });
+		slices.at(2)->setScale({ 1, size.y / textureSize.y });
+
+		break;
+	case en_SliceType::FOUR:
+		//Pos
+		slices.at(0)->setPosition({pos.x, pos.y});
+		slices.at(1)->setPosition({ pos.x + (size.x / 2.f), pos.y});
+		slices.at(2)->setPosition({ pos.x, pos.y + (size.y / 2.f)});
+		slices.at(3)->setPosition({ pos.x + (size.x / 2.f), pos.y + (size.y  / 2.f)});
+
+		//Scale
+		slices.at(0)->setScale({ (size.x / 2.f) / (halfF),(size.y / 2.f) / (halfFY)});
+		slices.at(1)->setScale({ (size.x / 2.f) / (halfC), (size.y / 2.f) / (halfFY)});
+		slices.at(2)->setScale({ (size.x / 2.f) / (halfF), (size.y / 2.f) / (halfCY)});
+		slices.at(3)->setScale({ (size.x / 2.f) / (halfC), (size.y / 2.f) / (halfCY)});
+		
+
+		break;
+	case en_SliceType::NINE:
+		//Pos
+		slices.at(0)->setPosition({pos.x, pos.y});
+		slices.at(1)->setPosition({ pos.x + thirdF, pos.y});
+		slices.at(2)->setPosition({ pos.x + size.x - thirdF, pos.y});
+
+		slices.at(3)->setPosition({ pos.x, pos.y + thirdFY });
+		slices.at(4)->setPosition({ pos.x + thirdF, pos.y + thirdFY });
+		slices.at(5)->setPosition({ pos.x + size.x - thirdF, pos.y + thirdFY });
+
+		slices.at(6)->setPosition({ pos.x, pos.y + size.y - thirdFY});
+		slices.at(7)->setPosition({ pos.x + thirdF, pos.y + size.y - thirdFY });
+		slices.at(8)->setPosition({ pos.x + size.x - thirdF, pos.y + size.y - thirdFY });
+
+		//Scale
+		scaleX = (size.x - (2 * thirdF))  / (thirdC);
+		scaleY = (size.y - (2 * thirdFY)) / (thirdCY);
+		
+		slices.at(1)->setScale(scaleX, 1);
+		slices.at(3)->setScale(1, scaleY);
+		slices.at(4)->setScale(scaleX,scaleY);
+		slices.at(5)->setScale(1, scaleY);
+		slices.at(7)->setScale(scaleX, 1);
+
+		break;
+	}
+}
+
+void Widget_Button::updateTexture()
+{
+	int offset = 0;
+
+	//Calculate floor and ceiling fractions to make non equally
+	//divisible textures work
+	int thirdF = std::floor(textureSize.x / 3.f);
+	int thirdC = std::ceil(textureSize.x / 3.f);
+	int thirdFY = std::floor(textureSize.y / 3.f);
+	int thirdCY = std::ceil(textureSize.y / 3.f);
+	int halfF = std::floor(textureSize.x / 2.f);
+	int halfC = std::ceil(textureSize.x / 2.f);
+	int halfFY = std::floor(textureSize.y / 2.f);
+	int halfCY = std::ceil(textureSize.y / 2.f);
+
+	for (sf::Sprite* s : slices) {
+		s->setTexture(*texture);
+	}
+
+	switch (state) {
+	case ButtonState::UNPRESS:
+		offset = 0;
+		break;
+	case ButtonState::HOVER:
+		offset = textureSize.x;
+		break;
+	case ButtonState::PRESS:
+		offset = 2 * textureSize.x;
+		break;
+	}
+
+	switch (sliceType) {
+	case en_SliceType::NONE:
+		slices.front()->setTextureRect({ offset,0,(int)textureSize.x,(int)textureSize.y });
+		break;
+	case en_SliceType::THREE:
+
+		slices.at(0)->setTextureRect({ offset,0,thirdF,(int)textureSize.y});
+		slices.at(1)->setTextureRect({ offset + thirdF,0,thirdC,(int)textureSize.y });
+		slices.at(2)->setTextureRect({ offset + thirdF + thirdC,0,thirdF,(int)textureSize.y });
+
+		break;
+	case en_SliceType::FOUR:
+
+		slices.at(0)->setTextureRect({ offset,0,halfF,halfFY });
+		slices.at(1)->setTextureRect({ offset + halfF,0,halfC,halfFY });
+		slices.at(2)->setTextureRect({ offset, halfFY,halfF,halfCY});
+		slices.at(3)->setTextureRect({ offset + halfF, halfFY,halfC,halfCY});
+
+		break;
+	case en_SliceType::NINE:
+
+		slices.at(0)->setTextureRect({ offset,0,thirdF,thirdFY });
+		slices.at(1)->setTextureRect({ offset + thirdF,0,thirdC,thirdFY });
+		slices.at(2)->setTextureRect({ offset + thirdF + thirdC,0,thirdF,thirdFY });
+
+		slices.at(3)->setTextureRect({ offset,thirdFY,thirdF,thirdCY });
+		slices.at(4)->setTextureRect({ offset + thirdF,thirdFY,thirdC,thirdCY });
+		slices.at(5)->setTextureRect({ offset + thirdF + thirdC, thirdFY,thirdF,thirdCY });
+
+		slices.at(6)->setTextureRect({ offset,thirdFY + thirdCY,thirdF,thirdFY });
+		slices.at(7)->setTextureRect({ offset + thirdF,thirdFY + thirdCY,thirdC,thirdFY });
+		slices.at(8)->setTextureRect({ offset + thirdF + thirdC,thirdFY + thirdCY,thirdF,thirdFY });
+		break;
+	}
+
+}
+
 Widget_Button::Widget_Button()
 {
+	for (int i = 0; i < 3; i++) {
+		slices.push_back(new sf::Sprite());
+	}
 }
 
 Widget_Button::~Widget_Button()
 {
+	for (sf::Sprite* s : slices) {
+		delete s;
+	}
 }
 
 void Widget_Button::setState(ButtonState newState)
@@ -777,42 +945,92 @@ void Widget_Button::setState(ButtonState newState)
 	state = newState;
 }
 
-void Widget_Button::setPosition(sf::Vector2f pos)
+void Widget_Button::setPosition(sf::Vector2f newPos)
 {
-	graph.setPosition(pos);
+	sf::Vector2f offset = { 0,0 };
+	offset.x = newPos.x - pos.x;
+	offset.y = newPos.y - pos.y;
+	pos = newPos;
+
+	bounds.left = pos.x;
+	bounds.top = pos.y;
+
+	for (sf::Sprite* s : slices) {
+		s->move(offset);
+	}
 }
 
 void Widget_Button::move(sf::Vector2f offset)
 {
-	graph.move(offset);
+	bounds.top += offset.y;
+	bounds.left += offset.x;
+
+	for (sf::Sprite* s : slices) {
+		s->move(offset);
+	}
 }
 
-void Widget_Button::setSize(sf::Vector2f size)
+void Widget_Button::setSize(sf::Vector2f newSize)
 {
-	float scaleX = size.x / graph.getGlobalBounds().width;
-	float scaleY = size.y / graph.getGlobalBounds().height;
+	size = newSize;
 
-	graph.setScale(scaleX, scaleY);
+	bounds.width = size.x;
+	bounds.height = size.y;
+
+	this->align();
 }
 
-void Widget_Button::setTexture(sf::Texture* texture)
+void Widget_Button::setTexture(sf::Texture* newTexture)
 {
 	//Check for valid ptr
-	if (!texture) {
+	if (!newTexture) {
 		std::cout << "Invalid Button Texture..." << std::endl;
 		return;
 	}
 
-	textureSize.x = texture->getSize().x / 3;
+	texture = newTexture;
+
+	textureSize.x = texture->getSize().x / 3.f;
 	textureSize.y = texture->getSize().y;
 
-	graph.setTexture(*texture);
-	graph.setTextureRect({0,0,textureSize.x,textureSize.y});
+
+	this->updateTexture();
+	this->align();
 }
 
-void Widget_Button::setTextureRect(sf::IntRect rect)
+void Widget_Button::setType(en_SliceType newType)
 {
-	graph.setTextureRect(rect);
+	sliceType = newType;
+
+	for (sf::Sprite* s : slices) {
+		delete s;
+	}
+
+	slices.clear();
+
+	switch (sliceType) {
+	case  en_SliceType::NONE:
+		slices.push_back(new sf::Sprite());
+		break;
+	case  en_SliceType::THREE:
+		for (int i = 0; i < 3; i++) {
+			slices.push_back(new sf::Sprite());
+		}
+		break;
+	case  en_SliceType::FOUR:
+		for (int i = 0; i < 4; i++) {
+			slices.push_back(new sf::Sprite());
+		}
+		break;
+	case  en_SliceType::NINE:
+		for (int i = 0; i < 9; i++) {
+			slices.push_back(new sf::Sprite());
+		}
+		break;
+	}
+
+	this->updateTexture();
+	this->align();
 }
 
 void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
@@ -820,15 +1038,15 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 	if (event.type == sf::Event::MouseMoved) {
 		//Get Mouse Pos
 		sf::Vector2i mousePos = sf::Mouse::getPosition(win);
-		if (graph.getGlobalBounds().contains({(float)mousePos.x, (float)mousePos.y})) {
+		if (bounds.contains({(float)mousePos.x, (float)mousePos.y})) {
 			lastState = state;
 			state = ButtonState::HOVER;
-			graph.setTextureRect({ textureSize.x,0,textureSize.x,textureSize.y });
+			this->updateTexture();
 		}
 		else {
 			lastState = state;
 			state = ButtonState::UNPRESS;
-			graph.setTextureRect({ 0,0,textureSize.x,textureSize.y });
+			this->updateTexture();
 		}
 
 	}
@@ -837,7 +1055,7 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 		if (state == ButtonState::HOVER) {
 			lastState = state;
 			state = ButtonState::PRESS;
-			graph.setTextureRect({ textureSize.x*2,0,textureSize.x,textureSize.y });
+			this->updateTexture();
 		}
 	}
 
@@ -845,15 +1063,15 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 		sf::Vector2i mousePos = sf::Mouse::getPosition(win);
 		if (state == ButtonState::PRESS) {
 			lastState = state;
-			if (graph.getGlobalBounds().contains({ (float)mousePos.x, (float)mousePos.y })) {
+			if (bounds.contains({ (float)mousePos.x, (float)mousePos.y })) {
 				lastState = state;
 				state = ButtonState::HOVER;
-				graph.setTextureRect({ textureSize.x,0,textureSize.x,textureSize.y });
+				this->updateTexture();
 			}
 			else {
 				lastState = state;
 				state = ButtonState::UNPRESS;
-				graph.setTextureRect({ 0,0,textureSize.x,textureSize.y });
+				this->updateTexture();
 			}
 		}
 	}
@@ -869,7 +1087,9 @@ void Widget_Button::update(const float dt)
 
 void Widget_Button::draw(sf::RenderWindow& win)
 {
-	win.draw(graph);
+	for (sf::Sprite* s : slices) {
+		win.draw(*s);
+	}
 }
 
 ButtonState Widget_Button::getState()
@@ -879,7 +1099,7 @@ ButtonState Widget_Button::getState()
 
 bool Widget_Button::contains(sf::Vector2f pos)
 {
-	if (graph.getGlobalBounds().contains(pos)) {
+	if (bounds.contains(pos)) {
 		return true;
 	}
 
