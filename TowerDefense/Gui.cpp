@@ -467,11 +467,13 @@ void Widget_Label::draw(sf::RenderWindow& win)
 
 void Widget_Label::setPosition(sf::Vector2f newPos)
 {
+	pos = newPos;
 	label.setPosition(newPos);
 }
 
 void Widget_Label::move(sf::Vector2f offset)
 {
+	pos += offset;
 	label.move(offset);
 }
 
