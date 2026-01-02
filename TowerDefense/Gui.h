@@ -293,6 +293,8 @@ private:
 	sf::Vector2i textureSize = { 1,1 };
 	sf::Texture* texture;
 
+	Widget_Label* label;
+
 	sf::FloatRect bounds = {0,0,1,1};
 
 	en_SliceType sliceType = en_SliceType::THREE;
@@ -315,6 +317,12 @@ public:
 	void move(sf::Vector2f offset);
 	void setSize(sf::Vector2f newSize);
 	void setTexture(sf::Texture* newTexture);
+
+	void setLabelFont(sf::Font* font);
+	void setLabelCharSize(unsigned int size);
+	void setLabelTextColor(sf::Color color);
+	void setLabelHighlightColor(sf::Color color);
+	void setLabelText(std::string text);
 
 	void setType(en_SliceType newType);
 

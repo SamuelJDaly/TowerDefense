@@ -434,10 +434,11 @@ void Widget_ScrollPanel::draw(sf::RenderWindow& win) {
 
 void Widget_Label::centerOrigin()
 {
-	float cX = std::round(label.getLocalBounds().width / 2.f);
-	float cY = std::round(label.getLocalBounds().height / 2.f);
+	//float cX = std::round(label.getLocalBounds().width / 2.f);
+	//float cY = std::round(label.getLocalBounds().height / 2.f);
+	sf::Vector2f target = label.getGlobalBounds().getSize() / 2.f + label.getLocalBounds().getPosition();
 
-	label.setOrigin(cX, cY);
+	label.setOrigin(std::round(target.x), std::round(target.y));
 }
 
 
@@ -839,6 +840,9 @@ void Widget_Button::align()
 
 		break;
 	}
+
+	//Label
+	label->setPosition({ pos.x + (size.x / 2), pos.y + (size.y / 2) });
 }
 
 void Widget_Button::updateTexture()
@@ -914,6 +918,9 @@ Widget_Button::Widget_Button()
 	for (int i = 0; i < 3; i++) {
 		slices.push_back(new sf::Sprite());
 	}
+
+	label = new Widget_Label();
+	label->setPosition({ pos.x + (size.x / 2), pos.y + (size.y / 2) });
 }
 
 Widget_Button::~Widget_Button()
@@ -921,6 +928,8 @@ Widget_Button::~Widget_Button()
 	for (sf::Sprite* s : slices) {
 		delete s;
 	}
+
+	delete label;
 }
 
 void Widget_Button::setState(ButtonState newState)
@@ -941,6 +950,9 @@ void Widget_Button::setPosition(sf::Vector2f newPos)
 	for (sf::Sprite* s : slices) {
 		s->move(offset);
 	}
+
+	//Label
+	label->setPosition({ pos.x + (size.x / 2), pos.y + (size.y / 2) });
 }
 
 void Widget_Button::move(sf::Vector2f offset)
@@ -951,6 +963,8 @@ void Widget_Button::move(sf::Vector2f offset)
 	for (sf::Sprite* s : slices) {
 		s->move(offset);
 	}
+
+	label->move(offset);
 }
 
 void Widget_Button::setSize(sf::Vector2f newSize)
@@ -961,6 +975,7 @@ void Widget_Button::setSize(sf::Vector2f newSize)
 	bounds.height = size.y;
 
 	this->align();
+
 }
 
 void Widget_Button::setTexture(sf::Texture* newTexture)
@@ -979,6 +994,31 @@ void Widget_Button::setTexture(sf::Texture* newTexture)
 
 	this->updateTexture();
 	this->align();
+}
+
+void Widget_Button::setLabelFont(sf::Font* font)
+{
+	label->setFont(font);
+}
+
+void Widget_Button::setLabelCharSize(unsigned int size)
+{
+	label->setCharacterSize(size);
+}
+
+void Widget_Button::setLabelTextColor(sf::Color color)
+{
+	label->setTextColor(color);
+}
+
+void Widget_Button::setLabelHighlightColor(sf::Color color)
+{
+	label->setHighlightColor(color);
+}
+
+void Widget_Button::setLabelText(std::string text)
+{
+	label->setText(text);
 }
 
 void Widget_Button::setType(en_SliceType newType)
@@ -1018,6 +1058,8 @@ void Widget_Button::setType(en_SliceType newType)
 
 void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 {
+	label->poll(win, event);
+
 	if (event.type == sf::Event::MouseMoved) {
 		//Get Mouse Pos
 		sf::Vector2i mousePos = sf::Mouse::getPosition(win);
@@ -1065,7 +1107,7 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 
 void Widget_Button::update(const float dt)
 {
-	
+	label->update(dt);
 }
 
 void Widget_Button::draw(sf::RenderWindow& win)
@@ -1073,7 +1115,10 @@ void Widget_Button::draw(sf::RenderWindow& win)
 	for (sf::Sprite* s : slices) {
 		win.draw(*s);
 	}
+
+	label->draw(win);
 }
+
 
 ButtonState Widget_Button::getState()
 {
