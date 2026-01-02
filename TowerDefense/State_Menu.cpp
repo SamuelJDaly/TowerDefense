@@ -28,12 +28,22 @@ void State_Menu::initGui()
 	btn_game->setSize({ 300,50 });
 	btn_game->setPosition({ centerX - 150,centerY - 100 });
 
+	btn_game->setLabelFont(&font_second);
+	btn_game->setLabelText("Start Game");
+	btn_game->setLabelCharSize(20);
+	btn_game->setLabelTextColor(sf::Color::Black);
+
 	//Editor button
 	btn_editor = new Widget_Button();
 	btn_editor->setTexture(textureHandler->lookup("btn_blank_sq_ol"));
 	btn_editor->setType(en_SliceType::NINE);
 	btn_editor->setSize({ 300,50 });
 	btn_editor->setPosition({ centerX - 150,centerY });
+
+	btn_editor->setLabelFont(&font_second);
+	btn_editor->setLabelText("Level Editor");
+	btn_editor->setLabelCharSize(20);
+	btn_editor->setLabelTextColor(sf::Color::Black);
 
 	//Quit button
 	btn_quit = new Widget_Button();
@@ -42,13 +52,28 @@ void State_Menu::initGui()
 	btn_quit->setSize({ 300,50 });
 	btn_quit->setPosition({ centerX - 150,centerY + 100 });
 
+	btn_quit->setLabelFont(&font_second);
+	btn_quit->setLabelText("Quit");
+	btn_quit->setLabelCharSize(20);
+	btn_quit->setLabelTextColor(sf::Color::Black);
 
+	//Version Label
+	Widget_Label* label_version = new Widget_Label();
+	label_version->setFont(&font_second);
+	label_version->setCharacterSize(10);
+	label_version->setTextColor(sf::Color::Black);
+	label_version->setText("Version: " + VERSION_GAME);
+
+	int x = window->getSize().x - (int)label_version->getGlobalBounds().width - 10;
+	int y = window->getSize().y - (int)label_version->getGlobalBounds().height - 10;
+	label_version->setPosition({(float)x,(float)y});
 
 	//Add components to gui
 	gui->addWidget(label_title);
 	gui->addWidget(btn_game);
 	gui->addWidget(btn_editor);
 	gui->addWidget(btn_quit);
+	gui->addWidget(label_version);
 }
 
 State_Menu::State_Menu(TextureHandler* textureHandler, sf::RenderWindow* window)
@@ -56,6 +81,9 @@ State_Menu::State_Menu(TextureHandler* textureHandler, sf::RenderWindow* window)
 	this->textureHandler = textureHandler;
 	this->window = window;
 	if (!font_generic.loadFromFile("resource/font/jmhtype.ttf")) {
+		std::cerr << "Could not load menu font" << std::endl;
+	}
+	if (!font_second.loadFromFile("resource/font/roboto_regular.ttf")) {
 		std::cerr << "Could not load menu font" << std::endl;
 	}
 	this->initGui();

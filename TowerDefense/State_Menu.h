@@ -1,11 +1,13 @@
 #pragma once
 #include "Gamestate.h"
+#include "Version.h"
 
 class State_Menu : public Gamestate {
 private:
 	//## Data
 	Gui* gui;
 	sf::Font font_generic;
+	sf::Font font_second;
 
 	sf::Sprite background;
 
