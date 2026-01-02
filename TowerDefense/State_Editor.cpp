@@ -45,12 +45,29 @@ void State_Editor::initGui() {
 	btn_save->setTexture(textureHandler->lookup("btn_save"));
 	btn_save->setSize({ 20,20 });
 
+	
+
+	//## Load Tilset Button
+	btn_loadTilset = new Widget_Button();
+	btn_loadTilset->setTexture(textureHandler->lookup("btn_palette"));
+	btn_loadTilset->setPosition({ 20,50 });
+	btn_loadTilset->setLayer(2);
+	btn_loadTilset->setSize({ 20,20 });
+
+	//## Map size label
+	label_mapSize = new Widget_Label();
+	label_mapSize->setPosition(pnl_left->getPos());
+	label_mapSize->move({ pnl_left->getPos().x + pnl_left->getSize().x / 2, pnl_left->getSize().y - 50});
+	label_mapSize->setFont(font);
+	label_mapSize->setCharacterSize(14);
+	label_mapSize->setText("10 x 10");
+
 	//## Size buttons
 	//X increase
 	btn_SizeUpX = new Widget_Button();
 	btn_SizeUpX->setLayer(2);
-	btn_SizeUpX->setPosition(pnl_left->getPos());
-	btn_SizeUpX->move({ 70, pnl_left->getSize().y - 60 });
+	btn_SizeUpX->setPosition(label_mapSize->getPos());
+	btn_SizeUpX->move({ -1 * label_mapSize->getLocalBounds().width - 10, - 20});
 	btn_SizeUpX->setTexture(textureHandler->lookup("btn_plus"));
 	btn_SizeUpX->setSize({ 20,20 });
 
@@ -66,21 +83,6 @@ void State_Editor::initGui() {
 	//Y decrease
 	btn_SizeDnY = new Widget_Button(*btn_SizeDnX);
 	btn_SizeDnY->move({ 85,0 });
-
-	//## Load Tilset Button
-	btn_loadTilset = new Widget_Button();
-	btn_loadTilset->setTexture(textureHandler->lookup("btn_palette"));
-	btn_loadTilset->setPosition({ 20,50 });
-	btn_loadTilset->setLayer(2);
-	btn_loadTilset->setSize({ 20,20 });
-
-	//## Map size label
-	label_mapSize = new Widget_Label();
-	label_mapSize->setPosition(pnl_left->getPos());
-	label_mapSize->move({ 100, pnl_left->getSize().y - 50 });
-	label_mapSize->setFont(font);
-	label_mapSize->setCharacterSize(14);
-	label_mapSize->setText("10 x 10");
 
 
 	//## Text box

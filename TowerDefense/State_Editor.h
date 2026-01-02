@@ -64,7 +64,6 @@ private:
 	std::vector<sf::Vertex> grid_horizontal;
 	std::vector<sf::Vertex> grid_vertical;
 
-
 	//Path
 	sf::CircleShape nodeDisplay;
 	sf::CircleShape nodeButton;
