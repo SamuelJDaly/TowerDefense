@@ -7,7 +7,7 @@
 /*
 Project: GUI System
 Created: 28 MAY 2025
-Updated: 28 NOV 2025
+Updated: 1 JAN 2026
 
 Description:
 	This file contains the GUI System. The system is made up of a collection of widets, and a Gui class to manage them.
@@ -306,9 +306,13 @@ private:
 	void updateTexture();
 
 public:
-	//Constructor and Destructor
+	//Constructors and Destructor
 	Widget_Button();
+	Widget_Button(const Widget_Button &obj);
 	~Widget_Button();
+
+	//Operators
+	Widget_Button& operator=(const Widget_Button &obj);
 
 
 	//Primary Functions

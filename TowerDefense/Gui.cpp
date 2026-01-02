@@ -923,6 +923,26 @@ Widget_Button::Widget_Button()
 	label->setPosition({ pos.x + (size.x / 2), pos.y + (size.y / 2) });
 }
 
+Widget_Button::Widget_Button(const Widget_Button& obj)
+{
+	pos = obj.pos;
+	bounds = obj.bounds;
+	size = obj.size;
+	layer = obj.layer; //double check this is the desired behavior
+	view = obj.view;
+	textureSize = obj.textureSize;
+	texture = obj.texture;
+
+	//Label
+	label = new Widget_Label(*obj.label);
+	label->setPosition({ pos.x + (size.x / 2), pos.y + (size.y / 2) });
+
+	//Graphic
+	for (sf::Sprite* s : obj.slices) {
+		slices.push_back(new sf::Sprite(*s));
+	}
+}
+
 Widget_Button::~Widget_Button()
 {
 	for (sf::Sprite* s : slices) {
@@ -930,6 +950,28 @@ Widget_Button::~Widget_Button()
 	}
 
 	delete label;
+}
+
+Widget_Button& Widget_Button::operator=(const Widget_Button &obj)
+{
+	pos = obj.pos;
+	bounds = obj.bounds;
+	size = obj.size;
+	layer = obj.layer; //double check this is the desired behavior
+	view = obj.view;
+	textureSize = obj.textureSize;
+	texture = obj.texture;
+
+	//Label
+	label = new Widget_Label(*obj.label);
+	label->setPosition({ pos.x + (size.x / 2), pos.y + (size.y / 2) });
+
+	//Graphic
+	for (sf::Sprite* s : obj.slices) {
+		slices.push_back(new sf::Sprite(*s));
+	}
+
+	return *this;
 }
 
 void Widget_Button::setState(ButtonState newState)
@@ -959,6 +1001,8 @@ void Widget_Button::move(sf::Vector2f offset)
 {
 	bounds.top += offset.y;
 	bounds.left += offset.x;
+
+	pos += offset;
 
 	for (sf::Sprite* s : slices) {
 		s->move(offset);
