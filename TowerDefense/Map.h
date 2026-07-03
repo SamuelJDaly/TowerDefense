@@ -9,7 +9,7 @@
 /*
 Project: Tower Defense, Map System
 Created: 26 MAY 2025
-Updated: 20 OCT 2025
+Updated: 3 JUL 2026
 
 Description:
 	This file contains the map system. The original idea was to use a simple map with a single background image, which was called the "Map".
@@ -23,7 +23,8 @@ Description:
 class Tile {
 private:
 	//Data
-	sf::Sprite sprite;
+	sf::Texture defaultTexture;
+	sf::Sprite sprite = sf::Sprite(defaultTexture);
 	bool solid = false;
 	int type = -1;
 
@@ -59,7 +60,8 @@ private:
 	int textureSize = 1;
 
 	bool hasBackground = false;
-	sf::Sprite background;
+	sf::Texture defaultTexture;
+	sf::Sprite background = sf::Sprite(defaultTexture);
 
 	Node* pathHead = nullptr;
 	bool doDrawNodes = true;

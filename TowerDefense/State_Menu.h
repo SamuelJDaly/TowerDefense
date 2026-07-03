@@ -9,7 +9,7 @@ private:
 	sf::Font font_generic;
 	sf::Font font_second;
 
-	sf::Sprite background;
+	sf::Sprite background = sf::Sprite(defaultTexture);
 
 	//Text
 	Widget_Label* label_title;
@@ -29,7 +29,7 @@ public:
 
 	//Primary Functions
 	void update(float dt);
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void draw(sf::RenderWindow& win);
 
 };

@@ -81,10 +81,10 @@ void State_Game::initGui()
 
 void State_Game::initView()
 {
-	view_playField.setCenter(viewSize_playField.x / 2, viewSize_playField.y / 2);
+	view_playField.setCenter({ viewSize_playField.x / 2, viewSize_playField.y / 2 });
 	view_playField.setSize(viewSize_playField);
 	view_gui.setSize(viewSize_gui);
-	view_gui.setCenter(viewSize_gui.x / 2, viewSize_gui.y / 2);
+	view_gui.setCenter({ viewSize_gui.x / 2, viewSize_gui.y / 2 });
 
 	view_playField.setViewport(viewport_playField);
 	view_gui.setViewport(viewport_gui);
@@ -191,11 +191,11 @@ State_Game::~State_Game()
 	delete gui;
 }
 
-void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
+void State_Game::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
 	//###	MOUSE
 	//Button Release
-	if (event.type == sf::Event::MouseButtonReleased) {
+	if (auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>()) {
 		// Get click coords
 		// get the current mouse position in the window
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
@@ -206,7 +206,7 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 
 		//## Left Click
-		if (event.key.code == sf::Mouse::Left) {
+		if (mouseReleased->button == sf::Mouse::Button::Left) {
 
 			if (isPalletePicked) {
 				paletteDeselect();
@@ -234,7 +234,7 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 
 		//## Right Click
-		if (event.key.code == sf::Mouse::Right) {
+		if (mouseReleased->button == sf::Mouse::Button::Right) {
 			//Fire tower
 			if (!ctrlTower) {
 				return;
@@ -246,8 +246,8 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 	}
 
 	//Button press
-	if (event.type == sf::Event::MouseButtonPressed) {
-		if (event.key.code == sf::Mouse::Left) {
+	if (auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+		if (mousePressed->button == sf::Mouse::Button::Left) {
 			if (!isPalletePicked) {
 				paletteSelect();
 			}
@@ -256,8 +256,8 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 
 
 	//Scroll Wheel
-	if (event.type == sf::Event::MouseWheelMoved) {
-		float zoom = currZoom - (zoomSpeed * event.mouseWheel.delta);
+	if (const auto* mouseScrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+		float zoom = currZoom - (zoomSpeed * mouseScrolled->delta);
 
 		if (zoom < zoomBounds.x && zoom >= zoomBounds.y) {
 
@@ -269,8 +269,8 @@ void State_Game::poll(sf::RenderWindow& win, sf::Event& event)
 	}
 
 	//###	KEYBOARD
-	if (event.type == sf::Event::KeyReleased) {
-		if (event.key.code == sf::Keyboard::Space) {
+	if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+		if (keyReleased->code == sf::Keyboard::Key::Space) {
 			hostiles.push_back(new Hostile());
 			hostiles.back()->setTexture(textureHandler->lookup("hostile_0"));
 			hostiles.back()->setPath(tileMap->getPath());
@@ -428,7 +428,7 @@ void State_Game::updateCollision()
 	//Naive approach
 	for (auto p : projectiles) {
 		for (auto h : hostiles) {
-			if (p->getBounds().intersects(h->getBounds())) {
+			if (p->getBounds().findIntersection(h->getBounds())) {
 				h->takeDamage(p->getDamage(), p->getDamageType());
 				p->die();
 			}
@@ -451,27 +451,27 @@ void State_Game::updateTargeting()
 void State_Game::updateCamera(float dt)
 {
 	//Up
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		if (view_playField.getCenter().y >= cameraBounds.top) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+		if (view_playField.getCenter().y >= cameraBounds.position.y) {
 			view_playField.move({ 0,-1 * panSpeed * dt });
 		}
 	}
 
 	//Down
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		if (view_playField.getCenter().y <= cameraBounds.height) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+		if (view_playField.getCenter().y <= cameraBounds.size.y) {
 			view_playField.move({ 0,panSpeed * dt });
 		}
 	}
 	//Left
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		if (view_playField.getCenter().x >= cameraBounds.left) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+		if (view_playField.getCenter().x >= cameraBounds.position.x) {
 			view_playField.move({ -1 * panSpeed * dt,0 });
 		}
 	}
 	//Right
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		if (view_playField.getCenter().x <= cameraBounds.width) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+		if (view_playField.getCenter().x <= cameraBounds.size.x) {
 			view_playField.move({ panSpeed * dt,0 });
 		}
 	}

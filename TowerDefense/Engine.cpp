@@ -3,7 +3,7 @@
 void Engine::initWindow()
 {
 	win = new sf::RenderWindow;
-	win->create(sf::VideoMode(1280, 720), "Tower Defense");
+	win->create(sf::VideoMode({ 1280, 720 }), "Tower Defense");
 }
 
 void Engine::initTextures()
@@ -76,15 +76,15 @@ void Engine::update()
 	mainClock.restart();
 
 	//# Handle Polled Events
-	while (win->pollEvent(event)) {
+	while (std::optional event = win->pollEvent()) {
 		//Window closure
-		if (event.type == sf::Event::Closed) {
+		if (event->is<sf::Event::Closed>()) {
 			win->close();
 			isRunning = false;
 		}
 
-		if (event.type == sf::Event::MouseButtonReleased) {
-			if (event.key.code == sf::Mouse::Right) {
+		if (auto* mouseButton = event->getIf<sf::Event::MouseButtonReleased>()) {
+			if (mouseButton->button == sf::Mouse::Button::Right) {
 				auto pos = sf::Mouse::getPosition(*win);
 
 				std::cout << "(" << pos.x << ", " << pos.y << ")" << std::endl;

@@ -25,12 +25,12 @@ float degToRad(float degrees)
 
 void printRectI(sf::IntRect targ)
 {
-	std::cout << "{" << targ.left << ", " << targ.top << ", " << targ.width << ", " << targ.height << "}" << std::endl;
+	std::cout << "{" << targ.position.x << ", " << targ.position.y << ", " << targ.size.x << ", " << targ.size.y << "}" << std::endl;
 }
 
 void printRectF(sf::FloatRect targ)
 {
-	std::cout << "{" << targ.left << ", " << targ.top << ", " << targ.width << ", " << targ.height << "}" << std::endl;
+	std::cout << "{" << targ.position.x << ", " << targ.position.y << ", " << targ.size.x << ", " << targ.size.y << "}" << std::endl;
 }
 
 sf::Vector2f round(sf::Vector2f targ)
@@ -178,7 +178,7 @@ void drawPath(Node* pathHead, sf::RenderWindow& win)
 	sf::Color currCol = sf::Color::Blue;
 	sf::Color lastCol = sf::Color::Blue;
 
-	sf::Vertex line[] = { sf::Vertex(sf::Vector2f(0,0)), sf::Vertex(sf::Vector2f(0,0)) };
+	sf::Vertex line[2];
 
 	while (curr) {
 		//Draw point
@@ -206,7 +206,7 @@ void drawPath(Node* pathHead, sf::RenderWindow& win)
 		if (last) {
 			line[1].position = last->pos;
 			line[1].color = lastCol;
-			win.draw(line, 2, sf::Lines);
+			win.draw(line, 2, sf::PrimitiveType::Lines);
 		}
 
 		//Get next node
@@ -391,7 +391,7 @@ void Spritesheet::slice()
 
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
-			rects.push_back({ j * textureSize.x,i * textureSize.y,textureSize.x,textureSize.y });
+			rects.push_back({ {j * textureSize.x,i * textureSize.y},{textureSize.x,textureSize.y} });
 			//std::cout << j * textureSize.x << "," << i * textureSize.y << "," << textureSize.x << "," << textureSize.y << std::endl;
 		}
 	}
@@ -399,11 +399,7 @@ void Spritesheet::slice()
 
 Spritesheet::Spritesheet()
 {
-	//Set up blank texture
-	sf::Image blankImg;
-	blankImg.create(1,1, sf::Color::White);
 
-	blankTexture.loadFromImage(blankImg);
 }
 
 Spritesheet::~Spritesheet()
@@ -479,7 +475,7 @@ sf::IntRect Spritesheet::getRect(int idx)
 	//Check idx validity
 	if (numTextures <= idx) {
 		std::cout << "Invalid spritesheet index" << std::endl;
-		return {0,0,1,1};
+		return { {0,0},{1,1} };
 	}
 	
 	//std::cout << "getting rect at: " << idx << std::endl;;
@@ -494,7 +490,7 @@ sf::IntRect Spritesheet::getRect(int x, int y)
 	//Check idx validity
 	if (cols <= x || rows <= y) {
 		std::cout << "Invalid spritesheet index" << std::endl;
-		return {0,0,1,1};
+		return { {0,0},{1,1} };
 	}
 	
 	//Flatten (x,y) and return

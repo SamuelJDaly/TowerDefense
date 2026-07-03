@@ -18,7 +18,7 @@ void Projectile::update(float dt)
 
 	//Move
 	//std::cout << "Moving at: " << velocity.x << ", " << velocity.y << std::endl;
-	graph.move(velocity.x * dt, velocity.y * dt);
+	graph.move({ velocity.x * dt, velocity.y * dt });
 }
 
 void Projectile::draw(sf::RenderWindow& win)
@@ -29,8 +29,8 @@ void Projectile::draw(sf::RenderWindow& win)
 void Projectile::setTexture(sf::Texture* texture)
 {
 	graph.setTexture(*texture);	
-	graph.setTextureRect({0,0,(int)texture->getSize().x, (int)texture->getSize().y});
-	graph.setOrigin(graph.getGlobalBounds().width / 2.f, graph.getGlobalBounds().height / 2.f);
+	graph.setTextureRect({ {0,0},{(int)texture->getSize().x, (int)texture->getSize().y} });
+	graph.setOrigin({ graph.getGlobalBounds().size.x / 2.f, graph.getGlobalBounds().size.y / 2.f });
 }
 
 void Projectile::die()
@@ -53,7 +53,7 @@ void Projectile::setTarget(sf::Vector2f target)
 	//Get angle
 	sf::Vector2f posDiff = diff(spawn, target);
 	float theta = atan2f(posDiff.y, posDiff.x);
-	graph.setRotation(radToDeg(theta));
+	graph.setRotation(sf::radians(theta));
 
 	//Get components
 	velocity.x = speed * cosf(theta);
@@ -81,10 +81,10 @@ void Projectile::setSpeed(float newSpeed)
 }
 
 void Projectile::setSize(sf::Vector2f newSize) {
-	float scaleX = newSize.x / graph.getGlobalBounds().width;
-	float scaleY = newSize.y / graph.getGlobalBounds().height;
+	float scaleX = newSize.x / graph.getGlobalBounds().size.x;
+	float scaleY = newSize.y / graph.getGlobalBounds().size.y;
 
-	graph.setScale(scaleX, scaleY);
+	graph.setScale({ scaleX, scaleY });
 }
 
 
@@ -143,7 +143,7 @@ void Tower::draw(sf::RenderWindow& win)
 	if (doDrawRange) {
 		sf::CircleShape circle;
 		circle.setRadius(range);
-		circle.setOrigin(range, range);
+		circle.setOrigin({ range, range });
 		circle.setPosition(graph.getPosition());
 		circle.setFillColor({0,200,0,20});
 		circle.setOutlineColor({0,255,0});
@@ -156,9 +156,9 @@ void Tower::draw(sf::RenderWindow& win)
 void Tower::setTexture(sf::Texture* texture)
 {
 	graph.setTexture(*texture);
-	graph.setOrigin(texture->getSize().x / 2, texture->getSize().y / 2);
+	graph.setOrigin({ texture->getSize().x / 2.f, texture->getSize().y / 2.f });
 
-	size = {graph.getGlobalBounds().width, graph.getGlobalBounds().height};
+	size = {graph.getGlobalBounds().size.x, graph.getGlobalBounds().size.y};
 }
 
 void Tower::setProjectile(Projectile archetype)
@@ -184,23 +184,23 @@ void Tower::move(sf::Vector2f offset)
 void Tower::setSize(sf::Vector2f newSize) {
 	size = newSize;
 
-	float scaleX = size.x / graph.getGlobalBounds().width;
-	float scaleY = size.y / graph.getGlobalBounds().height;
+	float scaleX = size.x / graph.getGlobalBounds().size.x;
+	float scaleY = size.y / graph.getGlobalBounds().size.y;
 
-	graph.setScale(scaleX, scaleY);
+	graph.setScale({ scaleX, scaleY });
 
 }
 
 void Tower::setScale(float scale)
 {
-	auto baseSize = graph.getTexture()->getSize();
+	auto baseSize = graph.getTexture().getSize();
 
 	sf::Vector2f newSize = {(float)(baseSize.x * scale), (float)(baseSize.y * scale)};
 	size = newSize;
 	float scaleX = size.x / baseSize.x;
 	float scaleY = size.y / baseSize.y;
 
-	graph.setScale(scaleX, scaleY);
+	graph.setScale({ scaleX, scaleY });
 }
 
 sf::Vector2f Tower::getSize()

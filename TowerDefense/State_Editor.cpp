@@ -11,7 +11,7 @@ void State_Editor::initGui() {
 	gui = new Gui();
 	font = new sf::Font();
 
-	if (!font->loadFromFile("resource/font/roboto_regular.ttf")) {
+	if (!font->openFromFile("resource/font/roboto_regular.ttf")) {
 		return;
 	}
 
@@ -68,7 +68,7 @@ void State_Editor::initGui() {
 	btn_SizeUpX = new Widget_Button();
 	btn_SizeUpX->setLayer(2);
 	btn_SizeUpX->setPosition(label_mapSize->getPos());
-	btn_SizeUpX->move({ -1 * label_mapSize->getLocalBounds().width - 10, - 20});
+	btn_SizeUpX->move({ -1 * label_mapSize->getLocalBounds().size.x - 10, - 20});
 	btn_SizeUpX->setTexture(textureHandler->lookup("btn_plus"));
 	btn_SizeUpX->setSize({ 20,20 });
 
@@ -118,16 +118,16 @@ void State_Editor::initCamera()
 {
 	//Map
 	viewSize_map = { (float)window->getSize().x - (leftPanelRatio * (float)window->getSize().x), (float)window->getSize().y - ((float)window->getSize().y * bottomPanelRatio) };
-	viewport_map = { leftPanelRatio,0,1 - leftPanelRatio,1 - bottomPanelRatio };
+	viewport_map = { {leftPanelRatio,0},{1 - leftPanelRatio,1 - bottomPanelRatio} };
 
-	view_map.setCenter(viewSize_map.x / 2, viewSize_map.y / 2);
+	view_map.setCenter({ viewSize_map.x / 2, viewSize_map.y / 2 });
 	view_map.setSize(viewSize_map);
 	view_map.setViewport(viewport_map);
 
 
 	//Gui
 	view_gui.setSize(viewSize_gui);
-	view_gui.setCenter(viewSize_gui.x / 2, viewSize_gui.y / 2);
+	view_gui.setCenter({ viewSize_gui.x / 2, viewSize_gui.y / 2 });
 	view_gui.setViewport(viewport_gui);
 }
 
@@ -168,7 +168,7 @@ void State_Editor::initMap()
 	}
 
 	//Boundry (used for mouse click logic)
-	mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
+	mapBoundry = { {0,0},{mapSize.x * tileSize, mapSize.y * tileSize} };
 
 }
 
@@ -207,7 +207,7 @@ void State_Editor::initPathTool()
 	nodeButton.setRadius(10);
 	nodeButton.setFillColor(sf::Color::Blue);
 	nodeButton.setPosition(bottomPanelPos);
-	nodeButton.move(20, 50);
+	nodeButton.move({ 20, 50 });
 
 
 	float radius = 10;
@@ -319,7 +319,7 @@ void State_Editor::refreshGrid()
 	}
 
 	//Boundry
-	mapBoundry = { 0,0,mapSize.x * tileSize, mapSize.y * tileSize };
+	mapBoundry = { {0,0},{mapSize.x * tileSize, mapSize.y * tileSize} };
 }
 
 //########################################	CONSTRUCTORS AND DESTRUCTOR
@@ -327,10 +327,7 @@ void State_Editor::refreshGrid()
 State_Editor::State_Editor(TextureHandler* textureHandler, sf::RenderWindow* window)
 {
 	//Create blank texture
-	blankImage.create(1, 1, sf::Color::White);
-
 	blankTexture = new sf::Texture();
-	blankTexture->loadFromImage(blankImage);
 
 
 	//Init State
@@ -388,7 +385,7 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 	int col = 0;
 
 	for (int i = 0; i < spritesheet.getNumTextures(); i++) {
-		sf::Sprite curr;
+		sf::Sprite curr = sf::Sprite(defaultTexture);
 
 		//Texturing
 		curr.setTexture(*spritesheet.getTexture());
@@ -397,14 +394,14 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 		//Scaling
 		float colX = paletteSize.x / paletteColumns; //col width = width of palette / num columns
 
-		float scale = colX / curr.getTextureRect().width; //scale = width of column / width of texture
+		float scale = colX / curr.getTextureRect().size.x; //scale = width of column / width of texture
 
-		curr.setScale(scale, scale);
+		curr.setScale({ scale, scale });
 
 		//Positioning
 		float posX = palettePos.x + (colX * col);
 		float posY = palettePos.y + (colX * row); //Bc we are encforcing square tiles we just reuse colX
-		curr.setPosition(posX, posY);
+		curr.setPosition({ posX, posY });
 
 		//Iterate row and column
 		col++;
@@ -418,7 +415,7 @@ void State_Editor::loadPallete(int txSize, std::string filepath)
 	}
 
 	//Set up selection border
-	selectBorder.setSize({ (float)palette.at(0).getGlobalBounds().width, (float)palette.at(0).getGlobalBounds().height });
+	selectBorder.setSize({ (float)palette.at(0).getGlobalBounds().size.x, (float)palette.at(0).getGlobalBounds().size.y });
 
 	//Update the tilemap spritesheet data
 	tilemap->setTileset(spritesheet);
@@ -461,8 +458,8 @@ void State_Editor::load(std::string mapname) {
 
 //################################################################################	POLLING
 
-void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
-	if (event.type == sf::Event::MouseButtonReleased) {
+void State_Editor::poll(sf::RenderWindow& win, std::optional<sf::Event> event) {
+	if (auto* mouseButton = event->getIf<sf::Event::MouseButtonReleased>()) {
 		// Get click coords
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
 		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
@@ -470,7 +467,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 
 		//## LEFT
-		if (event.key.code == sf::Mouse::Left) {
+		if (mouseButton->button == sf::Mouse::Button::Left) {
 			//Painting
 			if (isPainting) {
 				isPainting = false; //???? debounce ?
@@ -510,8 +507,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.x--;
 				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry.width -= tileSize;
-				cameraBounds.width -= tileSize;
+				mapBoundry.size.x -= tileSize;
+				cameraBounds.size.x -= tileSize;
 				refreshGrid();
 			}
 
@@ -520,8 +517,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.x++;
 				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry.width += tileSize;
-				cameraBounds.width += tileSize;
+				mapBoundry.size.x += tileSize;
+				cameraBounds.size.x += tileSize;
 				refreshGrid();
 			}
 
@@ -530,8 +527,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.y--;
 				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry.height -= tileSize;
-				cameraBounds.height -= tileSize;
+				mapBoundry.size.y -= tileSize;
+				cameraBounds.size.y -= tileSize;
 				refreshGrid();
 			}
 
@@ -540,8 +537,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 				mapSize.y++;
 				tilemap->resize(mapSize.x, mapSize.y);
 				label_mapSize->setText(std::to_string(mapSize.x) + " x " + std::to_string(mapSize.y));
-				mapBoundry.height += tileSize;
-				cameraBounds.height += tileSize;
+				mapBoundry.size.y += tileSize;
+				cameraBounds.size.y += tileSize;
 				refreshGrid();
 			}
 
@@ -555,7 +552,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		}
 
 		//## RIGHT
-		if (event.key.code == sf::Mouse::Right) {
+		if (mouseButton->button == sf::Mouse::Button::Right) {
 			//Path Tool place
 			if (nodePlace && mapBoundry.contains(mapPos)) {
 				this->addNode(mapPos);
@@ -563,7 +560,7 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 		}
 
 		//## MIDDLE
-		if (event.key.code == sf::Mouse::Middle) {
+		if (mouseButton->button == sf::Mouse::Button::Middle) {
 			//Sample
 			if (mapBoundry.contains(mapPos)) {
 				int idxX = (int)(mapPos.x / tileSize);
@@ -581,14 +578,14 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 	}
 
-	if (event.type == sf::Event::MouseButtonPressed) {
+	if (auto* mouseButton = event->getIf<sf::Event::MouseButtonPressed>()) {
 		// Get click coords
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
 		sf::Vector2f mapPos = win.mapPixelToCoords(pixelPos, view_map);
 		sf::Vector2f guiPos = win.mapPixelToCoords(pixelPos, view_gui);
 
 		//Left
-		if (event.key.code == sf::Mouse::Left) {
+		if (mouseButton->button == sf::Mouse::Button::Left) {
 			//Painting
 			if (mapBoundry.contains(mapPos)) {
 				isPainting = true;
@@ -598,34 +595,34 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 
 	}
 
-	if (event.type == sf::Event::KeyPressed) {
-		if (event.key.code == sf::Keyboard::LControl) {
+	if (auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+		if (keyPressed->code == sf::Keyboard::Key::LControl) {
 			isPress_ctrl = true;
 		}
 
-		if (event.key.code == sf::Keyboard::Z) {
+		if (keyPressed->code == sf::Keyboard::Key::Z) {
 			isPress_z = true;
 		}
 
-		if (event.key.code == sf::Keyboard::S) {
+		if (keyPressed->code == sf::Keyboard::Key::S) {
 			isPress_s = true;
 		}
 	}
 
-	if (event.type == sf::Event::KeyReleased) {
-		if (event.key.code == sf::Keyboard::LControl) {
+	if (auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+		if (keyReleased->code == sf::Keyboard::Key::LControl) {
 			isPress_ctrl = false;
 		}
 
-		if (event.key.code == sf::Keyboard::Z) {
+		if (keyReleased->code == sf::Keyboard::Key::Z) {
 			isPress_z = false;
 		}
 
-		if (event.key.code == sf::Keyboard::S) {
+		if (keyReleased->code == sf::Keyboard::Key::S) {
 			isPress_s = false;
 		}
 
-		if (event.key.code == sf::Keyboard::Backspace) {
+		if (keyReleased->code == sf::Keyboard::Key::Backspace) {
 			if (nodePlace) {
 				remNode();
 			}
@@ -633,8 +630,8 @@ void State_Editor::poll(sf::RenderWindow& win, sf::Event& event) {
 	}
 
 	//Scroll Wheel
-	if (event.type == sf::Event::MouseWheelMoved) {
-		float zoom = currZoom - (zoomSpeed * event.mouseWheel.delta);
+	if (const auto* mouseScrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+		float zoom = currZoom - (zoomSpeed * mouseScrolled->delta);
 
 		if (zoom < zoomBounds.x && zoom >= zoomBounds.y) {
 
@@ -684,27 +681,27 @@ void State_Editor::updateCamera(float dt)
 	}
 
 	//Up
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		if (view_map.getCenter().y >= cameraBounds.top) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+		if (view_map.getCenter().y >= cameraBounds.position.y) {
 			view_map.move({ 0,-1 * panSpeed * dt });
 		}
 	}
 
 	//Down
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		if (view_map.getCenter().y <= cameraBounds.height) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+		if (view_map.getCenter().y <= cameraBounds.size.y) {
 			view_map.move({ 0,panSpeed * dt });
 		}
 	}
 	//Left
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		if (view_map.getCenter().x >= cameraBounds.left) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+		if (view_map.getCenter().x >= cameraBounds.position.x) {
 			view_map.move({ -1 * panSpeed * dt,0 });
 		}
 	}
 	//Right
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		if (view_map.getCenter().x <= cameraBounds.width) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+		if (view_map.getCenter().x <= cameraBounds.size.x) {
 			view_map.move({ panSpeed * dt,0 });
 		}
 	}
@@ -761,12 +758,12 @@ void State_Editor::drawMap(sf::RenderWindow& win)
 	//Grid
 	for (size_t i = 0; i < grid_horizontal.size(); i += 2) {
 		sf::Vertex gridLine[2] = { grid_horizontal.at(i), grid_horizontal.at(i + 1) };
-		win.draw(gridLine, 2, sf::Lines);
+		win.draw(gridLine, 2, sf::PrimitiveType::Lines);
 	}
 
 	for (size_t i = 0; i < grid_vertical.size(); i += 2) {
 		sf::Vertex gridLine[2] = { grid_vertical.at(i), grid_vertical.at(i + 1) };
-		win.draw(gridLine, 2, sf::Lines);
+		win.draw(gridLine, 2, sf::PrimitiveType::Lines);
 	}
 }
 
@@ -807,7 +804,7 @@ void State_Editor::drawPath(sf::RenderWindow& win)
 	//Path lines
 	for (size_t i = 0; i < pathLines.size(); i += 2) {
 		sf::Vertex pathLine[2] = { pathLines.at(i), pathLines.at(i + 1) };
-		win.draw(pathLine, 2, sf::Lines);
+		win.draw(pathLine, 2, sf::PrimitiveType::Lines);
 	}
 
 	//Path nodes
@@ -842,13 +839,13 @@ void State_Editor::drawPath(sf::RenderWindow& win)
 		win.draw(point);
 
 		//Draw lines
-		sf::Vertex line[] = { sf::Vertex(sf::Vector2f(0,0)), sf::Vertex(sf::Vector2f(0,0)) };
+		sf::Vertex line[] = { {{0,0},sf::Color::Red, {0,0}},{{0,0},sf::Color::Red, {0,0}} };
 		line[0].position = curr->pos;
 		line[0].color = currCol;
 		if (last) {
 			line[1].position = last->pos;
 			line[1].color = lastCol;
-			win.draw(line, 2, sf::Lines);
+			win.draw(line, 2, sf::PrimitiveType::Lines);
 		}
 
 		//Get next node

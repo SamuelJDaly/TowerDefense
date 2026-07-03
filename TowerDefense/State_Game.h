@@ -9,10 +9,10 @@ private:
 	sf::View view_gui;
 	sf::Vector2f viewSize_playField = { 1280,720 };
 	sf::Vector2f viewSize_gui = { 1280,720 };
-	sf::FloatRect viewport_playField = { 0,0,1,1 };
-	sf::FloatRect viewport_gui = { 0,0,1,1 };
+	sf::FloatRect viewport_playField = { {0,0},{1,1} };
+	sf::FloatRect viewport_gui = { {0,0},{1,1} };
 
-	sf::FloatRect cameraBounds = { -100,-100,600,600 }; //How much can the camera offset
+	sf::FloatRect cameraBounds = { {-100,-100},{600,600} }; //How much can the camera offset
 	float panSpeed = 300.f;
 	float zoomSpeed = .03f;
 	float currZoom = 1.f;
@@ -57,7 +57,7 @@ public:
 	~State_Game();
 
 	//Primary Functions
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void paletteSelect();
 	void paletteDeselect();
 

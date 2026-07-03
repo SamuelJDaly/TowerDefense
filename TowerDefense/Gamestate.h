@@ -11,7 +11,7 @@
 /*
 Project: Tower Defense, Gamestate System
 Created: 26 MAY 2025
-Updated: 29 DEC 2025
+Updated: 3 JUL 2026
 
 Description:
 	This file contains the Gamestate System. This is what actually ties the various systems (tower, hostile, map, etc...) together and manages their interactions.
@@ -51,6 +51,8 @@ protected:
 	sf::RenderWindow* window;
 	bool isFinished = false;
 	En_Gamestate nextState = En_Gamestate::END;
+	sf::Texture defaultTexture;
+	sf::Font defaultFont;
 
 public:
 	//Common Functions
@@ -59,6 +61,6 @@ public:
 
 	//Virtual Functions
 	virtual void update(float dt) = 0;
-	virtual void poll(sf::RenderWindow& win, sf::Event& event) = 0;
+	virtual void poll(sf::RenderWindow& win, std::optional<sf::Event> event) = 0;
 	virtual void draw(sf::RenderWindow& win) = 0;
 };

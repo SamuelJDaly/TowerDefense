@@ -7,7 +7,7 @@
 /*
 Project: GUI System
 Created: 28 MAY 2025
-Updated: 1 JAN 2026
+Updated: 3 JUL 2026
 
 Description:
 	This file contains the GUI System. The system is made up of a collection of widets, and a Gui class to manage them.
@@ -39,10 +39,12 @@ protected:
 	int ID = 0;
 	bool isFocus = false;
 	sf::View* view = nullptr;
+	sf::Texture defaultTexture;
+	sf::Font defaultFont;
 
 	sf::Vector2f size = { 32,32};
 	sf::Vector2f pos = {0,0};
-	sf::FloatRect bounds = {0,0,32,32};
+	sf::FloatRect bounds = { {0,0},{32,32} };
 
 public:
 	//Common Functions
@@ -57,7 +59,7 @@ public:
 	sf::Vector2f getPos();
 
 	//Virtual Functions
-	virtual void poll(sf::RenderWindow &win, sf::Event &event) = 0;
+	virtual void poll(sf::RenderWindow& win, std::optional<sf::Event> event) = 0;
 	virtual void update(const float dt) = 0;
 	virtual void draw(sf::RenderWindow& win) = 0;
 };
@@ -70,9 +72,8 @@ class Widget_Label;
 class Widget_Panel : public Widget {
 private:
 	//Data
-
-	sf::Sprite background;
-	sf::Sprite border[8];
+	sf::Sprite background = sf::Sprite(defaultTexture);
+	sf::Sprite* border[8];
 	sf::Texture* spriteSheet; //Use a spritesheet to avoid needing to set 9 textures
 	sf::Vector2f cornerSize = {1,1};
 	sf::Vector2f size = {1,1};
@@ -93,7 +94,7 @@ public:
 	~Widget_Panel();
 
 	//Primary Functions
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void update(const float dt);
 	void draw(sf::RenderWindow &win);
 	
@@ -145,7 +146,7 @@ public:
 	void setTabTitle(int idx, std::string title);
 	void setTabTitleColor(sf::Color color);
 
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void update(const float dt);
 	void draw(sf::RenderWindow& win);
 
@@ -160,7 +161,7 @@ private:
 	float scrollOffset = 0;
 	float maxOffset = 1;
 	float minOffset = 0;
-	sf::Sprite scrollBar;
+	sf::Sprite scrollBar = sf::Sprite(defaultTexture);
 	float scrollScale = 1;
 	sf::RectangleShape border;
 	bool isDebug = false;
@@ -180,7 +181,7 @@ public:
 	void setPosition(sf::Vector2f newPos, sf::RenderWindow &win);
 	void setSize(sf::Vector2f newSize, sf::RenderWindow &win);
 
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void update(const float dt);
 	void draw(sf::RenderWindow& win);
 };
@@ -189,7 +190,7 @@ public:
 class Widget_Label : public Widget {
 private:
 	//Data
-	sf::Text label;
+	sf::Text label = sf::Text(defaultFont);
 	std::string text = "";
 	sf::Font* font;
 	
@@ -206,7 +207,7 @@ public:
 	~Widget_Label();
 
 	//Primary Functions
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void update(float dt);
 	void draw(sf::RenderWindow &win);
 	void setPosition(sf::Vector2f newPos);
@@ -233,7 +234,7 @@ private:
 	//Data
 	sf::Vector2f pos = {0.f,0.f};
 	sf::Vector2f size = {1.f,1.f};
-	sf::Text textObject;
+	sf::Text textObject = sf::Text(defaultFont);
 	std::string text = "";
 	sf::Font* font;
 	unsigned int charSize = 12;
@@ -269,7 +270,7 @@ public:
 	~Widget_Textbox();
 
 	//Primary functions
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void update(float dt);
 	void draw(sf::RenderWindow& win);
 
@@ -304,7 +305,7 @@ private:
 
 	Widget_Label* label;
 
-	sf::FloatRect bounds = {0,0,1,1};
+	sf::FloatRect bounds = { {0,0},{1,1} };
 
 	en_SliceType sliceType = en_SliceType::THREE;
 
@@ -339,7 +340,7 @@ public:
 
 	void setType(en_SliceType newType);
 
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void update(const float dt);
 	void draw(sf::RenderWindow& win);
 	
@@ -371,7 +372,7 @@ public:
 	~Gui();
 
 	//Primary Functions
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void update(const float dt);
 	void draw(sf::RenderWindow &win);
 

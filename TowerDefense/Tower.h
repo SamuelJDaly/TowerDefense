@@ -5,7 +5,7 @@
 /*
 Project: Tower Defense, Tower System
 Created: 26 MAY 2025
-Updated: 16 JUN 2025
+Updated: 3 JUL 2026
 
 Description:
 	This file contains the Tower System, which is one of the main ways the player interacts with the game. As of this version, towers
@@ -18,7 +18,8 @@ Description:
 class Projectile {
 private:
 	//Data
-	sf::Sprite graph;
+	sf::Texture defaultTexture;
+	sf::Sprite graph = sf::Sprite(defaultTexture);
 
 	bool isDead = false;
 
@@ -65,7 +66,8 @@ class Tower
 {
 private:
 	//Data
-	sf::Sprite graph;
+	sf::Texture defaultTexture;
+	sf::Sprite graph = sf::Sprite(defaultTexture);
 
 	float cooldownThreshold = 1; //in s
 	float cooldownTimer = 0;

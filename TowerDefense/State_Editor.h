@@ -14,10 +14,10 @@ private:
 	sf::View view_gui;
 	sf::Vector2f viewSize_map = { 1280.f,720.f };
 	sf::Vector2f viewSize_gui = { 1280.f,720.f };
-	sf::FloatRect viewport_map = { .25f,0.f,1.f,.2f };
-	sf::FloatRect viewport_gui = { 0.f,0.f,1.f,1.f };
+	sf::Rect<float>  viewport_map = { {0.25f,0.f},{1.f,0.2f} };
+	sf::Rect<float> viewport_gui = { {0.f,0.f},{1.f,1.f} };
 
-	sf::FloatRect cameraBounds = { -100.f,-100.f,600.f,600.f }; //How much can the camera offset
+	sf::Rect<float> cameraBounds = { {-100.f,-100.f},{600.f,600.f} };
 	float panSpeed = 300.f;
 	float zoomSpeed = .03f;
 	float currZoom = 1.f;
@@ -121,7 +121,7 @@ public:
 	void loadPath(std::string filepath);
 	void load(std::string mapname);
 
-	void poll(sf::RenderWindow& win, sf::Event& event);
+	void poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 
 	void updatePathTool();
 	void updateCamera(float dt);

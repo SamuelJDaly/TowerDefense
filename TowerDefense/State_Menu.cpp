@@ -64,8 +64,8 @@ void State_Menu::initGui()
 	label_version->setTextColor(sf::Color::Black);
 	label_version->setText("Version: " + VERSION_GAME);
 
-	int x = window->getSize().x - (int)label_version->getGlobalBounds().width - 10;
-	int y = window->getSize().y - (int)label_version->getGlobalBounds().height - 10;
+	int x = window->getSize().x - (int)label_version->getGlobalBounds().size.x - 10;
+	int y = window->getSize().y - (int)label_version->getGlobalBounds().size.y - 10;
 	label_version->setPosition({(float)x,(float)y});
 
 	//Add components to gui
@@ -80,18 +80,19 @@ State_Menu::State_Menu(TextureHandler* textureHandler, sf::RenderWindow* window)
 {
 	this->textureHandler = textureHandler;
 	this->window = window;
-	if (!font_generic.loadFromFile("resource/font/jmhtype.ttf")) {
+	if (!font_generic.openFromFile("resource/font/jmhtype.ttf")) {
 		std::cerr << "Could not load menu font" << std::endl;
 	}
-	if (!font_second.loadFromFile("resource/font/roboto_regular.ttf")) {
+	if (!font_second.openFromFile("resource/font/roboto_regular.ttf")) {
 		std::cerr << "Could not load menu font" << std::endl;
 	}
 	this->initGui();
 
 	background.setTexture(*textureHandler->lookup("bg_menu"));
-	float scaleX = (float)window->getSize().x / (float)background.getTexture()->getSize().x;
-	float scaleY = (float)window->getSize().y / (float)background.getTexture()->getSize().y;
-	background.setScale(scaleX, scaleY);
+	background = sf::Sprite(*textureHandler->lookup("bg_menu"));
+	float scaleX = (float)window->getSize().x / (float)background.getTexture().getSize().x;
+	float scaleY = (float)window->getSize().y / (float)background.getTexture().getSize().y;
+	background.setScale({ scaleX, scaleY });
 }
 
 State_Menu::~State_Menu()
@@ -99,7 +100,7 @@ State_Menu::~State_Menu()
 	delete gui;
 }
 
-void State_Menu::poll(sf::RenderWindow& win, sf::Event& event)
+void State_Menu::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
 	gui->poll(win, event);
 

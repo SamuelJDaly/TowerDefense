@@ -13,7 +13,7 @@ public:
 	//## Constructor and Destructor
 
 	//## Primary Functions
-	void Poll(sf::RenderWindow &win, sf::Event &event);
+	void Poll(sf::RenderWindow& win, std::optional<sf::Event> event);
 	void Update(float dt);
 	void Draw(sf::RenderWindow& win);
 

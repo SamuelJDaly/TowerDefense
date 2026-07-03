@@ -39,8 +39,8 @@ void Tile::setType(int newType)
 void Tile::setSize(float size)
 {
 	//Calculate scale
-	float scaleX = size / sprite.getLocalBounds().width;
-	float scaleY = size / sprite.getLocalBounds().height;
+	float scaleX = size / sprite.getLocalBounds().size.x;
+	float scaleY = size / sprite.getLocalBounds().size.y;
 
 	//Set scale
 	sprite.setScale({ scaleX, scaleY });
@@ -225,7 +225,7 @@ void TileMap::refreshTilemap()
 			if (!tileset.containsIdx(curr->getType())) {
 				//Then assign blank texture
 				curr->setTexture(tileset.getTexture());
-				curr->setTextureRect({0,0,1,1});
+				curr->setTextureRect({ {0,0},{1,1} });
 			}
 			else {
 				curr->setTexture(tileset.getTexture());
@@ -257,7 +257,7 @@ void TileMap::modTile(int x, int y, int type)
 	//Blank Texture
 	if (!tileset.containsIdx(type)) {
 		tilemap.at(y)->at(x)->setTexture(tileset.getTexture());
-		tilemap.at(y)->at(x)->setTextureRect({0,0,1,1});
+		tilemap.at(y)->at(x)->setTextureRect({ {0,0},{1,1} });
 		tilemap.at(y)->at(x)->setType(type);
 		tilemap.at(y)->at(x)->setSize(tileSize);
 		//std::cout << "Set blank texture at: " << x << ", " << y << std::endl;
@@ -284,7 +284,7 @@ void TileMap::resize(int newWidth, int newHeight)
 			for (int j = 0; j < width; j++) {
 				Tile* curr = new Tile();
 				curr->setTexture(tileset.getTexture());
-				curr->setTextureRect({0,0,1,1});
+				curr->setTextureRect({ {0,0},{1,1} });
 				curr->setSize(tileSize);
 				dataRow->push_back(curr);
 			}
@@ -321,7 +321,7 @@ void TileMap::resize(int newWidth, int newHeight)
 			for (int j = width; j < newWidth; j++) {
 				Tile* curr = new Tile();
 				curr->setTexture(tileset.getTexture());
-				curr->setTextureRect({0,0,1,1});
+				curr->setTextureRect({ {0,0},{1,1} });
 				curr->setSize(tileSize);
 				tilemap.at(i)->push_back(curr);
 			}
@@ -388,7 +388,7 @@ void TileMap::setBackground(sf::Texture* texture, sf::Vector2f size)
 	float scaleX = size.x / texture->getSize().x;
 	float scaleY = size.y / texture->getSize().y;
 
-	background.setScale(scaleX, scaleY);
+	background.setScale({ scaleX, scaleY });
 	hasBackground = true;
 }
 

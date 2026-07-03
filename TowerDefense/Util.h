@@ -12,7 +12,7 @@
 /*
 Project: Tower Defense, Utility Functions
 Created: 26 MAY 2025
-Updated: 28 NOV 2025
+Updated: 3 JUL 2026
 
 Description:
 	This file contains various utility functions that are common to multiple systems.

@@ -42,7 +42,7 @@ void Hostile::update(float dt)
 	float theta = std::atan2f(yDiff,xDiff);
 	
 	//Move by speed * cos theta * dt, speed * sin theta * dt
-	graph.move(speed * std::cosf(theta) * dt, speed * std::sinf(theta) * dt);
+	graph.move({ speed * std::cosf(theta) * dt, speed * std::sinf(theta) * dt });
 }
 
 void Hostile::draw(sf::RenderWindow& win)

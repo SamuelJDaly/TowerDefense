@@ -1,6 +1,6 @@
 #include "State_Test.h"
 
-void State_Test::Poll(sf::RenderWindow& win, sf::Event& event)
+void State_Test::Poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
 }
 

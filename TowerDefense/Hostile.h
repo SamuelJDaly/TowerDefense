@@ -10,7 +10,7 @@
 /*
 Project: Tower Defense, Hostile System
 Created: 26 MAY 2025
-Updated: 24 JUN 2025
+Updated: 3 JUL 2026
 
 Description:
 	This file contains the Hostile system. This system implements the enemies that the player must defeat in order to stay alive.
@@ -25,7 +25,8 @@ class Hostile
 private:
 	//Data
 	sf::Texture* texture;
-	sf::Sprite graph;
+	sf::Texture defaultTexture;
+	sf::Sprite graph = sf::Sprite(defaultTexture);
 	sf::Vector2f scale = {1.f,1.f};
 	sf::Vector2f size = { 1.f,1.f };
 

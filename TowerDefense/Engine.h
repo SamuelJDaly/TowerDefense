@@ -11,7 +11,7 @@
 /*
 Project: Tower Defense, Engine
 Created: 26 MAY 2025
-Updated: 1 JAN 2026
+Updated: 3 JUL 2026
 
 Description:
 	This file contains the game "Engine" system. It functions as a state manager and a resource manager (textures, audio, etc...).
@@ -24,7 +24,6 @@ class Engine
 private:
 	//Data
 	sf::RenderWindow* win;
-	sf::Event event;
 	sf::Clock mainClock;
 	bool isRunning = true;
 	TextureHandler* textureHandler;

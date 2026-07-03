@@ -72,16 +72,16 @@ void Widget_Panel::applyPos()
 
 
 	//Pos
-	border[0].setPosition(pos.x, pos.y);
-	border[1].setPosition(pos.x + cornerSize.x, pos.y);
-	border[2].setPosition(pos.x + middleSize.x + cornerSize.x, pos.y);
+	border[0]->setPosition({ pos.x, pos.y });
+	border[1]->setPosition({ pos.x + cornerSize.x, pos.y });
+	border[2]->setPosition({pos.x + middleSize.x + cornerSize.x, pos.y});
 
-	border[3].setPosition(pos.x, pos.y + cornerSize.y);
-	border[4].setPosition(pos.x + middleSize.x + cornerSize.x, pos.y + cornerSize.y);
+	border[3]->setPosition({ pos.x, pos.y + cornerSize.y });
+	border[4]->setPosition({ pos.x + middleSize.x + cornerSize.x, pos.y + cornerSize.y });
 	
-	border[5].setPosition(pos.x, pos.y + middleSize.y + cornerSize.y);
-	border[6].setPosition(pos.x + cornerSize.x, pos.y + middleSize.y + cornerSize.y);
-	border[7].setPosition(pos.x + cornerSize.x + middleSize.x, pos.y + middleSize.y + cornerSize.y);
+	border[5]->setPosition({ pos.x, pos.y + middleSize.y + cornerSize.y });
+	border[6]->setPosition({pos.x + cornerSize.x, pos.y + middleSize.y + cornerSize.y});
+	border[7]->setPosition({ pos.x + cornerSize.x + middleSize.x, pos.y + middleSize.y + cornerSize.y });
 }
 
 void Widget_Panel::applyScale()
@@ -109,23 +109,29 @@ void Widget_Panel::applyScale()
 		middleScale.y = (middleSize.y / (spriteSheet->getSize().y / 3));
 	}
 	
-	border[1].setScale(middleScale.x, 1);
+	border[1]->setScale({ middleScale.x, 1 });
 
-	border[3].setScale(1, middleScale.y);
-	border[4].setScale(1, middleScale.y);
+	border[3]->setScale({ 1, middleScale.y });
+	border[4]->setScale({ 1, middleScale.y });
 
-	border[6].setScale(middleScale.x, 1);
+	border[6]->setScale({ middleScale.x, 1 });
 }
 
 Widget_Panel::Widget_Panel()
 {
+	border[0] = new sf::Sprite(defaultTexture); border[1] = new sf::Sprite(defaultTexture); border[2] = new sf::Sprite(defaultTexture);
+	border[3] = new sf::Sprite(defaultTexture); border[4] = new sf::Sprite(defaultTexture); border[5] = new sf::Sprite(defaultTexture);
+	border[6] = new sf::Sprite(defaultTexture); border[7] = new sf::Sprite(defaultTexture);
 }
 
 Widget_Panel::~Widget_Panel()
 {
+	for (int i = 0; i < 8; i++) {
+		delete border[i];
+	}
 }
 
-void Widget_Panel::poll(sf::RenderWindow& win, sf::Event& event)
+void Widget_Panel::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
 }
 
@@ -138,7 +144,7 @@ void Widget_Panel::draw(sf::RenderWindow& win)
 	win.draw(background);
 	
 	for (int i = 0; i < 8; i++) {
-		win.draw(border[i]);
+		win.draw(*border[i]);
 	}
 
 }
@@ -153,20 +159,20 @@ void Widget_Panel::setTexture(sf::Texture* sheet)
 	cornerSize = {(float)thirdX,(float)thirdY};
 
 	background.setTexture(*spriteSheet);
-	background.setTextureRect({ thirdX,thirdY,thirdX,thirdY });
+	background.setTextureRect({ {thirdX,thirdY},{thirdX,thirdY} });
 
 	for (int i = 0; i < 8; i++) {
-		border[i].setTexture(*spriteSheet);
+		border[i]->setTexture(*spriteSheet);
 	}
 
-	border[0].setTextureRect({ 0,0,thirdX,thirdY });
-	border[1].setTextureRect({ thirdX,0,thirdX,thirdY });
-	border[2].setTextureRect({ 2 * thirdX,0,thirdX,thirdY });
-	border[3].setTextureRect({ 0,thirdY,thirdX,thirdY });
-	border[4].setTextureRect({ 2 * thirdX,thirdY,thirdX,thirdY });
-	border[5].setTextureRect({ 0,2 * thirdY,thirdX,thirdY });
-	border[6].setTextureRect({ thirdX,2 * thirdY,thirdX,thirdY });
-	border[7].setTextureRect({ 2 * thirdX,2 * thirdY,thirdX,thirdY });
+	border[0]->setTextureRect({ {0,0},{thirdX,thirdY} });
+	border[1]->setTextureRect({ {thirdX,0},{thirdX,thirdY} });
+	border[2]->setTextureRect({ {2 * thirdX,0},{thirdX,thirdY} });
+	border[3]->setTextureRect({ {0,thirdY},{thirdX,thirdY} });
+	border[4]->setTextureRect({ {2 * thirdX,thirdY},{thirdX,thirdY} });
+	border[5]->setTextureRect({ {0,2 * thirdY},{thirdX,thirdY} });
+	border[6]->setTextureRect({ {thirdX,2 * thirdY},{thirdX,thirdY} });
+	border[7]->setTextureRect({ {2 * thirdX,2 * thirdY},{thirdX,thirdY} });
 
 	this->applyPos();
 	this->applyScale();
@@ -175,8 +181,8 @@ void Widget_Panel::setTexture(sf::Texture* sheet)
 void Widget_Panel::setSize(sf::Vector2f newSize)
 {
 	size = newSize;
-	bounds.width = newSize.x;
-	bounds.height = newSize.y;
+	bounds.size.x = newSize.x;
+	bounds.size.y = newSize.y;
 	this->applyPos();
 	this->applyScale();
 }
@@ -189,8 +195,8 @@ void Widget_Panel::setColor(sf::Color col)
 void Widget_Panel::setPosition(sf::Vector2f newPos)
 {
 	pos = newPos;
-	bounds.top = newPos.y;
-	bounds.left = newPos.x;
+	bounds.position.y = newPos.y;
+	bounds.position.x = newPos.x;
 	this->applyPos();
 }
 
@@ -222,7 +228,7 @@ void Widget_TabbedPanel::arrange() {
 
 	//Set Tab position and scale
 	for (int i = 0; i < (int)tabs.size(); i++) {
-		tabs.at(i).setScale(scaleX,scaleY);
+		tabs.at(i).setScale({ scaleX,scaleY });
 		tabs.at(i).setPosition({pos.x + (i * tabSizeX), pos.y});
 
 		//Determine label char size
@@ -233,8 +239,8 @@ void Widget_TabbedPanel::arrange() {
 		sf::Vector2f textOrigin;
 		sf::Vector2f textPos;
 
-		textOrigin.x = (tabTitles.at(i).getGlobalBounds().getSize().x / 2) + tabTitles.at(i).getLocalBounds().getPosition().x;
-		textOrigin.y = (tabTitles.at(i).getGlobalBounds().getSize().y / 2) + tabTitles.at(i).getLocalBounds().getPosition().y;
+		textOrigin.x = (tabTitles.at(i).getGlobalBounds().size.x / 2) + tabTitles.at(i).getLocalBounds().position.x;
+		textOrigin.y = (tabTitles.at(i).getGlobalBounds().size.y / 2) + tabTitles.at(i).getLocalBounds().position.y;
 
 		textPos.x = tabs.at(i).getPosition().x + (tabSizeX / 2);
 		textPos.y = tabs.at(i).getPosition().y + (tabSizeY / 2);
@@ -283,15 +289,15 @@ void Widget_TabbedPanel::setPanelTexture(sf::Texture* texture)
 
 void Widget_TabbedPanel::setPos(sf::Vector2f newPos) {
 	pos = newPos;
-	bounds.top = newPos.y;
-	bounds.left = newPos.x;
+	bounds.position.y = newPos.y;
+	bounds.position.x = newPos.x;
 	this->arrange();
 }
 
 void Widget_TabbedPanel::setSize(sf::Vector2f newSize) {
 	size = newSize;
-	bounds.width = newSize.x;
-	bounds.height = newSize.y;
+	bounds.size.x = newSize.x;
+	bounds.size.y = newSize.y;
 	this->arrange();
 }
 
@@ -304,7 +310,7 @@ void Widget_TabbedPanel::addTab(uint8_t count)
 
 	numTabs += count;
 	for (int i = 0; i < count; i++) {
-		sf::Sprite s;
+		sf::Sprite s = sf::Sprite(defaultTexture);
 		tabs.push_back(s);
 		Widget_Label label;
 		tabTitles.push_back(label);
@@ -365,28 +371,30 @@ void Widget_TabbedPanel::setTabTitleColor(sf::Color color)
 	}
 }
 
-void Widget_TabbedPanel::poll(sf::RenderWindow& win, sf::Event& event) {
+void Widget_TabbedPanel::poll(sf::RenderWindow& win, std::optional<sf::Event> event) {
 	//Mouse click
-	if (event.type == sf::Event::MouseButtonPressed && event.key.code == sf::Mouse::Left) {
-		sf::Vector2f mousePos;
-		if (view) {
-			//Then use mouse coords transformed to view
-			mousePos = win.mapPixelToCoords(sf::Mouse::getPosition(win), *view);
-		}
-		else {
-			//Use raw mouse coords in window
-			mousePos = { (float)sf::Mouse::getPosition(win).x, (float)sf::Mouse::getPosition(win).y };
-		}
+	if (auto* mouseButton = event->getIf<sf::Event::MouseButtonPressed>()) {
+		if (mouseButton->button == sf::Mouse::Button::Left) {
+			sf::Vector2f mousePos;
+			if (view) {
+				//Then use mouse coords transformed to view
+				mousePos = win.mapPixelToCoords(sf::Mouse::getPosition(win), *view);
+			}
+			else {
+				//Use raw mouse coords in window
+				mousePos = { (float)sf::Mouse::getPosition(win).x, (float)sf::Mouse::getPosition(win).y };
+			}
 
-		for (int i = 0; i < (int)tabs.size(); i++) {
-			if (tabs.at(i).getGlobalBounds().contains(mousePos)) {
-				//TODO: Set previous selected tab appearance to inactive
-				tabSel = i; //Set tab select
-				//TODO: Set new selected tab apperance to active
-				break;
+			for (int i = 0; i < (int)tabs.size(); i++) {
+				if (tabs.at(i).getGlobalBounds().contains(mousePos)) {
+					//TODO: Set previous selected tab appearance to inactive
+					tabSel = i; //Set tab select
+					//TODO: Set new selected tab apperance to active
+					break;
+				}
 			}
 		}
-	}
+		}
 }
 
 
@@ -417,7 +425,7 @@ uint8_t Widget_TabbedPanel::getTabSel()
 
 bool Widget_ScrollPanel::contains(float x, float y)
 {
-	if (bounds.contains(x,y)) {
+	if (bounds.contains({ x,y })) {
 		return  true;
 	}
 
@@ -441,42 +449,42 @@ void Widget_ScrollPanel::setDebug(bool state)
 
 void Widget_ScrollPanel::setPosition(sf::Vector2f newPos, sf::RenderWindow& win) {
 	pos = newPos;
-	bounds.top = newPos.y;
-	bounds.left = newPos.x;
+	bounds.position.y = newPos.y;
+	bounds.position.x = newPos.x;
 
-	float t = bounds.top / win.getSize().y;
-	float l = bounds.left / win.getSize().x;
-	float w = bounds.width / win.getSize().x;
-	float h = bounds.height / win.getSize().y;
+	float t = bounds.position.y / win.getSize().y;
+	float l = bounds.position.x / win.getSize().x;
+	float w = bounds.size.x / win.getSize().x;
+	float h = bounds.size.y / win.getSize().y;
 
-	scrollview.setViewport({ l,t,w,h });
+	scrollview.setViewport({ {l,t},{w,h} });
 	
 }
 
 void Widget_ScrollPanel::setSize(sf::Vector2f newSize, sf::RenderWindow& win) {
 	size = newSize;
-	bounds.width = newSize.x;
-	bounds.height = newSize.y;
+	bounds.size.x = newSize.x;
+	bounds.size.y = newSize.y;
 
-	float t = bounds.top / win.getSize().y;
-	float l = bounds.left / win.getSize().x;
-	float w = bounds.width / win.getSize().x;
-	float h = bounds.height / win.getSize().y;
+	float t = bounds.position.y / win.getSize().y;
+	float l = bounds.position.x / win.getSize().x;
+	float w = bounds.size.x / win.getSize().x;
+	float h = bounds.size.y / win.getSize().y;
 
 	border.setSize({newSize.x, newSize.y});
 
 	scrollview.setSize(newSize);
 	//scrollview.setCenter({});
-	scrollview.setViewport({ l,t,w,h });
+	scrollview.setViewport({ { l,t},{w,h} });
 	std::cout << l << ", " << t << ", " << w << ", " << h << std::endl;
 }
 
-void Widget_ScrollPanel::poll(sf::RenderWindow& win, sf::Event& event) {
+void Widget_ScrollPanel::poll(sf::RenderWindow& win, std::optional<sf::Event> event) {
 	auto mPos = sf::Mouse::getPosition(win);
 
 	if (this->contains((float)mPos.x, (float)mPos.y)) {
-		if (event.type == sf::Event::MouseWheelMoved) {
-			scrollview.move(0, event.mouseWheel.delta * scrollScale);
+		if (const auto* mouseScrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+			scrollview.move({ 0, mouseScrolled->delta * scrollScale });
 		}
 	}
 }
@@ -502,9 +510,9 @@ void Widget_Label::centerOrigin()
 {
 	//float cX = std::round(label.getLocalBounds().width / 2.f);
 	//float cY = std::round(label.getLocalBounds().height / 2.f);
-	sf::Vector2f target = label.getGlobalBounds().getSize() / 2.f + label.getLocalBounds().getPosition();
+	sf::Vector2f target = label.getGlobalBounds().size / 2.f + label.getLocalBounds().position;
 
-	label.setOrigin(std::round(target.x), std::round(target.y));
+	label.setOrigin({ std::round(target.x), std::round(target.y) });
 }
 
 
@@ -517,7 +525,7 @@ Widget_Label::~Widget_Label()
 {
 }
 
-void Widget_Label::poll(sf::RenderWindow& win, sf::Event& event)
+void Widget_Label::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
 	
 }
@@ -635,11 +643,11 @@ void Widget_Textbox::init()
 void Widget_Textbox::arrangeCursor()
 {
 	sf::Vector2f cursorPos = textObject.getPosition();
-	cursorPos.x += textObject.getGlobalBounds().width + 2;
-	cursorPos.y += (.25 * textObject.getGlobalBounds().height);
+	cursorPos.x += textObject.getGlobalBounds().size.x + 2;
+	cursorPos.y += (.25 * textObject.getGlobalBounds().size.y);
 
 	cursor[0].position = cursorPos;
-	cursorPos.y += textObject.getGlobalBounds().height + (.5 * textObject.getGlobalBounds().height);
+	cursorPos.y += textObject.getGlobalBounds().size.y + (.5 * textObject.getGlobalBounds().size.y);
 	cursor[1].position = cursorPos;
 
 }
@@ -654,7 +662,7 @@ void Widget_Textbox::arrange()
 	//Text
 	sf::Vector2f textPos = pos;
 	textPos.x += margins.x;
-	textPos.y = rectangle.getPosition().y + (.5 * textObject.getGlobalBounds().height);
+	textPos.y = rectangle.getPosition().y + (.5 * textObject.getGlobalBounds().size.y);
 	//textPos.y += margins.y;
 	textObject.setPosition(textPos);
 
@@ -684,50 +692,9 @@ Widget_Textbox::~Widget_Textbox()
 }
 
 
-void Widget_Textbox::poll(sf::RenderWindow& win, sf::Event& event)
+void Widget_Textbox::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
-	if (event.type == sf::Event::MouseButtonPressed) {
-		sf::Vector2i pixelPos = sf::Mouse::getPosition(win);
-		sf::Vector2f fPos = {(float)pixelPos.x, (float)pixelPos.y};
-
-		if (editable && rectangle.getGlobalBounds().contains(fPos)) {
-			active = true;
-			isFocus = true;
-			
-		}
-		else {
-			active = false;
-			isFocus = false;
-		}
-	}
-	
-	//Typing
-	if (active && event.type == sf::Event::TextEntered) {
-		if (event.text.unicode < 0x80 && event.text.unicode > 0x19) // it's printable
-		{
-			char key = (char)event.text.unicode;
-			text += key;
-			textObject.setString(text);
-			this->arrangeCursor();
-		}
-	}
-
-
-	//Key Press
-	if (active && event.type == sf::Event::KeyPressed) {
-		if (event.key.code == sf::Keyboard::BackSpace) {
-			isBackspace = true;
-			backspaceTimer = backspaceThresholdHigh;
-		}
-	}
-
-	//Key Release
-	if (active && event.type == sf::Event::KeyReleased) {
-		if (event.key.code == sf::Keyboard::BackSpace) {
-			isBackspace = false;
-			backspaceThresholdCurr = backspaceThresholdHigh;
-		}
-	}
+	//NOT IMPLEMENTED
 }
 
 void Widget_Textbox::update(float dt)
@@ -762,15 +729,15 @@ void Widget_Textbox::draw(sf::RenderWindow& win)
 
 	//Cursor
 	if (active && isCursorVisible) {
-		win.draw(cursor, 2, sf::Lines);
+		win.draw(cursor, 2, sf::PrimitiveType::Lines);
 	}
 }
 
 void Widget_Textbox::setPos(sf::Vector2f newPos)
 {
 	pos = newPos;
-	bounds.top = newPos.y;
-	bounds.left = newPos.x;
+	bounds.position.y = newPos.y;
+	bounds.position.x = newPos.x;
 	this->arrange();
 }
 
@@ -803,8 +770,8 @@ void Widget_Textbox::setFont(sf::Font* newFont)
 void Widget_Textbox::setSize(sf::Vector2f newSize)
 {
 	size = newSize;
-	bounds.width = newSize.x;
-	bounds.height = newSize.y;
+	bounds.size.x = newSize.x;
+	bounds.size.y = newSize.y;
 
 	rectangle.setSize(newSize);
 
@@ -855,7 +822,7 @@ void Widget_Button::align()
 		//Scale
 		scaleX = size.x / textureSize.x;
 		scaleY = size.y / textureSize.y;
-		slices.at(0)->setScale(scaleX, scaleY);
+		slices.at(0)->setScale({ scaleX, scaleY });
 
 		break;
 	case en_SliceType::THREE:
@@ -904,11 +871,11 @@ void Widget_Button::align()
 		scaleX = (size.x - (2 * thirdF))  / (thirdC);
 		scaleY = (size.y - (2 * thirdFY)) / (thirdCY);
 		
-		slices.at(1)->setScale(scaleX, 1);
-		slices.at(3)->setScale(1, scaleY);
-		slices.at(4)->setScale(scaleX,scaleY);
-		slices.at(5)->setScale(1, scaleY);
-		slices.at(7)->setScale(scaleX, 1);
+		slices.at(1)->setScale({ scaleX, 1 });
+		slices.at(3)->setScale({ 1, scaleY });
+		slices.at(4)->setScale({ scaleX,scaleY });
+		slices.at(5)->setScale({ 1, scaleY });
+		slices.at(7)->setScale({ scaleX, 1 });
 
 		break;
 	}
@@ -950,36 +917,36 @@ void Widget_Button::updateTexture()
 
 	switch (sliceType) {
 	case en_SliceType::NONE:
-		slices.front()->setTextureRect({ offset,0,(int)textureSize.x,(int)textureSize.y });
+		slices.front()->setTextureRect({ {offset,0},{(int)textureSize.x,(int)textureSize.y} });
 		break;
 	case en_SliceType::THREE:
 
-		slices.at(0)->setTextureRect({ offset,0,thirdF,(int)textureSize.y});
-		slices.at(1)->setTextureRect({ offset + thirdF,0,thirdC,(int)textureSize.y });
-		slices.at(2)->setTextureRect({ offset + thirdF + thirdC,0,thirdF,(int)textureSize.y });
+		slices.at(0)->setTextureRect({ {offset,0},{thirdF,(int)textureSize.y} });
+		slices.at(1)->setTextureRect({ {offset + thirdF,0},{thirdC,(int)textureSize.y} });
+		slices.at(2)->setTextureRect({ {offset + thirdF + thirdC,0},{thirdF,(int)textureSize.y} });
 
 		break;
 	case en_SliceType::FOUR:
 
-		slices.at(0)->setTextureRect({ offset,0,halfF,halfFY });
-		slices.at(1)->setTextureRect({ offset + halfF,0,halfC,halfFY });
-		slices.at(2)->setTextureRect({ offset, halfFY,halfF,halfCY});
-		slices.at(3)->setTextureRect({ offset + halfF, halfFY,halfC,halfCY});
+		slices.at(0)->setTextureRect({ {offset,0},{halfF,halfFY} });
+		slices.at(1)->setTextureRect({ {offset + halfF,0},{halfC,halfFY} });
+		slices.at(2)->setTextureRect({ {offset, halfFY},{halfF,halfCY} });
+		slices.at(3)->setTextureRect({ {offset + halfF, halfFY},{halfC,halfCY} });
 
 		break;
 	case en_SliceType::NINE:
 
-		slices.at(0)->setTextureRect({ offset,0,thirdF,thirdFY });
-		slices.at(1)->setTextureRect({ offset + thirdF,0,thirdC,thirdFY });
-		slices.at(2)->setTextureRect({ offset + thirdF + thirdC,0,thirdF,thirdFY });
+		slices.at(0)->setTextureRect({ {offset,0},{thirdF,thirdFY} });
+		slices.at(1)->setTextureRect({ {offset + thirdF,0},{thirdC,thirdFY} });
+		slices.at(2)->setTextureRect({ {offset + thirdF + thirdC,0},{thirdF,thirdFY} });
 
-		slices.at(3)->setTextureRect({ offset,thirdFY,thirdF,thirdCY });
-		slices.at(4)->setTextureRect({ offset + thirdF,thirdFY,thirdC,thirdCY });
-		slices.at(5)->setTextureRect({ offset + thirdF + thirdC, thirdFY,thirdF,thirdCY });
+		slices.at(3)->setTextureRect({ {offset,thirdFY},{thirdF,thirdCY} });
+		slices.at(4)->setTextureRect({ {offset + thirdF,thirdFY},{thirdC,thirdCY} });
+		slices.at(5)->setTextureRect({ {offset + thirdF + thirdC, thirdFY},{thirdF,thirdCY} });
 
-		slices.at(6)->setTextureRect({ offset,thirdFY + thirdCY,thirdF,thirdFY });
-		slices.at(7)->setTextureRect({ offset + thirdF,thirdFY + thirdCY,thirdC,thirdFY });
-		slices.at(8)->setTextureRect({ offset + thirdF + thirdC,thirdFY + thirdCY,thirdF,thirdFY });
+		slices.at(6)->setTextureRect({ {offset,thirdFY + thirdCY},{thirdF,thirdFY} });
+		slices.at(7)->setTextureRect({ {offset + thirdF,thirdFY + thirdCY},{thirdC,thirdFY} });
+		slices.at(8)->setTextureRect({ {offset + thirdF + thirdC,thirdFY + thirdCY},{thirdF,thirdFY} });
 		break;
 	}
 
@@ -988,7 +955,7 @@ void Widget_Button::updateTexture()
 Widget_Button::Widget_Button()
 {
 	for (int i = 0; i < 3; i++) {
-		slices.push_back(new sf::Sprite());
+		slices.push_back(new sf::Sprite(defaultTexture));
 	}
 
 	label = new Widget_Label();
@@ -1058,8 +1025,8 @@ void Widget_Button::setPosition(sf::Vector2f newPos)
 	offset.y = newPos.y - pos.y;
 	pos = newPos;
 
-	bounds.left = pos.x;
-	bounds.top = pos.y;
+	bounds.position.x = pos.x;
+	bounds.position.y = pos.y;
 
 	for (sf::Sprite* s : slices) {
 		s->move(offset);
@@ -1071,8 +1038,8 @@ void Widget_Button::setPosition(sf::Vector2f newPos)
 
 void Widget_Button::move(sf::Vector2f offset)
 {
-	bounds.top += offset.y;
-	bounds.left += offset.x;
+	bounds.position.y += offset.y;
+	bounds.position.x += offset.x;
 
 	pos += offset;
 
@@ -1087,8 +1054,8 @@ void Widget_Button::setSize(sf::Vector2f newSize)
 {
 	size = newSize;
 
-	bounds.width = size.x;
-	bounds.height = size.y;
+	bounds.size.x = size.x;
+	bounds.size.y = size.y;
 
 	this->align();
 
@@ -1149,21 +1116,21 @@ void Widget_Button::setType(en_SliceType newType)
 
 	switch (sliceType) {
 	case  en_SliceType::NONE:
-		slices.push_back(new sf::Sprite());
+		slices.push_back(new sf::Sprite(defaultTexture));
 		break;
 	case  en_SliceType::THREE:
 		for (int i = 0; i < 3; i++) {
-			slices.push_back(new sf::Sprite());
+			slices.push_back(new sf::Sprite(defaultTexture));
 		}
 		break;
 	case  en_SliceType::FOUR:
 		for (int i = 0; i < 4; i++) {
-			slices.push_back(new sf::Sprite());
+			slices.push_back(new sf::Sprite(defaultTexture));
 		}
 		break;
 	case  en_SliceType::NINE:
 		for (int i = 0; i < 9; i++) {
-			slices.push_back(new sf::Sprite());
+			slices.push_back(new sf::Sprite(defaultTexture));
 		}
 		break;
 	}
@@ -1172,11 +1139,11 @@ void Widget_Button::setType(en_SliceType newType)
 	this->align();
 }
 
-void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
+void Widget_Button::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
 	label->poll(win, event);
 
-	if (event.type == sf::Event::MouseMoved) {
+	if (const auto* mouseMoved = event->getIf<sf::Event::MouseMoved>()) {
 		//Get Mouse Pos
 		sf::Vector2i mousePos = sf::Mouse::getPosition(win);
 		if (bounds.contains({(float)mousePos.x, (float)mousePos.y})) {
@@ -1192,7 +1159,7 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 
 	}
 
-	if (event.type == sf::Event::MouseButtonPressed) {
+	if (event->is<sf::Event::MouseButtonPressed>()) {
 		if (state == ButtonState::HOVER) {
 			lastState = state;
 			state = ButtonState::PRESS;
@@ -1200,7 +1167,7 @@ void Widget_Button::poll(sf::RenderWindow& win, sf::Event& event)
 		}
 	}
 
-	if (event.type == sf::Event::MouseButtonReleased) {
+	if (event->is<sf::Event::MouseButtonReleased>()) {
 		sf::Vector2i mousePos = sf::Mouse::getPosition(win);
 		if (state == ButtonState::PRESS) {
 			lastState = state;
@@ -1273,7 +1240,7 @@ Gui::~Gui()
 	}
 }
 
-void Gui::poll(sf::RenderWindow& win, sf::Event& event)
+void Gui::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 {
 	//Poll widgets
 	for (size_t i = 0; i < widgets.size(); i++) {
