@@ -175,6 +175,8 @@ void Widget_Panel::setTexture(sf::Texture* sheet)
 void Widget_Panel::setSize(sf::Vector2f newSize)
 {
 	size = newSize;
+	bounds.width = newSize.x;
+	bounds.height = newSize.y;
 	this->applyPos();
 	this->applyScale();
 }
@@ -187,6 +189,8 @@ void Widget_Panel::setColor(sf::Color col)
 void Widget_Panel::setPosition(sf::Vector2f newPos)
 {
 	pos = newPos;
+	bounds.top = newPos.y;
+	bounds.left = newPos.x;
 	this->applyPos();
 }
 
@@ -279,11 +283,15 @@ void Widget_TabbedPanel::setPanelTexture(sf::Texture* texture)
 
 void Widget_TabbedPanel::setPos(sf::Vector2f newPos) {
 	pos = newPos;
+	bounds.top = newPos.y;
+	bounds.left = newPos.x;
 	this->arrange();
 }
 
 void Widget_TabbedPanel::setSize(sf::Vector2f newSize) {
 	size = newSize;
+	bounds.width = newSize.x;
+	bounds.height = newSize.y;
 	this->arrange();
 }
 
@@ -407,16 +415,70 @@ uint8_t Widget_TabbedPanel::getTabSel()
 //#################################### SCROLLABLE PANEL
 #pragma region scrollpanel
 
-Widget_ScrollPanel::Widget_ScrollPanel() {
+bool Widget_ScrollPanel::contains(float x, float y)
+{
+	if (bounds.contains(x,y)) {
+		return  true;
+	}
 
+	return false;
+}
+
+Widget_ScrollPanel::Widget_ScrollPanel() {
+	border.setFillColor(sf::Color::Transparent);
+	border.setOutlineColor(sf::Color::Red);
+	border.setOutlineThickness(1);
 }
 
 Widget_ScrollPanel::~Widget_ScrollPanel() {
 
 }
 
-void Widget_ScrollPanel::poll(sf::RenderWindow& win, sf::Event& event) {
+void Widget_ScrollPanel::setDebug(bool state)
+{
+	isDebug = state;
+}
 
+void Widget_ScrollPanel::setPosition(sf::Vector2f newPos, sf::RenderWindow& win) {
+	pos = newPos;
+	bounds.top = newPos.y;
+	bounds.left = newPos.x;
+
+	float t = bounds.top / win.getSize().y;
+	float l = bounds.left / win.getSize().x;
+	float w = bounds.width / win.getSize().x;
+	float h = bounds.height / win.getSize().y;
+
+	scrollview.setViewport({ l,t,w,h });
+	
+}
+
+void Widget_ScrollPanel::setSize(sf::Vector2f newSize, sf::RenderWindow& win) {
+	size = newSize;
+	bounds.width = newSize.x;
+	bounds.height = newSize.y;
+
+	float t = bounds.top / win.getSize().y;
+	float l = bounds.left / win.getSize().x;
+	float w = bounds.width / win.getSize().x;
+	float h = bounds.height / win.getSize().y;
+
+	border.setSize({newSize.x, newSize.y});
+
+	scrollview.setSize(newSize);
+	//scrollview.setCenter({});
+	scrollview.setViewport({ l,t,w,h });
+	std::cout << l << ", " << t << ", " << w << ", " << h << std::endl;
+}
+
+void Widget_ScrollPanel::poll(sf::RenderWindow& win, sf::Event& event) {
+	auto mPos = sf::Mouse::getPosition(win);
+
+	if (this->contains((float)mPos.x, (float)mPos.y)) {
+		if (event.type == sf::Event::MouseWheelMoved) {
+			scrollview.move(0, event.mouseWheel.delta * scrollScale);
+		}
+	}
 }
 
 void Widget_ScrollPanel::update(float dt) {
@@ -424,7 +486,11 @@ void Widget_ScrollPanel::update(float dt) {
 }
 
 void Widget_ScrollPanel::draw(sf::RenderWindow& win) {
-	
+	win.setView(scrollview);
+	sf::RectangleShape r;
+	r.setSize({10,10});
+	win.draw(r);
+	win.draw(border);
 }
 
 #pragma endregion
@@ -703,6 +769,8 @@ void Widget_Textbox::draw(sf::RenderWindow& win)
 void Widget_Textbox::setPos(sf::Vector2f newPos)
 {
 	pos = newPos;
+	bounds.top = newPos.y;
+	bounds.left = newPos.x;
 	this->arrange();
 }
 
@@ -735,6 +803,8 @@ void Widget_Textbox::setFont(sf::Font* newFont)
 void Widget_Textbox::setSize(sf::Vector2f newSize)
 {
 	size = newSize;
+	bounds.width = newSize.x;
+	bounds.height = newSize.y;
 
 	rectangle.setSize(newSize);
 

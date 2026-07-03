@@ -52,6 +52,9 @@ private:
 	sf::RectangleShape selectBorder;
 
 
+	Widget_ScrollPanel scrollPanel;
+
+
 
 	//Map
 	sf::FloatRect mapBoundry;
@@ -70,6 +73,14 @@ private:
 	Node* pathHead = nullptr;
 	Node* pathEnd = nullptr;
 	std::vector<sf::Vertex> pathLines;
+
+
+	//Round Tool
+	// NOT IMPLEMENTED
+
+	//Hostile Tool
+	// NOT IMPLEMENTED
+
 
 	//General
 	std::string filename = "resource/map/editor";

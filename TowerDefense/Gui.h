@@ -42,6 +42,7 @@ protected:
 
 	sf::Vector2f size = { 32,32};
 	sf::Vector2f pos = {0,0};
+	sf::FloatRect bounds = {0,0,32,32};
 
 public:
 	//Common Functions
@@ -159,18 +160,26 @@ private:
 	float scrollOffset = 0;
 	float maxOffset = 1;
 	float minOffset = 0;
-	Widget_Panel panel;
 	sf::Sprite scrollBar;
-
+	float scrollScale = 1;
+	sf::RectangleShape border;
+	bool isDebug = false;
 
 
 	//Util
+	bool contains(float x, float y);
+
 public:
 	//Constructor and Destructor
 	Widget_ScrollPanel();
 	~Widget_ScrollPanel();
 
 	//Primary Functions
+	void setDebug(bool state);
+
+	void setPosition(sf::Vector2f newPos, sf::RenderWindow &win);
+	void setSize(sf::Vector2f newSize, sf::RenderWindow &win);
+
 	void poll(sf::RenderWindow& win, sf::Event& event);
 	void update(const float dt);
 	void draw(sf::RenderWindow& win);

@@ -26,10 +26,11 @@ void State_Editor::initGui() {
 	pnl_bottom->setTabTexture(textureHandler->lookup("tab_simple"));
 	pnl_bottom->setTabFont(font);
 	pnl_bottom->setTabTitleColor(sf::Color::Black);
-	pnl_bottom->addTab(2);
+	pnl_bottom->addTab(3);
 
 	pnl_bottom->setTabTitle(0, "Path Tool");
 	pnl_bottom->setTabTitle(1, "Round Tool");
+	pnl_bottom->setTabTitle(2, "Hostile Tool");
 
 	sf::Vector2f pnl_bottomSize = { viewSize_gui.x - pnl_left->getSize().x, viewSize_gui.y * bottomPanelRatio };
 	pnl_bottom->setSize(pnl_bottomSize);
@@ -174,6 +175,7 @@ void State_Editor::initMap()
 void State_Editor::initPalleteTool()
 {
 	//## Pallete setup
+	scrollPanel.setDebug(true);
 
 	//Size and positioning
 	paletteSize.x = paletteRatio.x * pnl_left->getSize().x;
@@ -181,6 +183,11 @@ void State_Editor::initPalleteTool()
 
 	palettePos.x = .5f * (pnl_left->getSize().x - paletteSize.x) + pnl_left->getPos().x;
 	palettePos.y = .5f * (pnl_left->getSize().y - paletteSize.y) + pnl_left->getPos().y;
+
+
+	//Scroll Panel
+	scrollPanel.setPosition(palettePos, *window);
+	scrollPanel.setSize(paletteSize, *window);
 
 	//Border Box
 	paletteBorder.setFillColor(sf::Color::Transparent);
@@ -764,7 +771,10 @@ void State_Editor::drawMap(sf::RenderWindow& win)
 }
 
 void State_Editor::drawPallete(sf::RenderWindow& win) {
-	for (size_t i = 0; i < palette.size(); i++) {
+	
+	
+	scrollPanel.draw(win);
+	/*for (size_t i = 0; i < palette.size(); i++) {
 		win.draw(palette.at(i));
 	}
 
@@ -772,7 +782,9 @@ void State_Editor::drawPallete(sf::RenderWindow& win) {
 		win.draw(selectBorder);
 	}
 
-	win.draw(paletteBorder);
+	win.draw(paletteBorder);*/
+
+	
 }
 
 void State_Editor::drawRoundTool(sf::RenderWindow& win)
@@ -862,7 +874,7 @@ void State_Editor::draw(sf::RenderWindow& win) {
 	//Draw Gui
 	win.setView(view_gui);
 	gui->draw(win);
-	this->drawPallete(win);
+	
 	switch (pnl_bottom->getTabSel()) {
 	case 0:
 		//Draw Path Tool
@@ -876,6 +888,6 @@ void State_Editor::draw(sf::RenderWindow& win) {
 		//Do nothing
 		break;
 	}
-
+	this->drawPallete(win);
 }
 

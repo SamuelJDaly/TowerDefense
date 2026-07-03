@@ -140,6 +140,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="State_Editor.cpp" />
     <ClCompile Include="State_Game.cpp" />
+    <ClCompile Include="State_LevelEditor.cpp" />
     <ClCompile Include="State_Menu.cpp" />
     <ClCompile Include="State_Test.cpp" />
     <ClCompile Include="TextureHandler.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="State_Editor.h" />
     <ClInclude Include="State_Game.h" />
+    <ClInclude Include="State_LevelEditor.h" />
     <ClInclude Include="State_Menu.h" />
     <ClInclude Include="State_Test.h" />
     <ClInclude Include="TextureHandler.h" />

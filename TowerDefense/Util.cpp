@@ -216,26 +216,137 @@ void drawPath(Node* pathHead, sf::RenderWindow& win)
 	}
 }
 
-void AddNode(Node* pathHead, sf::Vector2f pos)
+void Path_PushBack(Node* pathHead, sf::Vector2f pos)
 {
-	//NOT IMPLEMENTED
-	std::cout << "NOT IMPLEMENTED" << std::endl;
+	//Create new node
+	Node* newNode = new Node;
+	newNode->pos = pos;
+	newNode->type = NodeType::END;
+
+	//Check for empty list case
+	if (!pathHead) {
+		pathHead = newNode;
+		return;
+	}
+
+	//Traverse to end of list
+	Node* curr = pathHead;
+
+	while (curr->next) {
+		curr = curr->next;
+	}
+
+	curr->type = NodeType::PATH;
+	curr->next = newNode;
+	newNode->last = curr;
 	return;
 }
 
-void RemNode(Node* pathHead, int idx)
+void Path_PopBack(Node* pathHead, int idx)
 {
-	//NOT 
-	std::cout << "NOT IMPLEMENTED" << std::endl;
+	//Check for empty list
+	if (!pathHead) {
+		std::cout << "Cannot pop empty list..." << std::endl;
+		return;
+	}
+
+	//Traverse list
+	Node* curr = pathHead;
+
+	while (curr->next) {
+		curr = curr->next;
+	}
+
+	//Update previous node if it exists
+	if (curr->last) {
+		curr->last->next = nullptr;
+		curr->last->type = NodeType::END;
+	}
+	
+	//Free data of end node
+	delete curr;
+
 	return;
 }
 
-void InsertNode(Node* pathHead, int idx)
+void Path_Insert(Node* pathHead, int idx, sf::Vector2f pos)
 {
-	//NOT IMPLEMENTED
-	std::cout << "NOT IMPLEMENTED" << std::endl;
+	//# Create new node
+	Node* newNode = new Node;
+	newNode->pos = pos;
+	newNode->type = NodeType::BEGIN;
+
+	//# Empty case
+	if (!pathHead) {
+		pathHead = newNode;
+		return;
+	}
+
+	//# Beginning case
+	if (idx == 0) {
+		Node* temp = pathHead;
+		pathHead = newNode;
+		pathHead->next = temp;
+		temp->last = pathHead;
+		
+
+		if (temp->next) {
+			temp->type = NodeType::PATH;
+		}
+		else {
+			temp->type = NodeType::END;
+		}
+		return;
+	}
+
+	//# Traverse to idx
+	Node* curr = pathHead;
+	for (int i = 0; i < idx; i++) {
+		if (!curr) {
+			std::cout << "Cannot insert path node at index: " << idx << " out of bounds" << std::endl;
+			delete newNode;
+			return;
+		}
+		curr = curr->next;
+	}
+
+	//# Curr is now the object that needs to shift right
+	curr->last->next = newNode;
+	newNode->next = curr;
+	curr->last = newNode;
+	newNode->type = NodeType::PATH;
+
+
 	return;
 }
+
+void Path_Remove(Node* pathHead, int idx)
+{
+	//# Empty Case
+	if (!pathHead) {
+		std::cout << "Cannot remove node from empty path" << std::endl;
+	}
+
+	//# Beginning Case
+	if (idx == 0) {
+
+	}
+
+	//# Traverse to idx
+	Node* curr = pathHead;
+	for (int i = 0; i < idx; i++) {
+		if (!curr) {
+			std::cout << "Cannot remove path node at index: " << idx << " out of bounds" << std::endl;
+			return;
+		}
+		curr = curr->next;
+	}
+
+	//# Curr is now the node that needs to be removed
+
+
+}
+
 
 void freePath(Node* pathHead)
 {
