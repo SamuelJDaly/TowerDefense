@@ -123,7 +123,6 @@ void State_Menu::poll(sf::RenderWindow& win, std::optional<sf::Event> event)
 void State_Menu::update(float dt)
 {
 	gui->update(dt);
-
 }
 
 void State_Menu::draw(sf::RenderWindow& win)

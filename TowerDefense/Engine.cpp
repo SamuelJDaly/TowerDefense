@@ -60,6 +60,7 @@ Engine::Engine()
 	this->initWindow();
 	this->initTextures();
 	this->initState();
+	ImGui::SFML::Init(*win);
 }
 
 Engine::~Engine()
@@ -67,6 +68,7 @@ Engine::~Engine()
 	delete currState;
 	delete textureHandler;
 	delete win;
+	ImGui::SFML::Shutdown();
 }
 
 void Engine::update()
@@ -77,6 +79,8 @@ void Engine::update()
 
 	//# Handle Polled Events
 	while (std::optional event = win->pollEvent()) {
+		//Imgui events
+		ImGui::SFML::ProcessEvent(*win, *event);
 		//Window closure
 		if (event->is<sf::Event::Closed>()) {
 			win->close();
@@ -95,6 +99,9 @@ void Engine::update()
 	}
 
 	//## Handle per frame events
+
+	//Imgui
+	ImGui::SFML::Update(*win, sf::seconds(deltaTime));
 
 	//Update Current State
 	currState->update(deltaTime);
@@ -147,6 +154,8 @@ void Engine::draw()
 	win->clear();
 
 	currState->draw(*win);
+
+	ImGui::SFML::Render(*win);
 
 	win->display();
 }

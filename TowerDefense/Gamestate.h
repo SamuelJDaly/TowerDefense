@@ -3,6 +3,10 @@
 #include <vector>
 #include <stack>
 #include <SFML/Graphics.hpp>
+
+#include "imgui.h"
+#include "imgui-SFML.h"
+
 #include "Tower.h"
 #include "Hostile.h"
 #include "Map.h"
